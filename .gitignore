@@ -1,4 +1,9 @@
 /node_modules
 package-lock.json
-./config/accounts.txt
-./config/proxy.txt
+config/accounts.txt
+config/proxy.txt
+/.venv
+config/accounts.txt
+assign_proxy.log
+process.log
+worker.log

@@ -1,5 +1,20 @@
 const fs = require('fs');
 const path = require('path');
+const log4js = require('log4js');
+
+// Configure log4js
+log4js.configure({
+  appenders: {
+    file: { type: 'file', filename: 'assign_proxy.log' },
+    console: { type: 'console' }
+  },
+  categories: {
+    default: { appenders: ['console', 'file'], level: 'info' }
+  }
+});
+
+// Get the logger instance
+const logger = log4js.getLogger();
 
 // Import the proxy list from the filtered_proxy.js file
 const proxyList = require('../config/filtered_proxy.json');
@@ -60,15 +75,20 @@ function saveAccountsWithProxiesToFile(filePath, accountsWithProxies) {
 
 // Main function to process the accounts and proxies
 async function processAccountsAndProxies(accountFilePath, outputFilePath) {
-  const accounts = readAccountsFromFile(accountFilePath);
-  const accountsWithProxies = assignProxiesToAccounts(accounts, proxyList);
-  saveAccountsWithProxiesToFile(outputFilePath, accountsWithProxies);
-  console.log(`Accounts with proxies have been saved to ${outputFilePath}`);
+  try {
+    logger.info('Starting to process accounts and proxies...');
+    
+    const accounts = readAccountsFromFile(accountFilePath);
+    logger.info(`Loaded ${accounts.length} accounts from ${accountFilePath}`);
+    
+    const accountsWithProxies = assignProxiesToAccounts(accounts, proxyList);
+    logger.info(`Assigned proxies to ${accountsWithProxies.length} accounts`);
+
+    saveAccountsWithProxiesToFile(outputFilePath, accountsWithProxies);
+    logger.info(`Accounts with proxies have been saved to ${outputFilePath}`);
+  } catch (error) {
+    logger.error(`Error during processing: ${error.message}`);
+  }
 }
-
-const accountFilePath = "./../config/accounts.txt";
-const outputFilePath = "./../config/account_with_proxy.json";
-
-// processAccountsAndProxies()
 
 module.exports = { processAccountsAndProxies };

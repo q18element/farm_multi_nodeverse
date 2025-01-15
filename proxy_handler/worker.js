@@ -1,7 +1,20 @@
-// worker.js
-
 const { parentPort } = require('worker_threads');
 const request = require('request');
+const log4js = require('log4js');
+
+// Configure log4js
+log4js.configure({
+  appenders: {
+    file: { type: 'file', filename: 'worker.log' },
+    console: { type: 'console' }
+  },
+  categories: {
+    default: { appenders: ['console', 'file'], level: 'info' }
+  }
+});
+
+// Get the logger instance
+const logger = log4js.getLogger();
 
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36";
@@ -40,10 +53,10 @@ async function testProxy(proxyUrl, domains) {
         });
       });
       results.success.push(domain);
-      console.log(`Proxy ${proxyUrl} successfully pinged ${domain}`);
+      logger.info(`Proxy ${proxyUrl} successfully pinged ${domain}`);
     } catch (e) {
       results.fail.push(domain);
-      console.log(`Proxy ${proxyUrl} failed to ping ${domain}`);
+      logger.error(`Proxy ${proxyUrl} failed to ping ${domain}: ${e.message}`);
     }
   }
 
@@ -52,6 +65,7 @@ async function testProxy(proxyUrl, domains) {
 
 // Listen for messages from the parent thread
 parentPort.on('message', async (data) => {
+  logger.info('Worker started processing proxies...');
   const results = await Promise.all(
     data.proxies.map(async (proxy) => {
       const result = await testProxy(proxy, domains);
@@ -62,5 +76,6 @@ parentPort.on('message', async (data) => {
     })
   );
   // Send the results back to the main thread
+  logger.info('Worker completed proxy processing.');
   parentPort.postMessage(results.filter((result) => result !== null));
 });
