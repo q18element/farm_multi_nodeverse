@@ -1,1 +1,152 @@
-[]
+[
+  {
+    "username": "asdnck@nvfjkd.com",
+    "proxies": [
+      {
+        "proxy": "v2-103-520833:BCAJL@14.161.29.217:15103\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      },
+      {
+        "proxy": "v2-056-778523:ACPHU@14.161.29.217:15056\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      },
+      {
+        "proxy": "v2-126-476409:JBEPK@14.161.29.217:15126\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      },
+      {
+        "proxy": "v2-133-240377:ENWPE@14.161.29.217:15133\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      },
+      {
+        "proxy": "v2-148-707990:PCYMY@14.161.29.217:15148\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      }
+    ]
+  },
+  {
+    "username": "bull1234@tourzy.us",
+    "proxies": [
+      {
+        "proxy": "v2-093-430333:KJYHK@14.161.29.217:15093\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      },
+      {
+        "proxy": "v2-099-140448:MCKJF@14.161.29.217:15099\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      },
+      {
+        "proxy": "v2-120-787772:POBVL@14.161.29.217:15120\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      },
+      {
+        "proxy": "v2-129-412006:LOMLI@14.161.29.217:15129\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      },
+      {
+        "proxy": "v2-105-672978:JUAWC@14.161.29.217:15105\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      }
+    ]
+  }
+]
