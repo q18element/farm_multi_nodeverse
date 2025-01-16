@@ -9,30 +9,30 @@ class TokenPlugin {
             if (isFirstLogin) {
                 console.log(`Account: ${username}, Proxy: ${proxyUrl}, it is first run, login URL will be opened automatically.`);
                 await driver.get(url);
-                await driver.wait(until.titleIs('OpenLoop'), 120000); // 30s timeout
+                await driver.wait(until.titleIs('OpenLoop'), 60000); // 30s timeout
                 console.log(`Account: ${username}, Proxy: ${proxyUrl}, Page title: ${await driver.getTitle()}`);
 
-                const continueButton = await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/div/div/a/button')), 120000);
+                const continueButton = await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/div/div/a/button')), 60000);
                 await continueButton.click();
 
             } else {
                 await driver.get(url);
-                await driver.wait(until.titleIs('OpenLoop'), 120000); // 30s timeout
+                await driver.wait(until.titleIs('OpenLoop'), 60000); // 30s timeout
                 console.log(`Account: ${username}, Proxy: ${proxyUrl}, Page title: ${await driver.getTitle()}`);
             }
 
             await driver.sleep(10000);  // Sleep to ensure the login process is complete
 
             // Wait for username and password input fields and the login button
-            const usernameField = await driver.wait(until.elementLocated(By.css('.el-input-wrapper[type="email"] > .relative > input.el-input')), 120000);
-            const passwordField = await driver.wait(until.elementLocated(By.css('.el-input-wrapper[type="password"] > .relative > input.el-input')), 120000);
-            const loginButton = await driver.wait(until.elementLocated(By.css('.btn.btn-white.mt-3')), 120000);
+            const usernameField = await driver.wait(until.elementLocated(By.css('.el-input-wrapper[type="email"] > .relative > input.el-input')), 60000);
+            const passwordField = await driver.wait(until.elementLocated(By.css('.el-input-wrapper[type="password"] > .relative > input.el-input')), 60000);
+            const loginButton = await driver.wait(until.elementLocated(By.css('.btn.btn-white.mt-3')), 60000);
 
             // Enter credentials and login
             await usernameField.sendKeys(username);
             await passwordField.sendKeys(password);
             await loginButton.click();
-            await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/header')), 120000);
+            await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/header')), 60000);
             await driver.sleep(10000);
             return true; // Success
         } catch (error) {
@@ -45,19 +45,19 @@ class TokenPlugin {
         try {
             const url = 'https://app.gradient.network/';
             await driver.get(url);
-            await driver.wait(until.titleIs('Gradient Network Dashboard'), 120000); // 30s timeout
+            await driver.wait(until.titleIs('Gradient Network Dashboard'), 60000); // 30s timeout
             console.log(`Account: ${username}, Proxy: ${proxyUrl}, Page title: ${await driver.getTitle()}`);
 
             // Wait for username and password input fields and the login button
-            const usernameField = await driver.wait(until.elementLocated(By.xpath('/html/body/div[1]/div[2]/div/div/div/div[2]/div[1]/input')), 120000);
-            const passwordField = await driver.wait(until.elementLocated(By.xpath('/html/body/div[1]/div[2]/div/div/div/div[2]/div[2]/span/input')), 120000);
-            const loginButton = await driver.wait(until.elementLocated(By.xpath('/html/body/div[1]/div[2]/div/div/div/div[4]/button[1]')), 120000);
+            const usernameField = await driver.wait(until.elementLocated(By.xpath('/html/body/div[1]/div[2]/div/div/div/div[2]/div[1]/input')), 60000);
+            const passwordField = await driver.wait(until.elementLocated(By.xpath('/html/body/div[1]/div[2]/div/div/div/div[2]/div[2]/span/input')), 60000);
+            const loginButton = await driver.wait(until.elementLocated(By.xpath('/html/body/div[1]/div[2]/div/div/div/div[4]/button[1]')), 60000);
 
             // Enter credentials and login
             await usernameField.sendKeys(username);
             await passwordField.sendKeys(password);
             await loginButton.click();
-            await driver.wait(until.elementLocated(By.xpath('/html/body/div[3]/div/div[2]/div')), 120000);
+            await driver.wait(until.elementLocated(By.xpath('/html/body/div[3]/div/div[2]/div')), 60000);
             await driver.sleep(10000);
             return true; // Success
         } catch (error) {
@@ -74,15 +74,15 @@ class TokenPlugin {
             console.log(`Account: ${username}, Proxy: ${proxyUrl}, Page title: ${await driver.getTitle()}`);
 
             // Wait for username and password input fields and the login button
-            const usernameField = await driver.wait(until.elementLocated(By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/div[1]/div/input')), 120000);
-            const passwordField = await driver.wait(until.elementLocated(By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/div[2]/div/input')), 120000);
-            const loginButton = await driver.wait(until.elementLocated(By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/button/div')), 120000);
+            const usernameField = await driver.wait(until.elementLocated(By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/div[1]/div/input')), 60000);
+            const passwordField = await driver.wait(until.elementLocated(By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/div[2]/div/input')), 60000);
+            const loginButton = await driver.wait(until.elementLocated(By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/button/div')), 60000);
 
             // Enter credentials and login
             await usernameField.sendKeys(username);
             await passwordField.sendKeys(password);
             await loginButton.click();
-            await driver.wait(until.elementLocated(By.xpath('/html/body/div/div[1]/div[2]/div[1]/div[1]/h1')), 120000);
+            await driver.wait(until.elementLocated(By.xpath('/html/body/div/div[1]/div[2]/div[1]/div[1]/h1')), 60000);
             await driver.sleep(10000);
             return true; // Success
         } catch (error) {
@@ -108,9 +108,9 @@ class TokenPlugin {
             await driver.sleep(3000);
 
             // Wait for the necessary elements
-            const statusValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[1]/span')), 120000);
-            const cntQualityValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[1]/span')), 120000);
-            const earningValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[2]/div[2]/span')), 120000);
+            const statusValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[1]/span')), 60000);
+            const cntQualityValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[1]/span')), 60000);
+            const earningValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[2]/div[2]/span')), 60000);
 
             console.log(`Account: ${username}, Proxy: ${proxyUrl}, Status: ${await statusValue.getText()}`);
             console.log(`Account: ${username}, Proxy: ${proxyUrl}, Conection quality: ${await cntQualityValue.getText()}`);
@@ -133,9 +133,9 @@ class TokenPlugin {
     async check_gradient(driver, username, proxyUrl, isFirstLogin, last2minValueGradient) {
         try {
             if (isFirstLogin) { 
-                const closeButton = await driver.wait(until.elementLocated(By.xpath('/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/button')), 120000);
+                const closeButton = await driver.wait(until.elementLocated(By.xpath('/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/button')), 60000);
                 await closeButton.click();
-                const yesButton = await driver.wait(until.elementLocated(By.xpath('/html/body/div[2]/div/div[2]/div/div[1]/div/div/div/button')), 120000);
+                const yesButton = await driver.wait(until.elementLocated(By.xpath('/html/body/div[2]/div/div[2]/div/div[1]/div/div/div/button')), 60000);
                 await yesButton.click();
             }
 
@@ -143,19 +143,19 @@ class TokenPlugin {
             await driver.sleep(3000);
 
             // Wait for the necessary elements
-            const statusValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[1]/div[2]/div[3]/div[2]/div/div[2]/div')), 120000);
-            const tapTodayValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1]')), 120000);
-            const upTimeValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1]')), 120000);
+            const statusValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[1]/div[2]/div[3]/div[2]/div/div[2]/div')), 60000);
+            const tapTodayValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1]')), 60000);
+            const upTimeValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1]')), 60000);
 
             console.log(`Account: ${username}, Proxy: ${proxyUrl}, Status: ${await statusValue.getText()}`);
             console.log(`Account: ${username}, Proxy: ${proxyUrl}, Tap today: ${await tapTodayValue.getText()}`);
             console.log(`Account: ${username}, Proxy: ${proxyUrl}, Up time value: ${await upTimeValue.getText()}`);
 
-            const rewardButton = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[3]/div/div[3]')), 120000);
+            const rewardButton = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[3]/div/div[3]')), 60000);
             await rewardButton.click();
 
-            const todayRewardValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1]')), 120000);
-            const sessionRewardValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1]')), 120000);
+            const todayRewardValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1]')), 60000);
+            const sessionRewardValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1]')), 60000);
 
             console.log(`Account: ${username}, Proxy: ${proxyUrl}, today Reward: ${await todayRewardValue.getText()}`);
             console.log(`Account: ${username}, Proxy: ${proxyUrl}, session Reward: ${await sessionRewardValue.getText()}`);
@@ -178,9 +178,9 @@ class TokenPlugin {
             await driver.sleep(3000);
             
             // Wait for the necessary elements
-            const elementValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root"]/div/div/div[4]/div[1]/p')), 120000);
-            const percentValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root"]/div/div/div[2]/div/div/div/p')), 120000);
-            const upTimeValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root"]/div/div/div[4]/div[2]/p')), 120000);
+            const elementValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root"]/div/div/div[4]/div[1]/p')), 60000);
+            const percentValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root"]/div/div/div[2]/div/div/div/p')), 60000);
+            const upTimeValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root"]/div/div/div[4]/div[2]/p')), 60000);
 
             console.log(`Account: ${username}, Proxy: ${proxyUrl}, Connection quality: ${await percentValue.getText()}`);
             console.log(`Account: ${username}, Proxy: ${proxyUrl}, Epoch value after 2 mins: ${await elementValue.getText()}`);

@@ -233,8 +233,9 @@ async function runAutomationForAccountAndProxy(account, proxyUrl, tasks = []) {
 
       // If tasks are empty, quit driver
       if (tasks.length === 0) {
-        logger.info(`[INFO] All tasks completed or failed. Quitting driver for ${username} on proxy ${proxyUrl}`);
-        await driver.quit();
+        logger.info(`[INFO] All tasks failed. Quitting browser for ${username} on proxy ${proxyUrl}`);
+        await switchToTab(driver, 0);
+        await driver.close();
         return;
       }
 
@@ -244,7 +245,8 @@ async function runAutomationForAccountAndProxy(account, proxyUrl, tasks = []) {
     logger.error(`[ERROR] Error initializing WebDriver or running automation for Account: ${username}, Proxy: ${proxyUrl} - ${error.message}`);
   } finally {
     if (driver) {
-      await driver.quit();
+      await switchToTab(driver, 0);
+      await driver.close();
     }
   }
 }
