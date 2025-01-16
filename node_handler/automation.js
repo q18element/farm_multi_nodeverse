@@ -46,6 +46,8 @@ options.addArguments(
   '--headless', // Uncomment for headless mode
 );
 
+// options.setChromeBinaryPath('/usr/bin/chromedriver');
+
 options.addExtensions(openloop_Extension_Path);
 options.addExtensions(gradient_Extension_Path);
 options.addExtensions(toggle_Extension_Path);
