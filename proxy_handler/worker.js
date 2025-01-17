@@ -37,7 +37,7 @@ async function testProxy(proxyUrl, domains) {
     const options = {
       url: domain,
       proxy: `http://${proxyUrl}`,
-      timeout: 120000, // 120 seconds timeout
+      timeout: 20000, // 120 seconds timeout
       headers: {
         "User-Agent": USER_AGENT,
       },
