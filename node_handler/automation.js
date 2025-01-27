@@ -1,10 +1,13 @@
+// node_handler/automation.js
+
 const fs = require('fs');
 const path = require('path');
-const { Builder, By, until } = require('selenium-webdriver');
+const { Builder } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 const proxyChain = require("proxy-chain");
 const TokenPlugin = require('./token_handler');  // Adjust path if needed
 const log4js = require('log4js');
+const os = require('os');
 
 const log4jsConfig = {
   appenders: {
@@ -18,7 +21,6 @@ const log4jsConfig = {
 
 // Configure log4js for structured logging
 log4js.configure(log4jsConfig);
-
 const logger = log4js.getLogger();
 
 const tokenPlugin = new TokenPlugin();
@@ -36,17 +38,34 @@ options.addArguments(
   'start-maximized',
   'disable-infobars',
   '--disable-application-cache',
-  '--no-sandbox',
-  '--disable-gpu',
+  '--disable-webrtc',
   `--user-agent=${USER_AGENT}`,
   '--disable-web-security',
   '--ignore-certificate-errors',
   '--dns-prefetch-disable',
   '--enable-unsafe-swiftshader',
-  '--headless', // Uncomment for headless mode
+  '--no-first-run',
+  '--enable-automation',
+  '--allow-remote-origin',
+  '--allow-pre-commit-input',
+  '--disable-popup-blocking',
+  // '--headless', // Uncomment for headless mode
 );
 
-options.setChromeBinaryPath('/usr/bin/chromium-browser');
+const platform = os.platform();
+
+// Check if machine is linux
+if (platform === 'linux') {
+  logger.info('Detected Linux OS. Setting Chromium path to /usr/bin/chromium-browser and turning on HEADLESS mode\n');
+  options.setChromeBinaryPath('/usr/bin/chromium-browser');
+  options.addArguments(
+    '--headless',
+    '--no-sandbox',
+    '--disable-gpu'
+  );
+} else {
+  logger.info('Detected Windows OS. Setting Chromium path to default.');
+}
 
 options.addExtensions(openloop_Extension_Path);
 options.addExtensions(gradient_Extension_Path);
@@ -63,13 +82,19 @@ function loadAccountData(filePath) {
 }
 
 async function switchToTab(driver, index, url = 'about:blank') {
-  const windowHandles = await driver.getAllWindowHandles();
-  if (index < windowHandles.length) {
-    await driver.switchTo().window(windowHandles[index]);
-  } else {
-    await driver.executeScript(`window.open('${url}', '_blank');`);
-    const newWindowHandles = await driver.getAllWindowHandles();
-    await driver.switchTo().window(newWindowHandles[newWindowHandles.length - 1]);
+  try {
+    const windowHandles = await driver.getAllWindowHandles();
+    if (index < windowHandles.length) {
+      await driver.switchTo().window(windowHandles[index]);
+    } else {
+      await driver.executeScript(`window.open('${url}', '_blank');`);
+      const newWindowHandles = await driver.getAllWindowHandles();
+      await driver.switchTo().window(newWindowHandles[newWindowHandles.length - 1]);
+    }
+    return true;
+  }
+  catch (err) {
+    return false;
   }
 }
 
@@ -84,7 +109,7 @@ async function runAutomationForAccountAndProxy(account, proxyUrl, tasks = []) {
   const newProxyUrl = await proxyChain.anonymizeProxy(proxyUrl);
   const proxyDetails = new URL(newProxyUrl);
   let driverOptions = options;
-  
+
   try {
     driverOptions.addArguments(
       `--proxy-server=${proxyDetails.protocol}//${proxyDetails.hostname}:${proxyDetails.port}`
@@ -94,9 +119,17 @@ async function runAutomationForAccountAndProxy(account, proxyUrl, tasks = []) {
       driverOptions.addArguments(`--proxy-auth=${proxyDetails.username}:${proxyDetails.password}`);
     }
 
-    driver = await new Builder().forBrowser('chrome').setChromeOptions(driverOptions).build();
+    // init Driver
+    try {
+      driver = await new Builder().forBrowser('chrome').setChromeOptions(driverOptions).build();
+    } catch (err) {
+      logger.error(`[ERROR] Failed to initialize WebDriver: ${err.message}`);
+      throw err;
+    }
+
     await driver.sleep(3000);
 
+    // close auto open tab
     const windowHandles = await driver.getAllWindowHandles();
     if (windowHandles.length > 1) {
       await driver.close();
@@ -152,6 +185,7 @@ async function runAutomationForAccountAndProxy(account, proxyUrl, tasks = []) {
           tasks = tasks.filter(t => t !== 'toggle');
         }
       }
+      
 
       // If tasks are empty, quit driver
       if (tasks.length === 0) {
@@ -166,7 +200,7 @@ async function runAutomationForAccountAndProxy(account, proxyUrl, tasks = []) {
       if (tasks.includes('openloop')) {
         await switchToTab(driver, 0);
         try {
-          const success = await tokenPlugin.navigateToExtension(driver, openloop_extension_url);
+          const success = true;
           if (!success) {
             tasks = tasks.filter(task => task !== 'openloop');
           } else {
@@ -188,14 +222,26 @@ async function runAutomationForAccountAndProxy(account, proxyUrl, tasks = []) {
       if (tasks.includes('gradient')) {
         await switchToTab(driver, 0);
         try {
-          const success = await tokenPlugin.navigateToExtension(driver, gradient_extension_url);
+          const success = true; // Mock success here
           if (!success) {
             tasks = tasks.filter(task => task !== 'gradient');
           } else {
-            const checkSuccess = await tokenPlugin.check_gradient(driver, username, proxyUrl, isFirstLogin, last2minValueGradient);
+            const checkSuccess = await tokenPlugin.check_gradient(
+              driver,
+              username,
+              proxyUrl,
+              isFirstLogin,
+              last2minValueGradient
+            );
             if (checkSuccess) {
               logger.info(`[SUCCESS] Checked Gradient token for ${username}`);
             } else {
+              await driver.sleep(100000000);
+              logger.error(`[ERROR]`);
+              logger.error(`[ERROR]`);
+              logger.error(`[ERROR]`);
+              logger.error(`[ERROR]`);
+              logger.error(`[ERROR]`);
               logger.error(`[ERROR] Gradient token check failed for ${username}`);
               tasks = tasks.filter(task => task !== 'gradient');
             }
@@ -210,7 +256,7 @@ async function runAutomationForAccountAndProxy(account, proxyUrl, tasks = []) {
       if (tasks.includes('toggle')) {
         await switchToTab(driver, 0);
         try {
-          const success = await tokenPlugin.navigateToExtension(driver, toggle_extension_url);
+          const success = true;
           if (!success) {
             tasks = tasks.filter(task => task !== 'toggle');
           } else {
@@ -228,25 +274,31 @@ async function runAutomationForAccountAndProxy(account, proxyUrl, tasks = []) {
         }
       }
 
-      await driver.executeScript(`window.open('', '_blank');`);
-      await driver.close();
+      isFirstLogin = false;
+
+      await switchToTab(driver, 0);
+      await driver.get("about:blank");
 
       // If tasks are empty, quit driver
       if (tasks.length === 0) {
         logger.info(`[INFO] All tasks failed. Quitting browser for ${username} on proxy ${proxyUrl}`);
         await driver.executeScript(`window.open('', '_blank');`);
         await driver.close();
-        // return;
       }
 
+      // Wait 2 minutes before checking again
       await driver.sleep(120000);
     }
   } catch (error) {
-    logger.error(`[ERROR] Error initializing WebDriver or running automation for Account: ${username}, Proxy: ${proxyUrl} - ${error.message}`);
+    logger.error(`[ERROR] Error running automation for Account: ${username}, Proxy: ${proxyUrl} - ${error.message}`);
   } finally {
     if (driver) {
-      await switchToTab(driver, 0);
-      await driver.close();
+      try {
+        await switchToTab(driver, 0);
+        await driver.close();
+      } catch (err) {
+        // may throw if already closed
+      }
     }
   }
 }

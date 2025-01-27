@@ -1,0 +1,40 @@
+[
+  {
+    "username": "bull608@tourzy.us",
+    "proxies": [
+      {
+        "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:28947\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      }
+    ]
+  },
+  {
+    "username": "bull609@tourzy.us",
+    "proxies": [
+      {
+        "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:26138\r",
+        "success": [
+          "https://app.gradient.network",
+          "https://toggle.pro/sign-in",
+          "https://openloop.so/auth/login"
+        ],
+        "fail": [],
+        "run": [
+          "gradient",
+          "toggle",
+          "openloop"
+        ]
+      }
+    ]
+  }
+]

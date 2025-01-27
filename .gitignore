@@ -8,3 +8,6 @@ assign_proxy.log
 automation.log
 process.log
 worker.log
+server.js
+config/account_with_proxy.json
+config/filtered_proxy.json

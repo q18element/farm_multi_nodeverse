@@ -7,10 +7,10 @@ class TokenPlugin {
             const url = 'chrome-extension://effapmdildnpkiaeghlkicpfflpiambm/dist/popup/index.html';
 
             if (isFirstLogin) {
-                console.log(`Account: ${username}, Proxy: ${proxyUrl}, it is first run, login URL will be opened automatically.`);
+                console.log(`it is first run, login URL will be opened automatically.`);
                 await driver.get(url);
                 await driver.wait(until.titleIs('OpenLoop'), 60000); // 30s timeout
-                console.log(`Account: ${username}, Proxy: ${proxyUrl}, Page title: ${await driver.getTitle()}`);
+                console.log(`Page title: ${await driver.getTitle()}`);
 
                 const continueButton = await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/div/div/a/button')), 60000);
                 await continueButton.click();
@@ -18,7 +18,7 @@ class TokenPlugin {
             } else {
                 await driver.get(url);
                 await driver.wait(until.titleIs('OpenLoop'), 60000); // 30s timeout
-                console.log(`Account: ${username}, Proxy: ${proxyUrl}, Page title: ${await driver.getTitle()}`);
+                console.log(`Page title: ${await driver.getTitle()}`);
             }
 
             await driver.sleep(10000);  // Sleep to ensure the login process is complete
@@ -46,7 +46,7 @@ class TokenPlugin {
             const url = 'https://app.gradient.network/';
             await driver.get(url);
             await driver.wait(until.titleIs('Gradient Network Dashboard'), 60000); // 30s timeout
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Page title: ${await driver.getTitle()}`);
+            console.log(`Page title: ${await driver.getTitle()}`);
 
             // Wait for username and password input fields and the login button
             const usernameField = await driver.wait(until.elementLocated(By.xpath('/html/body/div[1]/div[2]/div/div/div/div[2]/div[1]/input')), 60000);
@@ -71,7 +71,7 @@ class TokenPlugin {
             const url = 'https://toggle.pro/sign-in';
             await driver.get(url);
             await driver.wait(until.titleIs('Toggle Pro - Revolutionary AI that transforms digital workforce'), 60000); // 60s timeout
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Page title: ${await driver.getTitle()}`);
+            console.log(`Page title: ${await driver.getTitle()}`);
 
             // Wait for username and password input fields and the login button
             const usernameField = await driver.wait(until.elementLocated(By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/div[1]/div/input')), 60000);
@@ -94,7 +94,8 @@ class TokenPlugin {
     async navigateToExtension(driver, token_extension_url) {
         try {
             await driver.get(token_extension_url);
-            await driver.sleep(3000);  // Wait for the extension to load
+            let tabTitle = await driver.getTitle();
+            console.log('New tab opened: ', tabTitle)
             return true; // Success
         } catch (error) {
             console.log(`Error in navigateToExtension: ${error}`);
@@ -104,7 +105,9 @@ class TokenPlugin {
 
     async check_openloop(driver, username, password="Rtn@2024", proxyUrl) {
         try {
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Refresh completed`);
+            const url = 'chrome-extension://effapmdildnpkiaeghlkicpfflpiambm/dist/popup/index.html'
+            await driver.get(url);
+            console.log(`Refresh completed`);
             await driver.sleep(3000);
 
             // Wait for the necessary elements
@@ -112,16 +115,16 @@ class TokenPlugin {
             const cntQualityValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[1]/span')), 60000);
             const earningValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[2]/div[2]/span')), 60000);
 
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Status: ${await statusValue.getText()}`);
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Conection quality: ${await cntQualityValue.getText()}`);
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Earning value: ${await earningValue.getText()}`);
+            console.log(`Status: ${await statusValue.getText()}`);
+            console.log(`Conection quality: ${await cntQualityValue.getText()}`);
+            console.log(`Earning value: ${await earningValue.getText()}`);
 
             await driver.sleep(20000);
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Slept for 2 mins, starting new check.`);
+            console.log(`Slept for 2 mins, starting new check.`);
 
             return true; // Success
         } catch (error) {
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Error fetching elements or token expired. Re-logging in...`);
+            console.log(`Error fetching elements or token expired. Re-logging in...`);
             // Token expired or elements not found, so login again
             await this.login_openloop(driver, username, password, proxyUrl, false);  // Adjust the login call with required params
             await this.navigateToExtension(driver);  // Navigate to extension after re-login
@@ -130,16 +133,18 @@ class TokenPlugin {
         }
     }
 
-    async check_gradient(driver, username, proxyUrl, isFirstLogin, last2minValueGradient) {
+    async check_gradient(driver, username, proxyUrl, isFirstLogin, last2minValueGradient) { 
         try {
+            const url = 'chrome-extension://caacbgbklghmpodbdafajbgdnegacfmo/popup.html'
+            await this.navigateToExtension(driver, url);
             if (isFirstLogin) { 
                 const closeButton = await driver.wait(until.elementLocated(By.xpath('/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/button')), 60000);
                 await closeButton.click();
                 const yesButton = await driver.wait(until.elementLocated(By.xpath('/html/body/div[2]/div/div[2]/div/div[1]/div/div/div/button')), 60000);
                 await yesButton.click();
+                
             }
-
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Refresh completed`);
+            console.log(`Refresh completed`);
             await driver.sleep(3000);
 
             // Wait for the necessary elements
@@ -147,9 +152,9 @@ class TokenPlugin {
             const tapTodayValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1]')), 60000);
             const upTimeValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1]')), 60000);
 
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Status: ${await statusValue.getText()}`);
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Tap today: ${await tapTodayValue.getText()}`);
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Up time value: ${await upTimeValue.getText()}`);
+            console.log(`Status: ${await statusValue.getText()}`);
+            console.log(`Tap today: ${await tapTodayValue.getText()}`);
+            console.log(`Up time value: ${await upTimeValue.getText()}`);
 
             const rewardButton = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[3]/div/div[3]')), 60000);
             await rewardButton.click();
@@ -157,11 +162,11 @@ class TokenPlugin {
             const todayRewardValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1]')), 60000);
             const sessionRewardValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1]')), 60000);
 
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, today Reward: ${await todayRewardValue.getText()}`);
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, session Reward: ${await sessionRewardValue.getText()}`);
+            console.log(`today Reward: ${await todayRewardValue.getText()}`);
+            console.log(`session Reward: ${await sessionRewardValue.getText()}`);
 
             if (last2minValueGradient !== 0) {
-                console.log(`Account: ${username}, Proxy: ${proxyUrl}, Increase after 2 mins: ${parseFloat(await tapTodayValue.getText()) - last2minValueGradient}`);
+                console.log(`Increase after 2 mins: ${parseFloat(await tapTodayValue.getText()) - last2minValueGradient}`);
             }
 
             last2minValueGradient = parseFloat(await tapTodayValue.getText());
@@ -174,7 +179,10 @@ class TokenPlugin {
 
     async check_toggle(driver, username, proxyUrl, last2minValueToggle) {
         try {
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Refresh completed`);
+            const url = 'chrome-extension://bnkekngmddejlfdeefjilpfdhomeomgb/index.html'
+            await this.navigateToExtension(driver, url);
+
+            console.log(`Refresh completed`);
             await driver.sleep(3000);
             
             // Wait for the necessary elements
@@ -182,12 +190,12 @@ class TokenPlugin {
             const percentValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root"]/div/div/div[2]/div/div/div/p')), 60000);
             const upTimeValue = await driver.wait(until.elementLocated(By.xpath('//*[@id="root"]/div/div/div[4]/div[2]/p')), 60000);
 
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Connection quality: ${await percentValue.getText()}`);
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Epoch value after 2 mins: ${await elementValue.getText()}`);
-            console.log(`Account: ${username}, Proxy: ${proxyUrl}, Up time value: ${await upTimeValue.getText()}`);
+            console.log(`Connection quality: ${await percentValue.getText()}`);
+            console.log(`Epoch value after 2 mins: ${await elementValue.getText()}`);
+            console.log(`Up time value: ${await upTimeValue.getText()}`);
 
             if (last2minValueToggle !== 0) {
-                console.log(`Account: ${username}, Proxy: ${proxyUrl}, Increase after 2 mins: ${parseFloat(await elementValue.getText()) - last2minValueToggle}`);
+                console.log(`Increase after 2 mins: ${parseFloat(await elementValue.getText()) - last2minValueToggle}`);
             }
 
             last2minValueToggle = parseFloat(await elementValue.getText());

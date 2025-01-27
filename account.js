@@ -7,7 +7,6 @@ const outputFilePath = "./config/account_with_proxy.json";
 
 async function main () {
   const assignedAccounts = await processAccountsAndProxies(accountFilePath, outputFilePath);
-
 }
 
 main()
