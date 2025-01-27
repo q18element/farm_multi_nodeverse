@@ -1,3 +1,4 @@
+// Updated worker.js
 const { parentPort } = require('worker_threads');
 const request = require('request');
 const log4js = require('log4js');
@@ -18,7 +19,7 @@ const logger = log4js.getLogger();
 
 const USER_AGENT =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36";
-  
+
 const domains = [
   "https://app.gradient.network",
   "https://toggle.pro/sign-in",
@@ -37,7 +38,7 @@ async function testProxy(proxyUrl, domains) {
     const options = {
       url: domain,
       proxy: `http://${proxyUrl}`,
-      timeout: 20000, // 120 seconds timeout
+      timeout: 20000, // 20 seconds timeout
       headers: {
         "User-Agent": USER_AGENT,
       },
@@ -69,13 +70,10 @@ parentPort.on('message', async (data) => {
   const results = await Promise.all(
     data.proxies.map(async (proxy) => {
       const result = await testProxy(proxy, domains);
-      if (result.success.length >= 2) {
-        return result;
-      }
-      return null; // Don't include proxies with less than 2 successes
+      return result; // Keep all proxies in the result
     })
   );
   // Send the results back to the main thread
   logger.info('Worker completed proxy processing.');
-  parentPort.postMessage(results.filter((result) => result !== null));
+  parentPort.postMessage(results);
 });

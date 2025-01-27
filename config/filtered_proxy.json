@@ -1,321 +1,33 @@
 [
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:28947\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:22923\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:12591\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snf1.tunproxy.com:24809\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:14180\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:26138\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:12856\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:21691\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:31407\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:31457\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:20244\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn5.tunproxy.com:34124\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:25120\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn3.tunproxy.com:12388\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn2.tunproxy.com:32802\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:20966\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn3.tunproxy.com:28517\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:31757\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snf1.tunproxy.com:11189\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:21129\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:31372\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:12123\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:17490\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:29654\r",
-    "success": [
+    "proxy": "gqrl3n0q:gQrL3n0Q@14.225.50.79:34975\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn5.tunproxy.com:17815\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:29854\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:20261\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:12376\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn2.tunproxy.com:29799\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn2.tunproxy.com:28161\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:26903\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:21064\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
-  },
-  {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:14582\r",
-    "success": [
-      "https://app.gradient.network",
-      "https://toggle.pro/sign-in",
-      "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:25803\r",
-    "success": [
+    "proxy": "babi6i5q:bAbI6i5Q@14.225.42.100:59903\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:15979\r",
-    "success": [
+    "proxy": "kuti5j7j:kUtI5j7J@14.225.55.110:12345\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn3.tunproxy.com:30067\r",
+    "proxy": "hhip3m6s:hHiP3m6s@14.225.58.131:50000\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -324,7 +36,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:28599\r",
+    "proxy": "vele7x1u:vELE7x1U@14.225.42.17:6666\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -333,16 +45,16 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:13613\r",
-    "success": [
+    "proxy": "tlqt0x3x:tLQT0x3x@14.225.55.69:45828\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn5.tunproxy.com:26783\r",
+    "proxy": "kpso8x1b:kPSO8x1b@14.225.59.40:12345\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -351,7 +63,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:28387\r",
+    "proxy": "pujt0l1z:pUJT0l1Z@14.225.58.72:50000\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -360,7 +72,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:28562\r",
+    "proxy": "azaw8x0r:aZaW8x0r@14.225.50.177:58943\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -369,16 +81,16 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn2.tunproxy.com:33314\r",
-    "success": [
+    "proxy": "fhcq9d6n:fHCQ9d6N@14.225.42.102:32117\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:19616\r",
+    "proxy": "soho7w5o:sOhO7w5O@14.225.49.250:33540\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -387,34 +99,34 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:25730\r",
-    "success": [
+    "proxy": "zevo1w5l:zEvO1w5l@14.225.58.195:50000\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:11984\r",
-    "success": [
+    "proxy": "cbix3u1d:cBIX3u1D@14.225.43.213:54273\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn3.tunproxy.com:34193\r",
-    "success": [
+    "proxy": "jvxf0x7f:jVXF0x7f@14.225.55.190:12345\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn2.tunproxy.com:30825\r",
+    "proxy": "viwg2u0r:pYAT9n8y@14.225.62.63:6666\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -423,25 +135,25 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:32846\r",
-    "success": [
+    "proxy": "v2-070-312995:JMPHP@14.161.29.217:15070\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:30070\r",
-    "success": [
+    "proxy": "v2-069-864283:ABFUS@14.161.29.217:15069\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn3.tunproxy.com:13982\r",
+    "proxy": "lzes5i0w:lZES5i0W@14.225.42.214:52205\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -450,25 +162,25 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:12191\r",
-    "success": [
+    "proxy": "mtxs6n0m:mTXS6n0m@14.225.60.147:50000\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:23177\r",
-    "success": [
+    "proxy": "qmfw5v4z:qMfW5v4Z@14.225.49.221:45004\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn3.tunproxy.com:14115\r",
+    "proxy": "xdbf7m9a:xDBF7m9a@14.225.66.182:12344\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -477,241 +189,241 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:27246\r",
-    "success": [
+    "proxy": "cfup5a0b:cFUP5a0b@14.225.42.70:6666\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:20420\r",
-    "success": [
+    "proxy": "xiac9z8f:xIaC9z8F@14.225.54.88:50000\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:23503\r",
-    "success": [
+    "proxy": "hair5f7a:hAiR5f7A@14.225.49.103:49075\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:32171\r",
-    "success": [
+    "proxy": "v2-095-547907:LSJMC@14.161.29.217:15095\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:33525\r",
-    "success": [
+    "proxy": "v2-092-291464:ASGNX@14.161.29.217:15092\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:28571\r",
-    "success": [
+    "proxy": "v2-109-668446:LNBXV@14.161.29.217:15109\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:33330\r",
-    "success": [
+    "proxy": "v2-132-725542:GKOAT@14.161.29.217:15132\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:32223\r",
-    "success": [
+    "proxy": "v2-077-460676:PGCII@14.161.29.217:15077\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:24257\r",
-    "success": [
+    "proxy": "v2-106-623705:LRFJB@14.161.29.217:15106\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:21861\r",
-    "success": [
+    "proxy": "v2-100-446256:AGPJG@14.161.29.217:15100\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:11293\r",
-    "success": [
+    "proxy": "v2-142-202473:SUHPB@14.161.29.217:15142\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:30714\r",
-    "success": [
+    "proxy": "v2-125-691037:IPDYJ@14.161.29.217:15125\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:14569\r",
-    "success": [
+    "proxy": "v2-062-235531:IAKMH@14.161.29.217:15062\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf1.tunproxy.com:18866\r",
-    "success": [
+    "proxy": "v2-063-367938:VJMLN@14.161.29.217:15063\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:18936\r",
-    "success": [
+    "proxy": "v2-111-406230:FLUDG@14.161.29.217:15111\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:25945\r",
-    "success": [
+    "proxy": "v2-108-128463:GLGAB@14.161.29.217:15108\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:23650\r",
-    "success": [
+    "proxy": "v2-143-835013:SUQEX@14.161.29.217:15143\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:25594\r",
-    "success": [
+    "proxy": "v2-131-622295:LHEGF@14.161.29.217:15131\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn2.tunproxy.com:26628\r",
-    "success": [
+    "proxy": "v2-071-278238:RLCIM@14.161.29.217:15071\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:23372\r",
-    "success": [
+    "proxy": "v2-088-912423:CAOLQ@14.161.29.217:15088\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf1.tunproxy.com:33170\r",
-    "success": [
+    "proxy": "v2-113-886412:GTTFV@14.161.29.217:15113\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn2.tunproxy.com:17016\r",
-    "success": [
+    "proxy": "v2-124-118612:JHVLJ@14.161.29.217:15124\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:29931\r",
-    "success": [
+    "proxy": "v2-097-669709:XCEJK@14.161.29.217:15097\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:32383\r",
-    "success": [
+    "proxy": "v2-053-371306:GYNOB@14.161.29.217:15053\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:34835\r",
-    "success": [
+    "proxy": "v2-076-418194:NCBTP@14.161.29.217:15076\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn5.tunproxy.com:20996\r",
-    "success": [
+    "proxy": "v2-080-597287:XQILX@14.161.29.217:15080\r",
+    "success": [],
+    "fail": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
       "https://openloop.so/auth/login"
-    ],
-    "fail": []
+    ]
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn2.tunproxy.com:32232\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33499\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -720,7 +432,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:11672\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33500\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -729,7 +441,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:19282\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33501\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -738,7 +450,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:15438\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33502\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -747,7 +459,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:15439\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33503\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -756,7 +468,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn2.tunproxy.com:24465\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33504\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -765,7 +477,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:22215\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33505\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -774,7 +486,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:18310\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33506\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -783,7 +495,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:19469\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33507\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -792,7 +504,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf1.tunproxy.com:27725\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33508\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -801,7 +513,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt1.tunproxy.com:17437\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33509\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -810,7 +522,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn1.tunproxy.com:30718\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33510\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -819,7 +531,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:12043\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33511\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -828,7 +540,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:33687\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33512\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -837,7 +549,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:21125\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33513\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -846,7 +558,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:32165\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33514\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -855,7 +567,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn2.tunproxy.com:27358\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33515\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -864,7 +576,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvt2.tunproxy.com:16278\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33516\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -873,7 +585,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn5.tunproxy.com:20513\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33517\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -882,7 +594,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snvn4.tunproxy.com:25432\r",
+    "proxy": "hoangkhoi:node@160.191.51.205:33518\r",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",
@@ -891,7 +603,7 @@
     "fail": []
   },
   {
-    "proxy": "SD9Dw3:54d4QWDd@snf2.tunproxy.com:16006",
+    "proxy": "hoangkhoi:node@160.191.51.205:33519",
     "success": [
       "https://app.gradient.network",
       "https://toggle.pro/sign-in",

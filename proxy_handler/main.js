@@ -1,3 +1,4 @@
+// proxy_handler/main.js
 const fs = require("fs");
 const { Worker, isMainThread, parentPort } = require("worker_threads");
 const log4js = require("log4js");
@@ -25,7 +26,7 @@ const PROXY_CHUNK_SIZE = 10;
 async function processWithWorker(proxies) {
   return new Promise((resolve, reject) => {
     const worker = new Worker('./proxy_handler/worker.js');
-    
+
     worker.on('message', (results) => {
       logger.info("Worker finished processing chunk.");
       resolve(results);

@@ -1,3 +1,4 @@
+// proxy_handler/assign_proxy.js
 const fs = require('fs');
 const path = require('path');
 const log4js = require('log4js');
@@ -73,22 +74,36 @@ function saveAccountsWithProxiesToFile(filePath, accountsWithProxies) {
   fs.writeFileSync(filePath, JSON.stringify(accountsWithProxies, null, 2), 'utf8');
 }
 
+// Save failed proxies by service
+function saveFailedProxiesByService(proxies, outputDir) {
+  const services = ['gradient', 'toggle', 'openloop'];
+
+  services.forEach(service => {
+    const failedProxies = proxies.filter(proxy => proxy.fail.includes(`https://app.gradient.network`));
+    const filePath = path.join(outputDir, `failed_gradient_proxy.txt`);
+    fs.writeFileSync(filePath, failedProxies.map(proxy => proxy.proxy).join('\n'), 'utf8');
+    logger.info(`Failed proxies for ${service} saved to ${filePath}`);
+  });
+}
+
 // Main function to process the accounts and proxies
-async function processAccountsAndProxies(accountFilePath, outputFilePath) {
+async function processAccountsAndProxies(accountFilePath, outputFilePath, failedProxyDir = './config') {
   try {
     logger.info('Starting to process accounts and proxies...');
-    
+
     const accounts = readAccountsFromFile(accountFilePath);
     logger.info(`Loaded ${accounts.length} accounts from ${accountFilePath}`);
-    
+
     const accountsWithProxies = assignProxiesToAccounts(accounts, proxyList);
     logger.info(`Assigned proxies to ${accountsWithProxies.length} accounts`);
 
     saveAccountsWithProxiesToFile(outputFilePath, accountsWithProxies);
     logger.info(`Accounts with proxies have been saved to ${outputFilePath}`);
+
+    saveFailedProxiesByService(proxyList, failedProxyDir);
   } catch (error) {
     logger.error(`Error during processing: ${error.message}`);
   }
 }
 
-module.exports = { processAccountsAndProxies };
+  module.exports = { processAccountsAndProxies };
