@@ -1,7 +1,7 @@
-// proxy_handler/assign_proxy.js
 const fs = require('fs');
 const path = require('path');
 const log4js = require('log4js');
+const { initDB } = require('../init_db.js');
 
 // Configure log4js
 log4js.configure({
@@ -14,96 +14,113 @@ log4js.configure({
   }
 });
 
-// Get the logger instance
 const logger = log4js.getLogger();
 
-// Import the proxy list from the filtered_proxy.js file
-const proxyList = require('../config/filtered_proxy.json');
 
-// Read accounts from a text file
+async function getFilteredProxiesFromDB(db) {
+  const rows = await db.all('SELECT proxy, success, fail FROM filtered_proxies');
+  return rows.map(row => ({
+    proxy: row.proxy,
+    success: JSON.parse(row.success || '[]'),
+    fail: JSON.parse(row.fail || '[]')
+  }));
+}
+
 function readAccountsFromFile(filePath) {
-  const data = fs.readFileSync(filePath, 'utf8');
-  const accounts = data.split('\n').map(line => {
-    const [username, password] = line.split(':');
-    return { username, password };
-  });
-  return accounts;
-}
-
-// Get service names from the success URLs
-function getServiceNamesFromUrls(urls) {
-  const services = {
-    'https://app.gradient.network': 'gradient',
-    'https://toggle.pro/sign-in': 'toggle',
-    'https://openloop.so/auth/login': 'openloop'
-  };
-
-  // Return the names of the services for the URLs that are in the services map
-  return urls
-    .map(urlString => services[urlString])
-    .filter(serviceName => serviceName);  // Filter out undefined services
-}
-
-// Assign proxies to accounts without reusing the same proxy
-function assignProxiesToAccounts(accounts, proxies) {
-  const assignedProxies = new Set(); // Track which proxies have already been assigned
-
-  return accounts.map(account => {
-    // Filter out proxies that have already been assigned
-    const availableProxies = proxies.filter(proxy => !assignedProxies.has(proxy.proxy));
-
-    // Get up to 5 proxies for this account (if available)
-    const accountProxies = availableProxies.slice(0, 5).map(proxy => {
-      const runServices = getServiceNamesFromUrls(proxy.success);
-      assignedProxies.add(proxy.proxy); // Mark this proxy as assigned
-      return {
-        ...proxy,
-        run: runServices  // Add the "run" field with the service names
+  return fs.readFileSync(filePath, 'utf8')
+    .split('\n')
+    .map(line => {
+      const [username, ...passwordParts] = line.split(':');
+      return { 
+        username: username.trim(),
+        password: passwordParts.join(':').trim() 
       };
-    });
+    })
+    .filter(acc => acc.username && acc.password);
+}
+
+async function saveAccountProxyMappings(db, accountsWithProxies) {
+  for (const account of accountsWithProxies) {
+    // Insert or ignore if account exsist
+    await db.run(
+      `INSERT OR IGNORE INTO accounts (username, password) VALUES (?, ?)`,
+      [account.username, account.password]
+    );
+    
+    // Get account ID
+    const { id } = await db.get(
+      'SELECT id FROM accounts WHERE username = ?',
+      [account.username]
+    );
+
+    // Insert proxy associations
+    for (const proxy of account.proxies) {
+      await db.run(
+        `INSERT OR IGNORE INTO accounts_proxies (account_id, proxy, services) 
+         VALUES (?, ?, ?)`,
+        [id, proxy.proxy, JSON.stringify(proxy.run)]
+      );
+    }
+  }
+}
+
+function assignProxiesToAccounts(accounts, proxies) {
+  // Create a working copy of the proxy list
+  const availableProxies = [...proxies];
+  
+  return accounts.map(account => {
+    // Take first 5 proxies from the available list (or empty array if <5 remain)
+    const assignedProxies = availableProxies.splice(0, 5);
 
     return {
       username: account.username,
-      proxies: accountProxies
+      password: account.password,
+      proxies: assignedProxies.map(proxy => ({
+        proxy: proxy.proxy,
+        run: proxy.success.filter(service => 
+          ['gradient', 'toggle', 'openloop'].includes(service)
+        )
+      }))
     };
   });
 }
 
-// Save the result to a JSON file
-function saveAccountsWithProxiesToFile(filePath, accountsWithProxies) {
-  fs.writeFileSync(filePath, JSON.stringify(accountsWithProxies, null, 2), 'utf8');
+async function saveFailedProxies(proxies, outputDir = './output') {
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
+  const failedProxies = proxies
+    .filter(p => p.fail.length > 0)
+    .map(p => p.proxy);
+
+  const filePath = path.join(outputDir, 'failed_proxies.txt');
+  fs.writeFileSync(filePath, failedProxies.join('\n'), 'utf8');
+  logger.info(`Total failed proxies saved: ${failedProxies.length}`);
 }
 
-// Save failed proxies by service
-function saveFailedProxiesByService(proxies, outputDir) {
-  const services = ['gradient', 'toggle', 'openloop'];
-
-  services.forEach(service => {
-    const failedProxies = proxies.filter(proxy => proxy.fail.includes(`https://app.gradient.network`));
-    const filePath = path.join(outputDir, `failed_gradient_proxy.txt`);
-    fs.writeFileSync(filePath, failedProxies.map(proxy => proxy.proxy).join('\n'), 'utf8');
-    logger.info(`Failed proxies for ${service} saved to ${filePath}`);
-  });
-}
-
-// Main function to process the accounts and proxies
-async function processAccountsAndProxies(accountFilePath, outputFilePath, failedProxyDir = './config') {
+async function processAccountsAndProxies(accountFilePath, outputDir = './output') {
   try {
-    logger.info('Starting to process accounts and proxies...');
-
+    const db = await initDB();
+    
+    // Load data
+    const proxyList = await getFilteredProxiesFromDB(db);
     const accounts = readAccountsFromFile(accountFilePath);
-    logger.info(`Loaded ${accounts.length} accounts from ${accountFilePath}`);
-
+    
+    // Assign proxies
     const accountsWithProxies = assignProxiesToAccounts(accounts, proxyList);
-    logger.info(`Assigned proxies to ${accountsWithProxies.length} accounts`);
-
-    saveAccountsWithProxiesToFile(outputFilePath, accountsWithProxies);
-    logger.info(`Accounts with proxies have been saved to ${outputFilePath}`);
-
-    saveFailedProxiesByService(proxyList, failedProxyDir);
+    
+    // Save to database
+    await saveAccountProxyMappings(db, accountsWithProxies);
+    
+    // Save failed proxies
+    await saveFailedProxies(proxyList, outputDir);
+    
+    await db.close();
+    logger.info('Proxy assignment completed successfully');
   } catch (error) {
-    logger.error(`Error during processing: ${error.message}`);
+    logger.error(`Processing failed: ${error.message}`);
   }
 }
 
-  module.exports = { processAccountsAndProxies };
+module.exports = { processAccountsAndProxies };
