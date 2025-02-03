@@ -16,6 +16,9 @@ const {
   FAILED_TASKS_PATH,
   logger
 } = require('./config');
+const { tabReset } = require('./automationHelpers');
+
+
 
 // Ensure output and profiles directories exist
 ['./output', './profiles'].forEach(dir => {
@@ -100,7 +103,7 @@ class AutomationManager {
           tasks = await this.getPendingTasks(account, proxy);
           if (tasks.length === 0) break;
         } finally {
-          await this.cleanupDriver(driver);
+          await tabReset(driver);
         }
       }
     } catch (error) {
@@ -117,7 +120,7 @@ class AutomationManager {
       // If there are no more pending tasks, quit the driver peacefully
       if (tasks.length === 0) {
         logger.info(`[PROFILE DONE] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Closing driver.`);
-        await this.cleanupDriver(driver); // Quit the driver safely
+        await tabReset(driver);
         return; // Exit loop to prevent further execution
       }
 
@@ -138,15 +141,6 @@ class AutomationManager {
       } else {
         break;
       }
-
-      // Periodic tab check (if extra tabs are detected)
-      // setInterval(async () => {
-      //   const handles = await driver.getAllWindowHandles();
-      //   if (handles.length > 1) {
-      //     logger.warn(`Detected ${handles.length - 1} extra tabs`);
-      //     // Optionally add tab cleanup logic here
-      //   }
-      // }, CHECK_INTERVAL);
     }
   }
 
@@ -155,6 +149,7 @@ class AutomationManager {
     for (const service of tasks) {
       // console.log(`\n--- Processing service: ${service} ---`);
       try {
+        await tabReset(driver);
         // Step 1: Check current login state.
         // console.log("Step 1: Calling checkLoginState");
         let loginState = await this.tokenPlugin.checkLoginState(driver, service);
@@ -188,7 +183,6 @@ class AutomationManager {
             logger.error(`[LOGIN ERROR] ${service} login error: ${error.message}. Attempt ${retryCounters[service]}/${MAX_LOGIN_RETRIES}`);
           }
         }
-        
         // Step 9: If login succeeded, perform the check.
         if (loginSuccess) {
           // console.log(`Step 9: Login successful for ${service}. Proceeding to check.`);
@@ -200,8 +194,7 @@ class AutomationManager {
           );
           // console.log(`Step 10: Check result for ${service}: ${results[service]}`);
         } else {
-          // Step 11: If login never succeeded, mark result as false.
-          // console.log(`Step 11: Login never succeeded for ${service}. Marking result as false.`);
+          await tabReset(driver);
           results[service] = false;
         }
       } catch (error) {
@@ -221,19 +214,19 @@ class AutomationManager {
     const remainingTasks = [...tasks];
   
     for (const service of tasks) {
-      if (results[service]) {
-        // Only mark the service as successful if the check passes.
-        await this.updateTaskState(account.id, proxy, service, "success");
+      if (results[service] !== false) {
+        // The check process now returns a point value if successful.
+        const point = results[service];
+        await this.updateTaskState(account.id, proxy, service, "success", 0, point);
       } else {
-        // If the check failed, and we haven't reached the maximum retries, keep the state pending.
+        // When the check fails, point is set to 0.
         if (retryCounters[service] < MAX_LOGIN_RETRIES) {
           logger.warn(`[RETRY] ${service} check/login failed for ${account.username}. Attempt ${retryCounters[service]}/${MAX_LOGIN_RETRIES}`);
-          await this.updateTaskState(account.id, proxy, service, "pending");
+          await this.updateTaskState(account.id, proxy, service, "pending", 0, 0);
           shouldRetry = true;
         } else {
-          // Once the maximum retries have been reached, mark the task as failed.
           logger.error(`[FAILURE] ${service} failed after ${MAX_LOGIN_RETRIES} attempts`);
-          await this.updateTaskState(account.id, proxy, service, "failed");
+          await this.updateTaskState(account.id, proxy, service, "failed", 0, 0);
           this.logFailedTask(account.username, proxy, service);
           const index = remainingTasks.indexOf(service);
           if (index > -1) {
@@ -242,7 +235,7 @@ class AutomationManager {
         }
       }
     }
-
+  
     return { shouldRetry, remainingTasks };
   }
 
@@ -343,23 +336,12 @@ class AutomationManager {
 
     await driver.sleep(5000);
     
-    // Tab cleanup logic.
-    try {
-      const handles = await driver.getAllWindowHandles();
-      if (handles.length > 1) {
-        for (let i = handles.length - 1; i > 0; i--) {
-          await driver.switchTo().window(handles[i]);
-          await driver.close();
-        }
-        await driver.switchTo().window(handles[0]);
-      }
-      await driver.get('about:blank');
-    } catch (error) {
-      logger.error(`[TAB CLEANUP ERROR] ${error.message}`);
-    }
+    await tabReset(driver);
     
     return driver;
   }
+
+  
 
   async processProxy(proxyUrl) {
     const anonymized = await proxyChain.anonymizeProxy(`http://${proxyUrl}`);
@@ -439,20 +421,22 @@ class AutomationManager {
   }
 
   // New method: update the state and optionally increment the retry_count for a task in the task_monitoring table.
-  async updateTaskState(accountId, proxy, service, state, retryIncrement = 0) {
+  async updateTaskState(accountId, proxy, service, state, retryIncrement = 0, point = 0) {
     try {
       const db = await this.getDB();
       await db.run(
         `UPDATE task_monitoring
          SET state = ?,
-             retry_count = retry_count + ?
+             retry_count = retry_count + ?,
+             point = ?
          WHERE account_id = ? AND proxy = ? AND service = ?`,
-        [state, retryIncrement, accountId, proxy, service]
+        [state, retryIncrement, point, accountId, proxy, service]
       );
-      logger.info(`Updated task state for account ${accountId} on proxy ${proxy}: ${service} -> ${state}`);
+      logger.info(`Updated task state for account ${accountId} on proxy ${proxy}: ${service} -> ${state}, point: ${point}`);
     } catch (error) {
       logger.error(`Failed to update task state for account ${accountId} on proxy ${proxy}, service ${service}: ${error.message}`);
     }
+  
   }
 
   sleep(ms) {

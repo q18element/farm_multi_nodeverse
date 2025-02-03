@@ -17,9 +17,9 @@ class ToggleService {
       
       // Check if already logged in by verifying the dashboard element.
       try {
-        if (await driver.wait(until.elementLocated(By.xpath(selectors.dashboardElement)), 3000)) {
-          return true;
-        }
+        await waitForElement(driver, selectors.dashboardElement, 20000);
+        this.logger.info(`Already loged in Toggle for ${username}`);
+        return true;
       } catch (e) {
         // Not logged in; proceed with the login flow.
       }
@@ -66,7 +66,12 @@ class ToggleService {
       Epoch Value: ${epoch}
       Uptime: ${uptime}`);
 
-      return true;
+      let point = parseInt(epoch, 10);
+      if (isNaN(point)) {
+        point = 0;
+      }
+      return point;
+
     } catch (error) {
       this.logger.error(`Toggle check error for ${username}: ${error.message}`);
       return false;

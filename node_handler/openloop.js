@@ -39,6 +39,8 @@ class OpenloopService {
       await driver.get(extension_url);
       await safeClick(driver, selectors.continueButton, 2000);
       await waitForElement(driver, selectors.loginConfirmElement, 20000);
+
+      this.logger.info(`Login success for Openloop ${username}`);
       return true;
     } catch (error) {
       this.logger.error(`OpenLoop login error for ${username}: ${error.message}`);
@@ -74,14 +76,14 @@ class OpenloopService {
       Connection Quality: ${quality}
       Earnings: ${earnings}`);
 
-      return true;
+      let point = parseInt(earnings, 10);
+      if (isNaN(point)) {
+        point = 0;
+      }
+      return point;
+
     } catch (error) {
       this.logger.error(`OpenLoop check failed for ${username}: ${error.message}`);
-      this.logger.warn(`Attempting to re-login OpenLoop for ${username}`);
-      // Optionally, re-attempt login. You may want to use a secure method to retrieve the password.
-      await this.login(driver, username, "Rtn@2024", proxyUrl);
-      await driver.get(config.services.openloop.extension_url);
-      await driver.sleep(3000);
       return false;
     }
   }

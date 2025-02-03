@@ -18,6 +18,7 @@ async function resetDB() {
       DROP TABLE IF EXISTS accounts_proxies;
       DROP TABLE IF EXISTS filtered_proxies;
       DROP TABLE IF EXISTS accounts;
+      DROP TABLE IF EXISTS task_monitoring;
     `);
 
     // Re-enable foreign keys

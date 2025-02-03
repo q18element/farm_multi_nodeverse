@@ -12,15 +12,27 @@ class GradientService {
   async login(driver, username, password, proxyUrl) {
     try {
       this.logger.info(`Starting Gradient login for ${username}`);
+
       const { login_url, extension_url, selectors } = config.services.gradient;
       await driver.get(login_url);
-      await driver.wait(until.urlContains(login_url), config.timeouts.page);
+
+      // Check if already logged in by verifying the dashboard element.
+      try {
+        await waitForElement(driver, selectors.dashboardElement, 20000);
+        this.logger.info(`Already loged in Gradient for ${username}`);
+        return true;
+      } catch (e) {
+        // Not logged in; proceed with the login flow.
+      }
+
       await enterText(driver, selectors.username, username);
       await enterText(driver, selectors.password, password);
       await clickElement(driver, selectors.loginButton);
       await driver.sleep(3000);
       await driver.get(extension_url);
       await waitForElement(driver, selectors.loginConfirmElement, 20000);
+
+      this.logger.info(`Login success for Gradient ${username}`);
       return true;
     } catch (error) {
       this.logger.error(`Gradient login failed for ${username}: ${error.message}`);
@@ -67,7 +79,12 @@ class GradientService {
       Session Reward: ${sessionReward}
     `);
 
-      return true;
+    let point = parseInt(sessionReward, 10);
+    if (isNaN(point)) {
+      point = 0;
+    }
+    return point;
+
     } catch (error) {
       this.logger.error(`Gradient check failed for ${username}: ${error.message}`);
       return false;

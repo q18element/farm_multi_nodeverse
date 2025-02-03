@@ -41,6 +41,7 @@ async function initDB() {
       service TEXT NOT NULL,
       state TEXT NOT NULL DEFAULT 'pending',
       retry_count INTEGER NOT NULL DEFAULT 0,
+      point INTEGER NOT NULL DEFAULT 0,
       last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(account_id) REFERENCES accounts(id)
     );

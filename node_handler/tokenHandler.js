@@ -5,6 +5,7 @@ const { waitForElement } = require('./automationHelpers');
 const openloopService = require('./openloop');
 const gradientService = require('./gradient');
 const toggleService = require('./toggle');
+const blessService = require('./bless');
 
 class TokenPlugin {
   constructor() {
@@ -15,6 +16,7 @@ class TokenPlugin {
       openloop: openloopService,
       gradient: gradientService,
       toggle: toggleService,
+      bless: blessService
     };
   }
 

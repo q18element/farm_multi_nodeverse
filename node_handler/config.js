@@ -35,7 +35,8 @@ const services = {
       username: '/html/body/div[1]/div[2]/div/div/div/div[2]/div[1]/input',
       password: '/html/body/div[1]/div[2]/div/div/div/div[2]/div[2]/span/input',
       loginButton: '/html/body/div[1]/div[2]/div/div/div/div[4]/button[1]',
-      loginConfirmElement: '//*[@id="root-gradient-extension-popup-20240807"]/div/div[1]/div[1]/img',
+      loginConfirmElement: '//*[@id="root-gradient-extension-popup-20240807"]/div/div[3]/div/div[2]',
+      dashboardElement: '/html/body/div[1]/div[1]/div[2]/main/div/div/div[1]',
       // Skip button selectors
       gotItButton: '/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/button',
       yesButton: '/html/body/div[2]/div/div[2]/div/div[1]/div/div/div/button',
@@ -61,6 +62,41 @@ const services = {
       epoch: '//*[@id="root"]/div/div/div[4]/div[1]/p',
       uptime: '//*[@id="root"]/div/div/div[4]/div[2]/p'
     }
+  },
+  bless: {
+    login_url: "https://bless.network/dashboard?ref=Y06FN1",
+    extension_url: "https://bless.network/dashboard",
+    selectors: {
+      emailInput: '//*[@id="email"]',
+      loginButton: '/html/body/div/main/div/div/div[2]/div[3]/button',
+      loginConfirmElement: '/html/body/div/main/div/div[1]/h1',
+      dashboardElement: '/html/body/div/main/div/div[1]/h1'
+    }
+  },
+  veer: {
+    login_url: "https://mail.veer.vn",
+    selectors: {
+      emailInput: '//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[1]/input',
+      passwordInput: '//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[2]/input',
+      loginButton: '//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[3]/button',
+      loginConfirmElement: '//*[@id="mail-box-toggle"]/div[3]',
+      inboxElement: '//*[@id="mail-box-toggle"]/div[3]',
+      firstMail: '//*[@id="mail-item-0"]/div',
+      refreshButton: '//*[@id="mail-box-toggle"]/div[3]/div/div/div[1]/div[1]/div[3]/a',
+    }
+  },
+  bizflycloud: {
+    login_url: 'https://id.bizflycloud.vn/login?service=https%3A%2F%2Fmail.bizflycloud.vn%2F&_t=webmail',
+    selectors: {
+      emailInput: '//*[@id="app"]/div/div/main/div/div/div/div[1]/div/div/div/div/div[1]/form/div[1]/div/div/input',
+      passwordInput: '//*[@id="app"]/div/div/main/div/div/div/div/div/div/div/div/div[2]/form/div/div/div/input',
+      nextButton: '//*[@id="app"]/div/div/main/div/div/div/div[1]/div/div/div/div/div[1]/form/div[1]/div/button',
+      loginButton: '//*[@id="app"]/div/div/main/div/div/div/div/div/div/div/div/div[2]/form/div/div/div/div/button',
+      loginConfirmElement: '//*[@id="app"]/div/div/div[3]/div[1]/div[2]/div',
+      inboxElement: '//*[@id="app"]/div/div/div[3]/div[1]/div[2]/div',
+      firstMail: '//*[@id="threads_list"]/div[1]/div[3]/div[1]',
+      refreshButton: '//*[@id="refresh-threads-btn"]',
+    }
   }
 };
 
@@ -69,14 +105,14 @@ const timeouts = {
   element: 60000,
   page: 60000,
   action: 10000,
-  loginCheck: 2000,
+  loginCheck: 10000,
 };
 
 // ─── AUTOMATION CONSTANTS ─────────────────────────────────────────────────
 const MAX_LOGIN_RETRIES = 2;
 const PROFILE_CLEANUP_ON_FAILURE = true;
-const CHECK_INTERVAL = 120000; // 2 minutes
-const STAGGER_DELAY = 30000; // 30 seconds between account starts
+const CHECK_INTERVAL = 360000; // 6 minutes
+const STAGGER_DELAY = 45000; // 30 seconds between account starts
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36";
 const FAILED_TASKS_PATH = path.resolve('./output/fail_tasks.json');
 
@@ -84,7 +120,8 @@ const FAILED_TASKS_PATH = path.resolve('./output/fail_tasks.json');
 const EXTENSIONS = {
   openloop: { path: path.resolve('./crxs/openloop.crx') },
   gradient: { path: path.resolve('./crxs/gradient.crx') },
-  toggle: { path: path.resolve('./crxs/toggle.crx') }
+  toggle: { path: path.resolve('./crxs/toggle.crx') },
+  bless: { path: path.resolve('./crxs/bless.crx') },
 };
 
 // ─── CHROME OPTIONS SETUP ───────────────────────────────────────────────
@@ -92,25 +129,24 @@ const configureChromeOptions = () => {
   const options = new chrome.Options();
   const args = [
     `--user-agent=${USER_AGENT}`,
-    '--disable-web-security',
-    '--ignore-certificate-errors',
-    '--dns-prefetch-disable',
-    '--enable-unsafe-swiftshader',
-    '--no-first-run',
-    '--enable-automation',
-    '--allow-remote-origin',
+    // '--disable-web-security',
+    // '--ignore-certificate-errors',
+    // '--dns-prefetch-disable',
+    // '--enable-unsafe-swiftshader',
+    // '--no-first-run',
+    // '--enable-automation',
+    // '--allow-remote-origin',
     '--allow-pre-commit-input',
-    '--disable-popup-blocking',
     'start-maximized',
     'disable-infobars',
     '--disable-application-cache',
     // WebRTC-related flags
-    '--disable-webrtc',
-    '--disable-features=WebRtcHideLocalIpsWithMdns',
-    '--force-webrtc-ip-handling-policy=public_interface_only',
+    // '--disable-webrtc',
+    // '--disable-features=WebRtcHideLocalIpsWithMdns',
+    // '--force-webrtc-ip-handling-policy=public_interface_only',
     // Reduce logging verbosity
     '--log-level=3',
-    '--vmodule=*/webrtc/*=0,*/libjingle/*=0',
+    // '--vmodule=*/webrtc/*=0,*/libjingle/*=0',
     // Run headless
     '--headless'
   ];
