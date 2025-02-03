@@ -148,7 +148,7 @@ const configureChromeOptions = () => {
     '--log-level=3',
     // '--vmodule=*/webrtc/*=0,*/libjingle/*=0',
     // Run headless
-    '--headless'
+    // '--headless'
   ];
 
   if (os.platform() === 'linux') {
