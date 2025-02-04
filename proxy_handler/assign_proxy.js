@@ -78,7 +78,7 @@ function assignProxiesToAccounts(accounts, proxies) {
       proxies: assignedProxies.map(proxy => ({
         proxy: proxy.proxy,
         run: proxy.success.filter(service => 
-          ['gradient', 'toggle', 'openloop'].includes(service)
+          ['gradient', 'toggle', 'openloop', 'bless'].includes(service)
         )
       }))
     };

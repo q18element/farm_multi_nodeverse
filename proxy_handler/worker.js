@@ -39,14 +39,14 @@ const domains = [
   "https://app.gradient.network",
   "https://toggle.pro/sign-in",
   "https://openloop.so/auth/login",
-  // "https://bless.network",  // This will be skipped
+  "https://bless.network",  // This will be skipped
 ];
 
 const services = {
   'https://app.gradient.network': 'gradient',
   'https://toggle.pro/sign-in': 'toggle',
   'https://openloop.so/auth/login': 'openloop',
-  // 'https://bless.network': 'bless',
+  'https://bless.network': 'bless',
 };
 
 // Function to test a proxy against a list of domains

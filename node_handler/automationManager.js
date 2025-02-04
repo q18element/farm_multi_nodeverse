@@ -112,16 +112,42 @@ class AutomationManager {
     }
   }
 
+  async shouldProcessBlessTask(account, currentProxy) {
+    try {
+      const db = await this.getDB();
+      // Fetch the pending bless task with the smallest id for this account.
+      const row = await db.get(
+        `SELECT id, proxy FROM task_monitoring 
+         WHERE account_id = ? AND service = 'bless' AND state = 'pending' 
+         ORDER BY id ASC LIMIT 1`,
+         [account.id]
+      );
+      // No pending bless task exists – process the current one.
+      if (!row) {
+        return true;
+      }
+      // If the pending bless task belongs to the current proxy, process it.
+      // Otherwise, it means a previous bless task is still pending.
+      if (row.proxy === currentProxy) {
+        return true;
+      }
+      // A previous bless task is still pending – skip processing this one.
+      return false;
+    } catch (error) {
+      logger.error(`[BLESS CHECK ERROR] ${error.message}`);
+      // On error, default to processing the task to avoid accidental skipping.
+      return true;
+    }
+  }
+
   async monitorServices(driver, account, proxy, tasks, retryCounters) {
     while (tasks.length > 0) {
-      // Fetch the latest pending tasks from the cache database
       tasks = await this.getPendingTasks(account, proxy);
 
-      // If there are no more pending tasks, quit the driver peacefully
       if (tasks.length === 0) {
         logger.info(`[PROFILE DONE] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Closing driver.`);
         await tabReset(driver);
-        return; // Exit loop to prevent further execution
+        return;
       }
 
       const checkResults = await this.checkServices(driver, account, proxy, tasks, retryCounters);
@@ -147,23 +173,27 @@ class AutomationManager {
   async checkServices(driver, account, proxy, tasks, retryCounters) {
     let results = {};
     for (const service of tasks) {
-      // console.log(`\n--- Processing service: ${service} ---`);
       try {
         await tabReset(driver);
-        // Step 1: Check current login state.
-        // console.log("Step 1: Calling checkLoginState");
+
+        // For the "bless" service, check if a previous bless task is pending.
+        if (service === "bless") {
+          const processBless = await this.shouldProcessBlessTask(account, proxy);
+          if (!processBless) {
+            logger.info(`[BLESS SKIP] A previous bless task is pending for ${account.username}. Skipping this bless task.`);
+            // Optionally, set the result to null or handle it as you see fit,
+            // ensuring that this task is not updated in the monitor table.
+            results[service] = null;
+            continue; // Skip processing for this service.
+          }
+        }
+
+        // Process other services (or bless if allowed) as normal.
         let loginState = await this.tokenPlugin.checkLoginState(driver, service);
-        // console.log(`Step 2: Received loginState: ${loginState}`);
         let loginSuccess = loginState;
-  
-        // Step 3: Log the service name.
-        // console.log(`Step 3: Starting processing for service: ${service}`);
-  
-        // Step 4: If not logged in, immediately try to login until success or max retries reached.
-        while (!loginSuccess && retryCounters[service] < MAX_LOGIN_RETRIES) {   
-          // console.log(`Step 4: loginSuccess is false, current retry count for ${service}: ${retryCounters[service]}`);
+
+        while (!loginSuccess && retryCounters[service] < MAX_LOGIN_RETRIES) {
           try {
-            // console.log(`Step 5: Attempting login via ${service}`);
             loginSuccess = await this.tokenPlugin.login(
               driver,
               service,
@@ -171,49 +201,47 @@ class AutomationManager {
               account.password,
               proxy
             );
-            // console.log(`Step 6: Login attempt result for ${service}: ${loginSuccess}`);
             if (!loginSuccess) {
               retryCounters[service]++;
-              // console.log(`Step 7: Incremented retry counter for ${service}: ${retryCounters[service]}`);
               logger.warn(`[LOGIN RETRY] ${service} login failed for ${account.username}. Attempt ${retryCounters[service]}/${MAX_LOGIN_RETRIES}`);
             }
           } catch (error) {
             retryCounters[service]++;
-            // console.log(`Step 8: Error during login for ${service}: ${error.message}. Retry counter: ${retryCounters[service]}`);
             logger.error(`[LOGIN ERROR] ${service} login error: ${error.message}. Attempt ${retryCounters[service]}/${MAX_LOGIN_RETRIES}`);
           }
         }
-        // Step 9: If login succeeded, perform the check.
         if (loginSuccess) {
-          // console.log(`Step 9: Login successful for ${service}. Proceeding to check.`);
           results[service] = await this.tokenPlugin.check(
             driver,
             service,
             account.username,
             proxy
           );
-          // console.log(`Step 10: Check result for ${service}: ${results[service]}`);
         } else {
           await tabReset(driver);
           results[service] = false;
         }
       } catch (error) {
         results[service] = false;
-        // console.log(`Step ERROR: An error occurred during processing of ${service}: ${error.message}`);
         logger.error(`[CHECK ERROR] ${service} check failed: ${error.message}`);
       }
     }
-    // console.log("Step 12: Finished processing all services. Returning results.");
     return results;
   }
-  
+
 
   // Process each service check and update its state in the new task_monitoring table.
   async processCheckResults(results, tasks, retryCounters, account, proxy) {
     let shouldRetry = false;
     const remainingTasks = [...tasks];
-  
+
     for (const service of tasks) {
+      // If it's the bless service and the result is null, skip any update.
+      if (service === "bless" && results[service] === null) {
+        logger.info(`[BLESS SKIP] Skipping update for bless service for ${account.username}`);
+        continue;
+      }
+
       if (results[service] !== false) {
         // The check process now returns a point value if successful.
         const point = results[service];
@@ -221,7 +249,9 @@ class AutomationManager {
       } else {
         // When the check fails, point is set to 0.
         if (retryCounters[service] < MAX_LOGIN_RETRIES) {
-          logger.warn(`[RETRY] ${service} check/login failed for ${account.username}. Attempt ${retryCounters[service]}/${MAX_LOGIN_RETRIES}`);
+          logger.warn(
+            `[RETRY] ${service} check/login failed for ${account.username}. Attempt ${retryCounters[service]}/${MAX_LOGIN_RETRIES}`
+          );
           await this.updateTaskState(account.id, proxy, service, "pending", 0, 0);
           shouldRetry = true;
         } else {
@@ -235,9 +265,10 @@ class AutomationManager {
         }
       }
     }
-  
+
     return { shouldRetry, remainingTasks };
   }
+
 
   async performLoginWorkflow(driver, account, proxy, tasks) {
     const remainingTasks = [...tasks];
