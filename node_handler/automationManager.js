@@ -219,7 +219,7 @@ class AutomationManager {
           );
         } else {
           await tabReset(driver);
-          results[service] = false;
+          results[service] = "login_failed";
         }
       } catch (error) {
         results[service] = false;
@@ -230,32 +230,29 @@ class AutomationManager {
   }
 
 
-  // Process each service check and update its state in the new task_monitoring table.
   async processCheckResults(results, tasks, retryCounters, account, proxy) {
     let shouldRetry = false;
     const remainingTasks = [...tasks];
-
+  
     for (const service of tasks) {
-      // If it's the bless service and the result is null, skip any update.
+      // Skip bless service when appropriate.
       if (service === "bless" && results[service] === null) {
         logger.info(`[BLESS SKIP] Skipping update for bless service for ${account.username}`);
         continue;
       }
-
-      if (results[service] !== false) {
-        // The check process now returns a point value if successful.
+  
+      if (results[service] !== false && results[service] !== "login_failed") {
+        // Successful check returns a point value.
         const point = results[service];
         await this.updateTaskState(account.id, proxy, service, "success", 0, point);
-      } else {
-        // When the check fails, point is set to 0.
+      } else if (results[service] === "login_failed") {
+        // Login failure: mark as failed only if max retries are reached.
         if (retryCounters[service] < MAX_LOGIN_RETRIES) {
-          logger.warn(
-            `[RETRY] ${service} check/login failed for ${account.username}. Attempt ${retryCounters[service]}/${MAX_LOGIN_RETRIES}`
-          );
+          logger.warn(`[RETRY] ${service} login failed for ${account.username}. Attempt ${retryCounters[service]}/${MAX_LOGIN_RETRIES}`);
           await this.updateTaskState(account.id, proxy, service, "pending", 0, 0);
           shouldRetry = true;
         } else {
-          logger.error(`[FAILURE] ${service} failed after ${MAX_LOGIN_RETRIES} attempts`);
+          logger.error(`[FAILURE] ${service} login failed after ${MAX_LOGIN_RETRIES} attempts`);
           await this.updateTaskState(account.id, proxy, service, "failed", 0, 0);
           this.logFailedTask(account.username, proxy, service);
           const index = remainingTasks.indexOf(service);
@@ -263,11 +260,18 @@ class AutomationManager {
             remainingTasks.splice(index, 1);
           }
         }
+      } else {
+        // Check failure (login was successful but check returned false).
+        logger.warn(`[CHECK FAILURE] ${service} check returned false for ${account.username}`);
+        await this.updateTaskState(account.id, proxy, service, "pending", 0, 0);
+        // Continue to retry check failures without marking them as failed.
+        shouldRetry = true;
       }
     }
-
+  
     return { shouldRetry, remainingTasks };
   }
+  
 
 
   async performLoginWorkflow(driver, account, proxy, tasks) {
