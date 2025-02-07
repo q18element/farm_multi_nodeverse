@@ -1,3 +1,4 @@
+// proxy_handler/assign_proxy.js
 const fs = require('fs');
 const path = require('path');
 const log4js = require('log4js');
@@ -64,7 +65,7 @@ async function saveAccountProxyMappings(db, accountsWithProxies) {
   }
 }
 
-function assignProxiesToAccounts(accounts, proxies) {
+function assignProxiesToAccounts(accounts, proxies, service_chosen) {
   // Create a working copy of the proxy list
   const availableProxies = [...proxies];
   
@@ -78,8 +79,8 @@ function assignProxiesToAccounts(accounts, proxies) {
       proxies: assignedProxies.map(proxy => ({
         proxy: proxy.proxy,
         run: proxy.success.filter(service => 
-          ['gradient', 'toggle', 'openloop', 'bless'].includes(service)
-        )
+          service_chosen.includes(service)
+        ) // 
       }))
     };
   });
@@ -99,7 +100,7 @@ async function saveFailedProxies(proxies, outputDir = './output') {
   logger.info(`Total failed proxies saved: ${failedProxies.length}`);
 }
 
-async function processAccountsAndProxies(accountFilePath, outputDir = './output') {
+async function processAccountsAndProxies(accountFilePath, outputDir = './output', service_chosen) {
   try {
     const db = await initDB();
     
@@ -108,7 +109,7 @@ async function processAccountsAndProxies(accountFilePath, outputDir = './output'
     const accounts = readAccountsFromFile(accountFilePath);
     
     // Assign proxies
-    const accountsWithProxies = assignProxiesToAccounts(accounts, proxyList);
+    const accountsWithProxies = assignProxiesToAccounts(accounts, proxyList, service_chosen);
     
     // Save to database
     await saveAccountProxyMappings(db, accountsWithProxies);

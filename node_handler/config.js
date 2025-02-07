@@ -73,6 +73,21 @@ const services = {
       dashboardElement: '/html/body/div/main/div/div[1]/h1'
     }
   },
+  blockmesh: {
+    login_url: "chrome-extension://obfhoiefijlolgdmphcekifedagnkfjp/js/popup.html",
+    extension_url: "chrome-extension://obfhoiefijlolgdmphcekifedagnkfjp/js/popup.html",
+    check_url: "https://app.blockmesh.xyz/ui/dashboard",
+    selectors: {
+      usernameInput: '//*[@id="mount_to"]/div[2]/div[2]/form/div[1]/input',
+      passwordInput: '//*[@id="mount_to"]/div[2]/div[2]/form/div[2]/input',
+      loginButton: '//*[@id="mount_to"]/div[2]/div[2]/form/button',
+      dashboardBtn: '//*[@id="mount_to"]/div[2]/div[3]/button[1]/a',
+      emailDashbardInput: '//*[@id="email"]',
+      passDashboardInput: '//*[@id="password"]',
+      loginDashboardBtn: '//*[@id="content"]/form/div/div/div[4]/button',
+      pointValue: '/html/body/div[2]/main/div/div/div[4]/div[5]/div/div[2]/div/span',
+    }
+  },
   veer: {
     login_url: "https://mail.veer.vn",
     selectors: {
@@ -122,6 +137,7 @@ const EXTENSIONS = {
   gradient: { path: path.resolve('./crxs/gradient.crx') },
   toggle: { path: path.resolve('./crxs/toggle.crx') },
   bless: { path: path.resolve('./crxs/bless.crx') },
+  blockmesh: { path: path.resolve('./crxs/blockmesh.crx') },
 };
 
 // ─── CHROME OPTIONS SETUP ───────────────────────────────────────────────

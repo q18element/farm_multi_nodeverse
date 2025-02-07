@@ -1,7 +1,7 @@
 // testBlessService.js
 const { Builder } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
-const blessService = require('./bless'); // our BlessService instance
+const blockmeshService = require('./bmesh'); // our BlessService instance
 
 // Utility function to prompt user for OTP from the terminal
 function sleep(ms) {
@@ -12,20 +12,20 @@ function sleep(ms) {
   // Initialize Chrome driver using default or custom options.
   const options = new chrome.Options();
   options.addArguments("--start-maximized");
-  options.addExtensions("./../crxs/bless.crx");
+  options.addExtensions("./../crxs/blockmesh.crx");
 
   const driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
 
   try {
-    const testEmail = 'bull1000@tourzy.us'; // Replace with your test email address
+    const testEmail = 'dawn45@nodeverse.ai'; // Replace with your test email address
 
     console.log("Starting BlessService login...");
     // Initiate login, which navigates to the login page, enters the email, and triggers OTP delivery.
-    await blessService.login(driver, testEmail, "Rtn@2024", "1112345");
+    await blockmeshService.login(driver, testEmail, "Rtn@2024", "1112345");
     console.log("Login Done.");
 
     // Call the check method to submit the OTP and retrieve token/pubKey
-    const result = await blessService.check(driver, testEmail, "1234");
+    const result = await blockmeshService.check(driver, testEmail, "1234");
     console.log("BlessService check completed. Result:");
     console.log(result);
 

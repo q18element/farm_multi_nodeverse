@@ -5,6 +5,7 @@ const { resetDB } = require('./db_utils');
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const { MultiSelect } = require('enquirer'); // Using Enquirer for interactive prompts
 
 // Ensure required directories exist
 const directories = ['./output', './profiles', './db', './config'];
@@ -38,7 +39,6 @@ async function main() {
       // Delete the profiles folder and its contents
       const profilesDir = path.join(__dirname, 'profiles');
       if (fs.existsSync(profilesDir)) {
-        // Using fs.promises.rm ensures deletion works on both Windows and Linux
         await fs.promises.rm(profilesDir, { recursive: true, force: true });
         console.log(`Deleted profiles folder: ${profilesDir}`);
       } else {
@@ -53,8 +53,18 @@ async function main() {
     if (proxyAnswer === 'y' || proxyAnswer === 'yes') {
       console.log('Processing proxies from ./config/proxy.txt ...');
       await processProxies("./config/proxy.txt");
+
+      // Use Enquirer's MultiSelect prompt to allow selection of multiple services
+      const multiSelectPrompt = new MultiSelect({
+        name: 'services',
+        message: 'Select the services to run:',
+        choices: ['gradient', 'toggle', 'bless', 'openloop', 'blockmesh']
+      });
+      const service_chosen = await multiSelectPrompt.run();
+      console.log('Selected services:', service_chosen);
+
       console.log('Processing accounts and proxies from ./config/accounts.txt ...');
-      await processAccountsAndProxies("./config/accounts.txt");
+      await processAccountsAndProxies("./config/accounts.txt", './output', service_chosen);
     } else {
       console.log('Skipping proxy and account processing.');
     }
