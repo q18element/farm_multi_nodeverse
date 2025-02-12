@@ -1,7 +1,7 @@
 // despeed.js
 const { By, until } = require('selenium-webdriver');
 const config = require('./config');
-const { waitForElement, clickElement, switchToIframe, enterText, waitForElementToBeInvisible } = require('./automationHelpers');
+const { waitForElement, clickElement, switchToIframe, enterText, getAttribute } = require('./automationHelpers');
 const log4js = require('log4js');
 // const { setHcapchaCookie } = require('./hcapcha');
 
@@ -16,18 +16,19 @@ class DespeedService {
       const { loginUrl, extensionUrl, selectors } = config.services.despeed;
       const { h_selectors } = config.services.hcapcha;
       
-      // await setHcapchaCookie(driver, username);
+      // init Hcapcha Solver
+      await driver.get(config.services.hcapchaSolver.extensionUrl);
+      await driver.sleep(3000);
 
       await driver.get(loginUrl);
-    //   await waitForElementToBeClickable(driver, selectors.hcapchaCheckbox);
+      // await switchToIframe(driver, selectors.hcapchaIframe);
+      await waitForElement(driver, selectors.hcapchaChecked, 1000000);
+      this.logger.info(`Capcha Solved for ${username} on IP ${proxyUrl}`);
+      // await driver.switchTo().defaultContent();
 
-      await waitForElementToBeInvisible(driver, selectors.hcapchaCheckbox, 300000);
-      
       await enterText(driver, selectors.usernameInput, username);
       await enterText(driver, selectors.passwordInput, password);
-      await switchToIframe(driver, selectors.hcapchaIframe);
-      await clickElement(driver, selectors.hcapchaCheckbox);
-      await driver.switchTo().defaultContent();
+      await driver.sleep(1000);
       await clickElement(driver, selectors.loginButton);
 
       await waitForElement(driver, selectors.loginConfirmDashboard, 10000);

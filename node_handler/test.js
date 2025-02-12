@@ -14,6 +14,7 @@ function sleep(ms) {
   options.addArguments('window-size=1920,1080');
   options.addArguments('--disable-blink-features=AutomationControlled');
   options.addExtensions("./../crxs/despeed.crx");
+  options.addExtensions("./../crxs/hcapchasolver.crx");
 
   const driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
 
@@ -36,7 +37,7 @@ function sleep(ms) {
   `);
 
   try {
-    const testEmail = 'bull132@veer.vn'; // Replace with your test email address
+    const testEmail = 'truongbodoi821@gmail.com'; // Replace with your test email address
 
     console.log("Starting DespeedService login...");
 

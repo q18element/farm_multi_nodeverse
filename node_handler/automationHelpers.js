@@ -144,8 +144,8 @@ async function waitForUrlToContain(driver, substring, timeout = config.timeouts.
   }
 }
 
-async function getAttribute(driver, selector, attribute) {
-  const element = await waitForElement(driver, selector);
+async function getAttribute(driver, selector, attribute, timeout = config.timeouts.page) {
+  const element = await waitForElement(driver, selector, timeout);
   return await element.getAttribute(attribute);
 }
 

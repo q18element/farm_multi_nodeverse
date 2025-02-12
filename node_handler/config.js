@@ -95,6 +95,7 @@ const services = {
       passwordInput: By.xpath('//*[@id="root"]/section/div/div/div/div[2]/form/div[2]/div/input'),
       hcapchaIframe: By.xpath('//*[@id="root"]/section/div/div/div/div[2]/form/div[4]/div/iframe'),
       hcapchaCheckbox: By.css('div#checkbox[role="checkbox"]'),
+      hcapchaChecked: By.xpath('//iframe[contains(@data-hcaptcha-response, "ey")]'),
       loginButton: By.xpath('//*[@id="root"]/section/div/div/div/div[2]/form/div[5]/button'),
       loginConfirmElement: By.xpath('//*[@id="app-container"]/div/div[4]/div/div[1]/div[2]'),
       loginConfirmDashboard: By.xpath('//*[@id="root"]/div[1]/div/div/div[1]/div[2]/div/div/div/main/div/div[1]/div/div[1]/div/div[1]/h3'),
@@ -109,6 +110,12 @@ const services = {
       congratsText: By.xpath('//*[@id="root"]/div/div[1]/div/div[2]/p[1]'),
       setCookieButton: By.xpath('//*[@id="root"]/div[2]/div/div/div[3]/button'),
       setCookieConfirm: By.xpath('//*[@id="root"]/div[2]/div/div/div[3]/span'),
+    }
+  },
+  hcapchaSolver: {
+    extensionUrl: "chrome-extension://hlifkpholllijblknnmbfagnkjneagid/popup/popup.html",
+    selectors: {
+      capchaSolved: By.xpath('//*[@id="anchor-state"]/div[3]/img'),
     }
   },
   veer: {
