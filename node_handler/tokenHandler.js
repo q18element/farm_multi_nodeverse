@@ -7,6 +7,7 @@ const gradientService = require('./gradient');
 const toggleService = require('./toggle');
 const blessService = require('./bless');
 const blockmeshService = require('./bmesh');
+const despeedService = require('./despeed');
 
 class TokenPlugin {
   constructor() {
@@ -18,7 +19,8 @@ class TokenPlugin {
       gradient: gradientService,
       toggle: toggleService,
       bless: blessService,
-      blockmesh: blockmeshService
+      blockmesh: blockmeshService,
+      despeed: despeedService,
     };
   }
 

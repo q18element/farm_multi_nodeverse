@@ -3,6 +3,8 @@ const path = require('path');
 const os = require('os');
 const chrome = require('selenium-webdriver/chrome');
 const log4js = require('log4js');
+const { By } = require('selenium-webdriver');
+
 
 // Ensure the output/log directory exists
 const logDir = path.resolve(__dirname, './output', 'log');
@@ -14,103 +16,124 @@ if (!fs.existsSync(logDir)) {
 // ─── SERVICES CONFIGURATION ──────────────────────────────────────────────
 const services = {
   openloop: {
-    login_url: "chrome-extension://effapmdildnpkiaeghlkicpfflpiambm/dist/popup/index.html",
-    extension_url: "chrome-extension://effapmdildnpkiaeghlkicpfflpiambm/dist/popup/index.html",
+    loginUrl: "chrome-extension://effapmdildnpkiaeghlkicpfflpiambm/dist/popup/index.html",
+    extensionUrl: "chrome-extension://effapmdildnpkiaeghlkicpfflpiambm/dist/popup/index.html",
     selectors: {
-      continueButton: '//*[@id="app"]/div/div/div[1]/div/div/a/button',
-      username: '.el-input-wrapper[type="email"] > .relative > input.el-input',
-      password: '.el-input-wrapper[type="password"] > .relative > input.el-input',
-      loginButton: '.btn.btn-white.mt-3',
-      loginConfirmElement: '//*[@id="app"]/div/div/div[1]/div/div/div[3]/div/div/div/div[1]/a/img',
-      status: '//*[@id="app"]/div/div/div[1]/div/div/div[1]/span',
-      quality: '//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[1]/span',
-      earnings: '//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[2]/div[2]/span'
+      continueButton: By.xpath('//*[@id="app"]/div/div/div[1]/div/div/a/button'),
+      usernameInput: By.css('.el-input-wrapper[type="email"] > .relative > input.el-input'),
+      passwordInput: By.css('.el-input-wrapper[type="password"] > .relative > input.el-input'),
+      loginButton: By.css('.btn.btn-white.mt-3'),
+      loginConfirmElement: By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[3]/div/div/div/div[1]/a/img'),
+      status: By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[1]/span'),
+      quality: By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[1]/span'),
+      earnings: By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[2]/div[2]/span')
     }
   },
   gradient: {
-    login_url: "https://app.gradient.network/",
-    extension_url: "chrome-extension://caacbgbklghmpodbdafajbgdnegacfmo/popup.html",
+    loginUrl: "https://app.gradient.network/",
+    extensionUrl: "chrome-extension://caacbgbklghmpodbdafajbgdnegacfmo/popup.html",
     selectors: {
-      // Login selectors
-      username: '/html/body/div[1]/div[2]/div/div/div/div[2]/div[1]/input',
-      password: '/html/body/div[1]/div[2]/div/div/div/div[2]/div[2]/span/input',
-      loginButton: '/html/body/div[1]/div[2]/div/div/div/div[4]/button[1]',
-      loginConfirmElement: '//*[@id="root-gradient-extension-popup-20240807"]/div/div[3]/div/div[2]',
-      dashboardElement: '/html/body/div[1]/div[1]/div[2]/main/div/div/div[1]',
-      // Skip button selectors
-      gotItButton: '/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/button',
-      yesButton: '/html/body/div[2]/div/div[2]/div/div[1]/div/div/div/button',
-      rewardSwitchButton: '//*[@id="root-gradient-extension-popup-20240807"]/div/div[3]/div/div[3]',
-      // Value selectors
-      status: '//*[@id="root-gradient-extension-popup-20240807"]/div/div[1]/div[2]/div[3]/div[2]/div/div[2]/div',
-      tapToday: '//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1]',
-      uptime: '//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1]',
-      todayReward: '//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1]',
-      sessionReward: '//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1]'
+      usernameInput: By.xpath('/html/body/div[1]/div[2]/div/div/div/div[2]/div[1]/input'),
+      passwordInput: By.xpath('/html/body/div[1]/div[2]/div/div/div/div[2]/div[2]/span/input'),
+      loginButton: By.xpath('/html/body/div[1]/div[2]/div/div/div/div[4]/button[1]'),
+      loginConfirmElement: By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[3]/div/div[2]'),
+      dashboardElement: By.xpath('/html/body/div[1]/div[1]/div[2]/main/div/div/div[1]'),
+      gotItButton: By.xpath('/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/button'),
+      yesButton: By.xpath('/html/body/div[2]/div/div[2]/div/div[1]/div/div/div/button'),
+      rewardSwitchButton: By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[3]/div/div[3]'),
+      status: By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[1]/div[2]/div[3]/div[2]/div/div[2]/div'),
+      tapToday: By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1]'),
+      uptime: By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1]'),
+      todayReward: By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[1]/div[1]'),
+      sessionReward: By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[4]/div[2]/div[1]')
     }
   },
   toggle: {
-    login_url: "https://toggle.pro/sign-in",
-    extension_url: "chrome-extension://bnkekngmddejlfdeefjilpfdhomeomgb/index.html",
+    loginUrl: "https://toggle.pro/sign-in",
+    extensionUrl: "chrome-extension://bnkekngmddejlfdeefjilpfdhomeomgb/index.html",
     selectors: {
-      username: '/html/body/div/div[1]/div/div/div/div[5]/form/div[1]/div/input',
-      password: '/html/body/div/div[1]/div/div/div/div[5]/form/div[2]/div/input',
-      loginButton: '/html/body/div/div[1]/div/div/div/div[5]/form/button/div',
-      loginConfirmElement: '//*[@id="root"]/div/div/div[4]/p',
-      dashboardElement: '/html/body/div/div[1]/div[2]/div[1]/div[1]/h1',
-      quality: '//*[@id="root"]/div/div/div[2]/div/div/div/p',
-      epoch: '//*[@id="root"]/div/div/div[4]/div[1]/p',
-      uptime: '//*[@id="root"]/div/div/div[4]/div[2]/p'
+      usernameInput: By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/div[1]/div/input'),
+      passwordInput: By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/div[2]/div/input'),
+      loginButton: By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/button/div'),
+      loginConfirmElement: By.xpath('//*[@id="root"]/div/div/div[4]/p'),
+      dashboardElement: By.xpath('/html/body/div/div[1]/div[2]/div[1]/div[1]/h1'),
+      quality: By.xpath('//*[@id="root"]/div/div/div[2]/div/div/div/p'),
+      epoch: By.xpath('//*[@id="root"]/div/div/div[4]/div[1]/p'),
+      uptime: By.xpath('//*[@id="root"]/div/div/div[4]/div[2]/p')
     }
   },
   bless: {
-    login_url: "https://bless.network/dashboard?ref=Y06FN1",
-    extension_url: "https://bless.network/dashboard",
+    loginUrl: "https://bless.network/dashboard?ref=Y06FN1",
+    extensionUrl: "https://bless.network/dashboard",
     selectors: {
-      emailInput: '//*[@id="email"]',
-      loginButton: '/html/body/div/main/div/div/div[2]/div[3]/button',
-      loginConfirmElement: '/html/body/div/main/div/div[1]/h1',
-      dashboardElement: '/html/body/div/main/div/div[1]/h1'
+      emailInput: By.xpath('//*[@id="email"]'),
+      loginButton: By.xpath('/html/body/div/main/div/div/div[2]/div[3]/button'),
+      loginConfirmElement: By.xpath('/html/body/div/main/div/div[1]/h1'),
+      dashboardElement: By.xpath('/html/body/div/main/div/div[1]/h1')
     }
   },
   blockmesh: {
-    login_url: "chrome-extension://obfhoiefijlolgdmphcekifedagnkfjp/js/popup.html",
-    extension_url: "chrome-extension://obfhoiefijlolgdmphcekifedagnkfjp/js/popup.html",
-    check_url: "https://app.blockmesh.xyz/ui/dashboard",
+    loginUrl: "chrome-extension://obfhoiefijlolgdmphcekifedagnkfjp/js/popup.html",
+    extensionUrl: "chrome-extension://obfhoiefijlolgdmphcekifedagnkfjp/js/popup.html",
+    checkUrl: "https://app.blockmesh.xyz/ui/dashboard",
     selectors: {
-      usernameInput: '//*[@id="mount_to"]/div[2]/div[2]/form/div[1]/input',
-      passwordInput: '//*[@id="mount_to"]/div[2]/div[2]/form/div[2]/input',
-      loginButton: '//*[@id="mount_to"]/div[2]/div[2]/form/button',
-      dashboardBtn: '//*[@id="mount_to"]/div[2]/div[3]/button[1]/a',
-      emailDashbardInput: '//*[@id="email"]',
-      passDashboardInput: '//*[@id="password"]',
-      loginDashboardBtn: '//*[@id="content"]/form/div/div/div[4]/button',
-      pointValue: '/html/body/div[2]/main/div/div/div[4]/div[5]/div/div[2]/div/span',
+      usernameInput: By.xpath('//*[@id="mount_to"]/div[2]/div[2]/form/div[1]/input'),
+      passwordInput: By.xpath('//*[@id="mount_to"]/div[2]/div[2]/form/div[2]/input'),
+      loginButton: By.xpath('//*[@id="mount_to"]/div[2]/div[2]/form/button'),
+      dashboardButton: By.xpath('//*[@id="mount_to"]/div[2]/div[3]/button[1]/a'),
+      emailDashboardInput: By.xpath('//*[@id="email"]'),
+      passwordDashboardInput: By.xpath('//*[@id="password"]'),
+      loginDashboardButton: By.xpath('//*[@id="content"]/form/div/div/div[4]/button'),
+      pointValue: By.xpath('/html/body/div[2]/main/div/div/div[4]/div[5]/div/div[2]/div/span')
+    }
+  },
+  despeed: {
+    loginUrl: "https://app.despeed.net/login",
+    extensionUrl: "chrome-extension://ofpfdpleloialedjbfpocglfggbdpiem/popup.html",
+    selectors: {
+      usernameInput: By.xpath('//*[@id="root"]/section/div/div/div/div[2]/form/div[1]/div/input'),
+      passwordInput: By.xpath('//*[@id="root"]/section/div/div/div/div[2]/form/div[2]/div/input'),
+      hcapchaIframe: By.xpath('//*[@id="root"]/section/div/div/div/div[2]/form/div[4]/div/iframe'),
+      hcapchaCheckbox: By.css('div#checkbox[role="checkbox"]'),
+      loginButton: By.xpath('//*[@id="root"]/section/div/div/div/div[2]/form/div[5]/button'),
+      loginConfirmElement: By.xpath('//*[@id="app-container"]/div/div[4]/div/div[1]/div[2]'),
+      loginConfirmDashboard: By.xpath('//*[@id="root"]/div[1]/div/div/div[1]/div[2]/div/div/div/main/div/div[1]/div/div[1]/div/div[1]/h3'),
+      pointValue: By.xpath('//*[@id="app-container"]/div/div[4]/div/div[1]/div[2]/h3'),
+    }
+  },
+  hcapcha: {
+    accessSignupUrl: "https://www.hcaptcha.com/accessibility",
+    setCookieUrl: "",
+    h_selectors: {
+      emailInput: By.xpath('//*[@id="email"]'),
+      congratsText: By.xpath('//*[@id="root"]/div/div[1]/div/div[2]/p[1]'),
+      setCookieButton: By.xpath('//*[@id="root"]/div[2]/div/div/div[3]/button'),
+      setCookieConfirm: By.xpath('//*[@id="root"]/div[2]/div/div/div[3]/span'),
     }
   },
   veer: {
-    login_url: "https://mail.veer.vn",
+    loginUrl: "https://mail.veer.vn",
     selectors: {
-      emailInput: '//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[1]/input',
-      passwordInput: '//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[2]/input',
-      loginButton: '//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[3]/button',
-      loginConfirmElement: '//*[@id="mail-box-toggle"]/div[3]',
-      inboxElement: '//*[@id="mail-box-toggle"]/div[3]',
-      firstMail: '//*[@id="mail-item-0"]/div',
-      refreshButton: '//*[@id="mail-box-toggle"]/div[3]/div/div/div[1]/div[1]/div[3]/a',
+      emailInput: By.xpath('//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[1]/input'),
+      passwordInput: By.xpath('//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[2]/input'),
+      loginButton: By.xpath('//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[3]/button'),
+      loginConfirmElement: By.xpath('//*[@id="mail-box-toggle"]/div[3]'),
+      inboxElement: By.xpath('//*[@id="mail-box-toggle"]/div[3]'),
+      firstMail: By.xpath('//*[@id="mail-item-0"]/div'),
+      refreshButton: By.xpath('//*[@id="mail-box-toggle"]/div[3]/div/div/div[1]/div[1]/div[3]/a')
     }
   },
   bizflycloud: {
-    login_url: 'https://id.bizflycloud.vn/login?service=https%3A%2F%2Fmail.bizflycloud.vn%2F&_t=webmail',
+    loginUrl: 'https://id.bizflycloud.vn/login?service=https%3A%2F%2Fmail.bizflycloud.vn%2F&_t=webmail',
     selectors: {
-      emailInput: '//*[@id="app"]/div/div/main/div/div/div/div[1]/div/div/div/div/div[1]/form/div[1]/div/div/input',
-      passwordInput: '//*[@id="app"]/div/div/main/div/div/div/div/div/div/div/div/div[2]/form/div/div/div/input',
-      nextButton: '//*[@id="app"]/div/div/main/div/div/div/div[1]/div/div/div/div/div[1]/form/div[1]/div/button',
-      loginButton: '//*[@id="app"]/div/div/main/div/div/div/div/div/div/div/div/div[2]/form/div/div/div/div/button',
-      loginConfirmElement: '//*[@id="app"]/div/div/div[3]/div[1]/div[2]/div',
-      inboxElement: '//*[@id="app"]/div/div/div[3]/div[1]/div[2]/div',
-      firstMail: '//*[@id="threads_list"]/div[1]/div[3]/div[1]',
-      refreshButton: '//*[@id="refresh-threads-btn"]',
+      emailInput: By.xpath('//*[@id="app"]/div/div/main/div/div/div/div[1]/div/div/div/div/div[1]/form/div[1]/div/div/input'),
+      passwordInput: By.xpath('//*[@id="app"]/div/div/main/div/div/div/div/div/div/div/div/div[2]/form/div/div/div/input'),
+      nextButton: By.xpath('//*[@id="app"]/div/div/main/div/div/div/div[1]/div/div/div/div/div[1]/form/div[1]/div/button'),
+      loginButton: By.xpath('//*[@id="app"]/div/div/main/div/div/div/div/div/div/div/div/div[2]/form/div/div/div/div/button'),
+      loginConfirmElement: By.xpath('//*[@id="app"]/div/div/div[3]/div[1]/div[2]/div'),
+      inboxElement: By.xpath('//*[@id="app"]/div/div/div[3]/div[1]/div[2]/div'),
+      firstMail: By.xpath('//*[@id="threads_list"]/div[1]/div[3]/div[1]'),
+      refreshButton: By.xpath('//*[@id="refresh-threads-btn"]')
     }
   }
 };
@@ -138,6 +161,8 @@ const EXTENSIONS = {
   toggle: { path: path.resolve('./crxs/toggle.crx') },
   bless: { path: path.resolve('./crxs/bless.crx') },
   blockmesh: { path: path.resolve('./crxs/blockmesh.crx') },
+  despeed: { path: path.resolve('./crxs/despeed.crx') },
+  hcapchaSolver: { path: path.resolve('./crxs/hcapchasolver.crx') },
 };
 
 // ─── CHROME OPTIONS SETUP ───────────────────────────────────────────────
@@ -150,7 +175,7 @@ const configureChromeOptions = () => {
     // '--dns-prefetch-disable',
     // '--enable-unsafe-swiftshader',
     // '--no-first-run',
-    // '--enable-automation',
+    // '--enable-automation', 
     // '--allow-remote-origin',
     '--allow-pre-commit-input',
     'start-maximized',

@@ -1,5 +1,4 @@
 // blockmesh.js
-const { By, until } = require('selenium-webdriver');
 const config = require('./config');
 const { waitForElement, clickElement, safeClick, enterText } = require('./automationHelpers');
 const log4js = require('log4js');
@@ -13,16 +12,16 @@ class BlockmeshService {
   async login(driver, username, password, proxyUrl) {
     try {
       this.logger.info(`Starting Blockmesh login for ${username}`);
-      const { login_url, extension_url, selectors } = config.services.blockmesh;
+      const { loginUrl, extensionUrl, selectors } = config.services.blockmesh;
       
-      await driver.get(login_url);
+      await driver.get(loginUrl);
       await enterText(driver, selectors.usernameInput, username);
       await enterText(driver, selectors.passwordInput, password);
       await driver.sleep(888);
       await clickElement(driver, selectors.loginButton);
       await driver.sleep(2000);
 
-      await waitForElement(driver, selectors.dashboardBtn);
+      await waitForElement(driver, selectors.dashboardButton);
 
       this.logger.info(`Login success for Blockmesh ${username}`);
       return true;
@@ -34,13 +33,13 @@ class BlockmeshService {
 
   async check(driver, username, proxyUrl) {
     try {
-      await driver.get(config.services.blockmesh.check_url);
+      await driver.get(config.services.blockmesh.checkUrl);
       const { selectors } = config.services.blockmesh;
 
-      await enterText(driver, selectors.emailDashbardInput, username);
-      await enterText(driver, selectors.passDashboardInput, "Rtn@2024");
+      await enterText(driver, selectors.emailDashboardInput, username);
+      await enterText(driver, selectors.passwordDashboardInput, "Rtn@2024");
       await driver.sleep(888);
-      await clickElement(driver, selectors.loginDashboardBtn);
+      await clickElement(driver, selectors.loginDashboardButton);
 
       await waitForElement(driver, selectors.pointValue);
 

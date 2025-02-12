@@ -31,7 +31,7 @@ class BlessService {
         let otp = null;
         try {
             await driver.switchTo().newWindow('tab');
-            await driver.get(config.services.bizflycloud.login_url);
+            await driver.get(config.services.bizflycloud.loginUrl);
 
             console.log(await driver.getCurrentUrl());
     
@@ -123,7 +123,6 @@ class BlessService {
             console.error('Error extracting OTP:', error);
         }
     }
-    
     
     async login(driver, username, password="Rtn@2024", proxyUrl) {
         try {

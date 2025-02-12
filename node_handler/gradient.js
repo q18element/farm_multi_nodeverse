@@ -13,7 +13,7 @@ class GradientService {
     try {
       this.logger.info(`Starting Gradient login for ${username}`);
 
-      const { login_url, extension_url, selectors } = config.services.gradient;
+      const { loginUrl, extensionUrl, selectors } = config.services.gradient;
       await driver.get(login_url);
 
       // Check if already logged in by verifying the dashboard element.
@@ -25,11 +25,11 @@ class GradientService {
         // Not logged in; proceed with the login flow.
       }
 
-      await enterText(driver, selectors.username, username);
-      await enterText(driver, selectors.password, password);
+      await enterText(driver, selectors.usernameInput, username);
+      await enterText(driver, selectors.passwordInput, password);
       await clickElement(driver, selectors.loginButton);
       await driver.sleep(3000);
-      await driver.get(extension_url);
+      await driver.get(extensionUrl);
       await waitForElement(driver, selectors.loginConfirmElement, 20000);
 
       this.logger.info(`Login success for Gradient ${username}`);
@@ -42,7 +42,7 @@ class GradientService {
 
   async check(driver, username, proxyUrl) {
     try {
-      await driver.get(config.services.gradient.extension_url);
+      await driver.get(config.services.gradient.extensionUrl);
       await driver.sleep(2000);
       const { selectors } = config.services.gradient;
       // Dismiss modal dialogs if present

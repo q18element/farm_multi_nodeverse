@@ -12,9 +12,9 @@ class OpenloopService {
   async login(driver, username, password, proxyUrl) {
     try {
       this.logger.info(`Starting OpenLoop login for ${username}`);
-      const { login_url, extension_url, selectors } = config.services.openloop;
+      const { loginUrl, extensionUrl, selectors } = config.services.openloop;
       
-      await driver.get(login_url);
+      await driver.get(loginUrl);
       await safeClick(driver, selectors.continueButton, 1000);
       
       // Locate username, password, and login button using CSS selectors.
@@ -36,7 +36,7 @@ class OpenloopService {
       await loginButton.click();
       
       await driver.sleep(3000);
-      await driver.get(extension_url);
+      await driver.get(extensionUrl);
       await safeClick(driver, selectors.continueButton, 2000);
       await waitForElement(driver, selectors.loginConfirmElement, 20000);
 
@@ -50,7 +50,7 @@ class OpenloopService {
 
   async check(driver, username, proxyUrl) {
     try {
-      await driver.get(config.services.openloop.extension_url);
+      await driver.get(config.services.openloop.extensionUrl);
       const { selectors } = config.services.openloop;
       await safeClick(driver, selectors.continueButton);
       

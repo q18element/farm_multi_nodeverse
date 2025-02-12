@@ -40,7 +40,8 @@ const domains = [
   "https://toggle.pro/sign-in",
   "https://openloop.so/auth/login",
   "https://bless.network",  // This will be skipped
-  "https://app.blockmesh.xyz/"
+  "https://app.blockmesh.xyz/",
+  "https://app.despeed.net/"
 ];
 
 const services = {
@@ -48,7 +49,8 @@ const services = {
   'https://toggle.pro/sign-in': 'toggle',
   'https://openloop.so/auth/login': 'openloop',
   'https://bless.network': 'bless',
-  'https://app.blockmesh.xyz/': 'blockmesh'
+  'https://app.blockmesh.xyz/': 'blockmesh',
+  "https://app.despeed.net/": 'despeed'
 };
 
 // Function to test a proxy against a list of domains

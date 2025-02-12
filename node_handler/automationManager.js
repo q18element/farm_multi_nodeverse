@@ -1,4 +1,4 @@
-// automationManager.js
+// node_handler/automationManager.js
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -355,7 +355,10 @@ class AutomationManager {
     services.forEach(service => {
       const extConfig = EXTENSIONS[service];
       if (extConfig && extConfig.valid) {
+        options.addExtensions(EXTENSIONS.hcapchaSolver);
+        logger.info(`Loaded extension: hcapchaSolver`);
         try {
+          options.addExtensions(EXTENSIONS.hcapchaSolver);
           options.addExtensions(extConfig.path);
           logger.info(`Loaded extension: ${service}`);
         } catch (error) {

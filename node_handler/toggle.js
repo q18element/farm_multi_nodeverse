@@ -12,8 +12,8 @@ class ToggleService {
   async login(driver, username, password, proxyUrl) {
     try {
       this.logger.info(`Starting Toggle login for ${username}`);
-      const { login_url, extension_url, selectors } = config.services.toggle;
-      await driver.get(login_url);
+      const { loginUrl, extensionUrl, selectors } = config.services.toggle;
+      await driver.get(loginUrl);
       
       // Check if already logged in by verifying the dashboard element.
       try {
@@ -24,8 +24,8 @@ class ToggleService {
         // Not logged in; proceed with the login flow.
       }
       
-      await enterText(driver, selectors.username, username);
-      await enterText(driver, selectors.password, password);
+      await enterText(driver, selectors.usernameInput, username);
+      await enterText(driver, selectors.passwordInput, password);
       await clickElement(driver, selectors.loginButton);
       await driver.sleep(3000);
       await waitForElement(driver, selectors.dashboardElement, 20000);
@@ -39,9 +39,9 @@ class ToggleService {
 
   async check(driver, username, proxyUrl) {
     try {
-      await driver.get(config.services.toggle.login_url);
+      await driver.get(config.services.toggle.loginUrl);
       await driver.sleep(2000);
-      await driver.get(config.services.toggle.extension_url);
+      await driver.get(config.services.toggle.extensionUrl);
       await driver.sleep(3000);
       const { selectors } = config.services.toggle;
       
