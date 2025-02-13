@@ -26,7 +26,23 @@ function sleep(ms) {
 
     console.log("Starting MTM setup...");
 
-    await mtmService.setup(driver, "1112345");
+    const recoveryKeyArray = [
+      "decade",
+      "bless",
+      "twice",
+      "candy",
+      "tube",
+      "donate",
+      "middle",
+      "laugh",
+      "pottery",
+      "ginger",
+      "assume",
+      "summer"
+    ]
+    ;
+
+    await mtmService.setupOldWallet(driver, recoveryKeyArray, "dummy_proxy");
     // console.log("Login Done.");
 
     // // Call the check method to submit the OTP and retrieve token/pubKey

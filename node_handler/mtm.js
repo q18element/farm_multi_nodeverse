@@ -32,7 +32,7 @@ async function copyRecoveryPhrase(driver) {
       const filePath = path.join(outputDir, 'recovery_phrase.txt');
       fs.writeFileSync(filePath, recoveryPhrase, 'utf8');
       
-      console.log('Recovery phrase saved to:', filePath);
+      // console.log('Recovery phrase saved to:', filePath);
 
       return phrases;
     } catch (error) {
@@ -64,23 +64,53 @@ async function fillRecoveryInputsWithClickAndSendKeys(driver, recoveryKeyArray) 
           await inputElement.click();
           await inputElement.clear();
           await inputElement.sendKeys(word);
-          console.log(`Filled input ${testid} with word "${word}".`);
+          // console.log(`Filled input ${testid} with word "${word}".`);
         } else {
           console.warn(`No word found for index ${index}.`);
         }
       }
-      console.log("All missing recovery words filled successfully using click and sendKeys.");
+      // console.log("All missing recovery words filled successfully using click and sendKeys.");
     } catch (error) {
       console.error("Error filling recovery inputs with click and sendKeys:", error);
     }
   }
+
+async function fillImportSrpRecoveryWords(driver, recoveryKeyArray) {
+try {
+    // Find all input elements with data-testid starting with "import-srp__srp-word-"
+    const inputElements = await driver.findElements(By.css('input[data-testid^="import-srp__srp-word-"]'));
+    
+    for (let inputElement of inputElements) {
+        // Retrieve the data-testid attribute (e.g., "import-srp__srp-word-0")
+        const testid = await driver.executeScript("return arguments[0].dataset.testid;", inputElement);
+        
+        // Extract the index from the testid by splitting on "-" and converting the last part to a number.
+        const parts = testid.split('-');
+        const index = parseInt(parts[parts.length - 1], 10);
+        
+        if (!isNaN(index) && index < recoveryKeyArray.length) {
+            const word = recoveryKeyArray[index];
+            // Click to focus, clear any existing value, and send the word.
+            await inputElement.click();
+            await inputElement.clear();
+            await inputElement.sendKeys(word);
+            // console.log(`Filled ${testid} with word "${word}".`);
+        } else {
+            console.warn(`Skipping ${testid}: invalid index or no corresponding word.`);
+        }
+    }
+    // console.log("All import SRP recovery words filled successfully.");
+} catch (error) {
+    console.error("Error filling import SRP recovery words:", error);
+}
+}
 
 class MtmService {
   constructor() {
     this.logger = log4js.getLogger('MtmService');
   }
 
-  async setup(driver, proxyUrl) {
+  async setupNewWallet(driver, proxyUrl) {
     try {
       this.logger.info(`Starting Mtm setup`);
       const { loginUrl, selectors } = config.services.mtm;
@@ -120,6 +150,7 @@ class MtmService {
       await driver.sleep(7777)
       await waitForElement(driver, selectors.mainetText)
       
+      this.logger.error(`Mtm setup success on proxy ${proxyUrl}`);
       return true;
     } catch (error) {
       this.logger.error(`Mtm setup failed for: ${error.message}`);
@@ -127,6 +158,46 @@ class MtmService {
     }
   }
 
+  async setupOldWallet(driver, seedPhrases, proxyUrl) {
+    try {
+      this.logger.info(`Starting Mtm setup`);
+      const { loginUrl, selectors } = config.services.mtm;
+      await driver.get(loginUrl);
+
+      await driver.sleep(3000)
+      await clickElement(driver, selectors.agreeCheckbox)
+      await scrollToElement(driver, selectors.importWalletButton)
+      await clickElement(driver, selectors.importWalletButton)
+
+      await clickElement(driver, selectors.agreeCheckbox2)
+      await scrollToElement(driver, selectors.iagreeButton)
+      await clickElement(driver, selectors.iagreeButton)
+
+      await driver.sleep(2000)
+      await fillImportSrpRecoveryWords(driver, seedPhrases)
+      await clickElement(driver, selectors.confirmSecretInputButton)
+
+      await enterText(driver, selectors.passwordInput, "Rtn@2024")
+      await enterText(driver, selectors.passwordRepeatInput, "Rtn@2024")
+      await clickElement(driver, selectors.iunderstandCheckbox)
+      await clickElement(driver, selectors.createNewWalletButton)
+
+      await driver.sleep(1000)
+      await clickElement(driver, selectors.doneButton)
+      await driver.sleep(1000)
+      await clickElement(driver, selectors.nextButton2)
+      await driver.sleep(1000)
+      await clickElement(driver, selectors.doneButton2)
+      await driver.sleep(7777)
+      await waitForElement(driver, selectors.mainetText)
+      
+      this.logger.error(`Mtm setup success on proxy ${proxyUrl}`);
+      return true;
+    } catch (error) {
+      this.logger.error(`Mtm setup failed for: ${error.message}`);
+      return false;
+    }
+  }
 }
 
 module.exports = new MtmService();

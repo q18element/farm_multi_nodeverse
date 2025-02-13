@@ -175,7 +175,8 @@ const services = {
       doneButton: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[3]/button'),
       nextButton2: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[2]/button'),
       doneButton2: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[2]/button'),
-      mainetText: By.xpath('//*[@id="app-content"]/div/div[2]/div/div[1]/button/p')
+      mainetText: By.xpath('//*[@id="app-content"]/div/div[2]/div/div[1]/button/p'),
+      confirmSecretInputButton: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[4]/div/button')
     }
   }
 };
