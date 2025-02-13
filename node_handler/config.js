@@ -102,6 +102,19 @@ const services = {
       pointValue: By.xpath('//*[@id="app-container"]/div/div[4]/div/div[1]/div[2]/h3'),
     }
   },
+  depined: {
+    loginUrl: "https://app.depined.org/onboarding",
+    extensionUrl: "chrome-extension://pjlappmodaidbdjhmhifbnnmmkkicjoc/popup.html",
+    selectors: {
+      usernameInput: By.xpath('//*[@id="email"]'),
+      passwordInput: By.xpath('//*[@id="password"]'),
+      loginButton: By.xpath('//*[@id="modal"]/div/div[2]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[3]/div[4]/div/div'),
+      connectButton: By.xpath('//*[@id="connect-button"]'),
+      loginConfirmElement: By.xpath('//*[@id="container"]/div[3]/div[1]/div[1]'),
+      loginConfirmDashboard: By.xpath('//*[@id="root"]/div[3]/div[3]/div[1]/div[4]/div[1]/div[1]'),
+      pointValue: By.xpath('//*[@id="container"]/div[3]/div[1]/div[2]/span'),
+    }
+  },
   hcapcha: {
     accessSignupUrl: "https://www.hcaptcha.com/accessibility",
     setCookieUrl: "",
@@ -170,6 +183,7 @@ const EXTENSIONS = {
   blockmesh: { path: path.resolve('./crxs/blockmesh.crx') },
   despeed: { path: path.resolve('./crxs/despeed.crx') },
   hcapchaSolver: { path: path.resolve('./crxs/hcapchasolver.crx') },
+  depined: { path: path.resolve('./crxs/depined.crx') },
 };
 
 // ─── CHROME OPTIONS SETUP ───────────────────────────────────────────────

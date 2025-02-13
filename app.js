@@ -58,7 +58,7 @@ async function main() {
       const multiSelectPrompt = new MultiSelect({
         name: 'services',
         message: 'Select the services to run:',
-        choices: ['gradient', 'toggle', 'bless', 'openloop', 'blockmesh', 'despeed']
+        choices: ['gradient', 'toggle', 'bless', 'openloop', 'blockmesh', 'despeed', 'depined']
       });
       const service_chosen = await multiSelectPrompt.run();
       console.log('Selected services:', service_chosen);

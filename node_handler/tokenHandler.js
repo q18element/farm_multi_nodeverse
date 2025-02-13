@@ -8,6 +8,7 @@ const toggleService = require('./toggle');
 const blessService = require('./bless');
 const blockmeshService = require('./bmesh');
 const despeedService = require('./despeed');
+const depinedService = require('./depined');
 
 class TokenPlugin {
   constructor() {
@@ -21,6 +22,7 @@ class TokenPlugin {
       bless: blessService,
       blockmesh: blockmeshService,
       despeed: despeedService,
+      depined: depinedService,
     };
   }
 

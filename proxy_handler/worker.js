@@ -41,7 +41,8 @@ const domains = [
   "https://openloop.so/auth/login",
   "https://bless.network",  // This will be skipped
   "https://app.blockmesh.xyz/",
-  "https://app.despeed.net/"
+  "https://app.despeed.net/",
+  "https://app.depined.org/onboarding"
 ];
 
 const services = {
@@ -50,7 +51,8 @@ const services = {
   'https://openloop.so/auth/login': 'openloop',
   'https://bless.network': 'bless',
   'https://app.blockmesh.xyz/': 'blockmesh',
-  "https://app.despeed.net/": 'despeed'
+  "https://app.despeed.net/": 'despeed',
+  "https://app.depined.org/onboarding": 'depined'
 };
 
 // Function to test a proxy against a list of domains
@@ -62,7 +64,7 @@ async function testProxy(proxyUrl, domains) {
   };
 
   for (let domain of domains) {
-    if (domain === "https://bless.network" || domain === "https://app.blockmesh.xyz/") {
+    if (domain === "https://bless.network" || domain === "https://app.blockmesh.xyz/" || domain === "https://app.depined.org/onboarding") {
       // Skip testing bless.network and add it directly to success
       results.success.push(services[domain]);
       logger.info(`Skipping ${domain}, automatically adding to success.`);
