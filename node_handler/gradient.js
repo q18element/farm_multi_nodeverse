@@ -14,7 +14,7 @@ class GradientService {
       this.logger.info(`Starting Gradient login for ${username}`);
 
       const { loginUrl, extensionUrl, selectors } = config.services.gradient;
-      await driver.get(login_url);
+      await driver.get(loginUrl);
 
       // Check if already logged in by verifying the dashboard element.
       try {

@@ -110,7 +110,7 @@ const services = {
       passwordInput: By.xpath('//*[@id="password"]'),
       loginButton: By.xpath('//*[@id="modal"]/div/div[2]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[3]/div[4]/div/div'),
       connectButton: By.xpath('//*[@id="connect-button"]'),
-      loginConfirmElement: By.xpath('//*[@id="container"]/div[3]/div[1]/div[1]'),
+      loginConfirmElement: By.xpath('//*[@id="connect-button"]/span[normalize-space(text()) = "Connected"]'),
       loginConfirmDashboard: By.xpath('//*[@id="root"]/div[3]/div[3]/div[1]/div[4]/div[1]/div[1]'),
       pointValue: By.xpath('//*[@id="container"]/div[3]/div[1]/div[2]/span'),
     }
@@ -169,8 +169,8 @@ const timeouts = {
 // ─── AUTOMATION CONSTANTS ─────────────────────────────────────────────────
 const MAX_LOGIN_RETRIES = 2;
 const PROFILE_CLEANUP_ON_FAILURE = true;
-const CHECK_INTERVAL = 360000; // 6 minutes
-const STAGGER_DELAY = 45000; // 30 seconds between account starts
+const CHECK_INTERVAL = 360000;
+const STAGGER_DELAY = 45000;
 const USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36";
 const FAILED_TASKS_PATH = path.resolve('./output/fail_tasks.json');
 

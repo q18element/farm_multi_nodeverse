@@ -5,7 +5,7 @@ const { resetDB } = require('./db_utils');
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
-const { MultiSelect } = require('enquirer'); // Using Enquirer for interactive prompts
+const { MultiSelect } = require('enquirer');
 
 // Ensure required directories exist
 const directories = ['./output', './profiles', './db', './config'];

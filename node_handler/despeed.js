@@ -3,7 +3,6 @@ const { By, until } = require('selenium-webdriver');
 const config = require('./config');
 const { waitForElement, clickElement, switchToIframe, enterText, getAttribute } = require('./automationHelpers');
 const log4js = require('log4js');
-// const { setHcapchaCookie } = require('./hcapcha');
 
 class DespeedService {
   constructor() {

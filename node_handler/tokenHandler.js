@@ -33,9 +33,9 @@ class TokenPlugin {
       if (!serviceConfig) {
         throw new Error(`Service ${service} not found in configuration`);
       }
-      const { extension_url, selectors } = serviceConfig;
+      const { loginUrl, extensionUrl, selectors } = serviceConfig;
       this.logger.info(`Checking login state for ${service}`);
-      await driver.get(extension_url);
+      await driver.get(extensionUrl);
       await driver.navigate().refresh();
       await driver.sleep(3000);
       await waitForElement(driver, selectors.loginConfirmElement, config.timeouts.loginCheck);

@@ -1,7 +1,7 @@
 // depined.js
 const { By, until } = require('selenium-webdriver');
 const config = require('./config');
-const { waitForElement, clickElement, safeClick, enterText } = require('./automationHelpers');
+const { waitForElement, clickElement, enterText } = require('./automationHelpers');
 const log4js = require('log4js');
 
 class DepinedService {
@@ -38,6 +38,7 @@ class DepinedService {
       await driver.sleep(2000);
       await clickElement(driver, selectors.connectButton);
       await driver.sleep(5000);
+      
       // Helper to safely get element text.
       const getValueSafe = async (selector) => {
         try {

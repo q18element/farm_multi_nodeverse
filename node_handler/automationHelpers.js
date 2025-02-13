@@ -2,6 +2,9 @@
 const { By, until } = require('selenium-webdriver');
 const config = require('./config');
 const fs = require('fs');
+const {
+  logger
+} = require('./config');
 
 
 async function waitForElement(driver, selector, timeout = config.timeouts.element) {
@@ -42,6 +45,7 @@ async function enterText(driver, selector, text) {
   await element.sendKeys(text);
 }
 
+
 async function tabReset(driver) {
     // Tab cleanup logic.
     try {
@@ -55,7 +59,7 @@ async function tabReset(driver) {
       }
       await driver.get('about:blank');
     } catch (error) {
-      logger.error(`[TAB CLEANUP ERROR] ${error.message}`);
+      console.log(`[TAB CLEANUP ERROR] ${error.message}`);
     }
 }
 

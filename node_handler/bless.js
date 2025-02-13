@@ -18,7 +18,6 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-
 class BlessService {
     constructor() {
        this.logger = log4js.getLogger('BlessService');

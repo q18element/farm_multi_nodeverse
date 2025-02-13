@@ -62,6 +62,15 @@ class AutomationManager {
     }
   }
 
+  
+  async safeTabReset(driver) {
+    try {
+      await tabReset(driver);
+    } catch (error) {
+      logger.warn(`[TAB RESET ERROR] Failed to reset tab: ${error.message}`);
+    }
+  }
+
   async handleAccountProxyTask(account, proxyConfig) {
     const { proxy, run: services } = proxyConfig;
     const profilePath = this.getProfilePath(account, proxy);
@@ -85,8 +94,8 @@ class AutomationManager {
 
       while (tasks.length > 0) {
         let driver;
+        driver = await this.initializeDriver(profilePath, proxy);
         try {
-          driver = await this.initializeDriver(profilePath, proxy);
           const newProfile = !wasProfileThere ||
             tasks.some(task => retryCounters[task] > 0);
 
@@ -103,7 +112,7 @@ class AutomationManager {
           tasks = await this.getPendingTasks(account, proxy);
           if (tasks.length === 0) break;
         } finally {
-          await tabReset(driver);
+          await this.safeTabReset(driver);
         }
       }
     } catch (error) {
@@ -146,7 +155,7 @@ class AutomationManager {
 
       if (tasks.length === 0) {
         logger.info(`[PROFILE DONE] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Closing driver.`);
-        await tabReset(driver);
+        await this.safeTabReset(driver);
         return;
       }
 
@@ -174,7 +183,7 @@ class AutomationManager {
     let results = {};
     for (const service of tasks) {
       try {
-        await tabReset(driver);
+        await this.safeTabReset(driver);
 
         // For the "bless" service, check if a previous bless task is pending.
         if (service === "bless") {
@@ -189,7 +198,8 @@ class AutomationManager {
         }
 
         // Process other services (or bless if allowed) as normal.
-        let loginState = await this.tokenPlugin.checkLoginState(driver, service);
+        let loginState = await this.safeServiceCheck(() => this.tokenPlugin.checkLoginState(driver, service));
+
         let loginSuccess = loginState;
 
         while (!loginSuccess && retryCounters[service] < MAX_LOGIN_RETRIES) {
@@ -218,7 +228,7 @@ class AutomationManager {
             proxy
           );
         } else {
-          await tabReset(driver);
+          await this.safeTabReset(driver);
           results[service] = "login_failed";
         }
       } catch (error) {
@@ -330,64 +340,157 @@ class AutomationManager {
     }
   }
 
-  async initializeDriver(profilePath, proxyUrl) {
-    const db = await this.getDB();
-    // Optionally retrieve proxy-specific data from accounts_proxies if needed.
-    const proxyRecord = await db.get(
-      'SELECT proxy, services FROM accounts_proxies WHERE proxy = ?',
-      [proxyUrl]
-    );
+  // async initializeDriver(profilePath, proxyUrl) {
+  //   const db = await this.getDB();
+  //   // Optionally retrieve proxy-specific data from accounts_proxies if needed.
+  //   const proxyRecord = await db.get(
+  //     'SELECT proxy, services FROM accounts_proxies WHERE proxy = ?',
+  //     [proxyUrl]
+  //   );
 
-    const options = configureChromeOptions();
-    const parsedProxy = await this.processProxy(proxyUrl);
+  //   const options = configureChromeOptions();
+  //   const parsedProxy = await this.processProxy(proxyUrl);
     
-    options.addArguments(`--user-data-dir=${profilePath}`);
-    options.addArguments(`--proxy-server=${parsedProxy.url}`);
+  //   options.addArguments(`--user-data-dir=${profilePath}`);
+  //   options.addArguments(`--proxy-server=${parsedProxy.url}`);
     
-    if (parsedProxy.auth) {
-      options.addArguments(`--proxy-auth=${parsedProxy.auth}`);
-    }
+  //   if (parsedProxy.auth) {
+  //     options.addArguments(`--proxy-auth=${parsedProxy.auth}`);
+  //   }
 
-    await this.validateExtensions();
+  //   await this.validateExtensions();
 
-    // Load extensions based on the services registered in accounts_proxies.
-    const services = proxyRecord && proxyRecord.services ? JSON.parse(proxyRecord.services) : [];
-    services.forEach(service => {
-      const extConfig = EXTENSIONS[service];
-      if (extConfig && extConfig.valid) {
+  //   // Load extensions based on the services registered in accounts_proxies.
+  //   const services = proxyRecord && proxyRecord.services ? JSON.parse(proxyRecord.services) : [];
+  //   services.forEach(service => {
+  //     const extConfig = EXTENSIONS[service];
+  //     if (extConfig && extConfig.valid) {
+  //       options.addExtensions(EXTENSIONS.hcapchaSolver.path);
+  //       logger.info(`Loaded extension: hcapchaSolver`);
+  //       try {
+  //         options.addExtensions(extConfig.path);
+  //         logger.info(`Loaded extension: ${service}`);
+  //       } catch (error) {
+  //         logger.error(`Failed to load extension ${service}: ${error.message}`);
+  //       }
+  //     }
+  //   });
+    
+  //   const driver = await new Builder()
+  //     .forBrowser('chrome')
+  //     .setChromeOptions(options)
+  //     .build();
+
+  //   await driver.sleep(5000);
+    
+  //   await this.safeTabReset(driver);
+    
+  //   return driver;
+  // }
+
+  async initializeDriver(profilePath, proxyUrl, maxRetries = 3) {
+    let retries = 0;
+    while (retries < maxRetries) {
+      try {
+        const db = await this.getDB();
+        const proxyRecord = await db.get(
+          'SELECT proxy, services FROM accounts_proxies WHERE proxy = ?',
+          [proxyUrl]
+        );
+  
+        const options = configureChromeOptions();
+        const parsedProxy = await this.processProxy(proxyUrl);
+  
+        options.addArguments(`--user-data-dir=${profilePath}`);
+        options.addArguments(`--proxy-server=${parsedProxy.url}`);
+
         options.addExtensions(EXTENSIONS.hcapchaSolver.path);
         logger.info(`Loaded extension: hcapchaSolver`);
-        try {
-          options.addExtensions(extConfig.path);
-          logger.info(`Loaded extension: ${service}`);
-        } catch (error) {
-          logger.error(`Failed to load extension ${service}: ${error.message}`);
+  
+        if (parsedProxy.auth) {
+          options.addArguments(`--proxy-auth=${parsedProxy.auth}`);
+        }
+  
+        await this.validateExtensions();
+  
+        const services = proxyRecord && proxyRecord.services ? JSON.parse(proxyRecord.services) : [];
+        services.forEach(service => {
+          const extConfig = EXTENSIONS[service];
+          if (extConfig && extConfig.valid) {
+            
+            try {
+              options.addExtensions(extConfig.path);
+              logger.info(`Loaded extension: ${service}`);
+            } catch (error) {
+              logger.error(`Failed to load extension ${service}: ${error.message}`);
+            }
+          }
+        });
+  
+        const driver = await new Builder()
+          .forBrowser('chrome')
+          .setChromeOptions(options)
+          .build();
+  
+        await driver.sleep(5000);
+        await tabReset(driver);
+  
+        logger.info(`[DRIVER SUCCESS] Driver initialized successfully for proxy ${proxyUrl}`);
+        return driver;
+  
+      } catch (error) {
+        retries++;
+        logger.error(`[DRIVER ERROR] Failed to initialize driver for proxy ${proxyUrl}. Attempt ${retries}/${maxRetries}. Error: ${error.message}`);
+        
+        if (error.message.includes('ECONNRESET') && retries < maxRetries) {
+          logger.warn(`[RETRYING] Retrying driver initialization due to ECONNRESET...`);
+          await this.sleep(3000);
+        } else if (retries === maxRetries) {
+          throw new Error(`Failed to initialize driver after ${maxRetries} attempts for proxy ${proxyUrl}: ${error.message}`);
         }
       }
-    });
-    
-    const driver = await new Builder()
-      .forBrowser('chrome')
-      .setChromeOptions(options)
-      .build();
-
-    await driver.sleep(5000);
-    
-    await tabReset(driver);
-    
-    return driver;
+    }
   }
-
+  
+  async safeServiceCheck(serviceCheckFunc, retries = 3) {
+    let attempts = 0;
+    while (attempts < retries) {
+      try {
+        return await serviceCheckFunc();
+      } catch (error) {
+        attempts++;
+        if (error.message.includes('ECONNRESET')) {
+          logger.warn(`[SERVICE CHECK RETRY] ECONNRESET for service check. Attempt ${attempts}/${retries}`);
+          await this.sleep(2000);
+        } else {
+          throw error; // Break out for other errors
+        }
+      }
+    }
+    throw new Error(`Service check failed after ${retries} attempts`);
+  }
   
 
-  async processProxy(proxyUrl) {
-    const anonymized = await proxyChain.anonymizeProxy(`http://${proxyUrl}`);
-    const parsed = new URL(anonymized);
-    return {
-      url: `${parsed.protocol}//${parsed.hostname}:${parsed.port}`,
-      auth: parsed.username && parsed.password ? `${parsed.username}:${parsed.password}` : null
-    };
+  async processProxy(proxyUrl, maxRetries = 3) {
+    let retries = 0;
+    while (retries < maxRetries) {
+      try {
+        const anonymized = await proxyChain.anonymizeProxy(`http://${proxyUrl}`);
+        const parsed = new URL(anonymized);
+        logger.info(`[PROXY SUCCESS] Anonymized Proxy: ${anonymized}`);
+        return {
+          url: `${parsed.protocol}//${parsed.hostname}:${parsed.port}`,
+          auth: parsed.username && parsed.password ? `${parsed.username}:${parsed.password}` : null,
+        };
+      } catch (error) {
+        retries++;
+        logger.error(`[PROXY ERROR] Failed to anonymize proxy ${proxyUrl}. Attempt ${retries}/${maxRetries}. Error: ${error.message}`);
+        if (retries === maxRetries) throw new Error(`Failed to process proxy after ${maxRetries} attempts: ${proxyUrl}`);
+        await this.sleep(2000); // Small delay before retrying
+      }
+    }
   }
+  
 
   async cleanupDriver(driver) {
     try {
