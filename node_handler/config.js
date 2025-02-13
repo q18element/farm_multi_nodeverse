@@ -155,6 +155,28 @@ const services = {
       firstMail: By.xpath('//*[@id="threads_list"]/div[1]/div[3]/div[1]'),
       refreshButton: By.xpath('//*[@id="refresh-threads-btn"]')
     }
+  },
+  mtm: {
+    loginUrl: 'chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/home.html#onboarding/welcome',
+    selectors: {
+      agreeCheckbox: By.xpath('//*[@id="onboarding__terms-checkbox"]'),
+      createWalletButton: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/ul/li[2]/button'),
+      importWalletButton: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/ul/li[3]/button'),
+      agreeCheckbox2: By.xpath('//*[@id="metametrics-opt-in"]'),
+      iagreeButton: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[2]/button[2]'),
+      passwordInput: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[2]/form/div[1]/label/input'),
+      passwordRepeatInput: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[2]/form/div[2]/label/input'),
+      iunderstandCheckbox: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[2]/form/div[3]/label/span[1]/input'),
+      createNewWalletButton: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[2]/form/button'),
+      secureMyWalletButton: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[2]/button[2]'),
+      revealMySecretButton: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[6]/button'),
+      nextButton: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[6]/div/button'),
+      confirmButton: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[5]/button'),
+      doneButton: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[3]/button'),
+      nextButton2: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[2]/button'),
+      doneButton2: By.xpath('//*[@id="app-content"]/div/div[2]/div/div/div/div[2]/button'),
+      mainetText: By.xpath('//*[@id="app-content"]/div/div[2]/div/div[1]/button/p')
+    }
   }
 };
 
