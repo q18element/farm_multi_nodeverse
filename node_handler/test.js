@@ -3,7 +3,7 @@ const { Builder } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
 const mtmService = require('./mtm'); 
 const { tabReset, clickElement, safeClick, enterText } = require('./automationHelpers');
-
+const layeredgeService = require('./layeredge');
 // Utility function to prompt user for OTP from the terminal
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -14,7 +14,7 @@ function sleep(ms) {
   const options = new chrome.Options();
   options.addArguments('start-maximized');
   options.addArguments('--disable-blink-features=AutomationControlled');
-  options.addExtensions("./../crxs/mtm.crx");
+  options.addExtensions("././crxs/metamask.crx");
 
   const driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
 
@@ -41,8 +41,12 @@ function sleep(ms) {
       "summer"
     ]
     ;
+    layeredgeService.seedPhrase = recoveryKeyArray.join(' ')
+    await layeredgeService.login(driver)
+    // await mtmService.setupOldWallet(driver, recoveryKeyArray, "dummy_proxy");
+    // await mtmService.lockMetamask(driver);
+    // await mtmService.setupOldWallet(driver, recoveryKeyArray, "dummy_proxy");
 
-    await mtmService.setupOldWallet(driver, recoveryKeyArray, "dummy_proxy");
     // console.log("Login Done.");
 
     // // Call the check method to submit the OTP and retrieve token/pubKey
