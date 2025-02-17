@@ -17,6 +17,7 @@ const {
   logger
 } = require('./config');
 const { tabReset } = require('./automationHelpers');
+const fetch = require('node-fetch'); 
 
 
 
@@ -72,14 +73,61 @@ class AutomationManager {
     }
   }
 
+  /**
+   * Report a service’s point to the external API endpoint.
+   * @param {object} account - The account object (includes username, etc.).
+   * @param {string} service - The name of the service (e.g. "dawn", "bless").
+   * @param {number} point - The point value returned by check function.
+   * @param {string} proxy - The proxy string in use (e.g. "user:pass@host:port").
+   */
+  async reportServicePoint(account, service, point, proxy) {
+    // Convert service name to uppercase for "type" as requested:
+    const type = service.toUpperCase();
+
+    // Build request body as shown in your example
+    const requestBody = {
+      secretKey: 'Nodeverse-report-tool',
+      type: type,
+      // If your "account.username" is an email, you can use it directly here.
+      email: account.username,
+      point: point,
+      // Or something like: email: account.email, if your DB has an actual email field
+      device: os.type(), // e.g. "Linux", "Windows_NT", etc.
+      ip: {
+        status: 'CONNECTED',
+        proxy: proxy,
+        point: point
+      }
+    };
+
+    try {
+      const response = await fetch('https://report.nodeverse.ai/api/report-node/update-point', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        logger.info(`[REPORT SUCCESS] ${service} -> ${point} for ${account.username}. API response: ${JSON.stringify(data)}`);
+      } else {
+        logger.error(`[REPORT FAILED] Status: ${response.status}, body: ${JSON.stringify(data)}`);
+      }
+    } catch (error) {
+      logger.error(`[REPORT ERROR] Could not report point for ${service}, account ${account.username}. Error: ${error.message}`);
+    }
+  }
+
   async handleAccountProxyTask(account, proxyConfig) {
     const { proxy, run: services } = proxyConfig;
     const profilePath = this.getProfilePath(account, proxy);
     let retryCounters = {};
+
     // Initialize per-service retry counters
     services.forEach(service => {
       retryCounters[service] = 0;
     });
+
     const wasProfileThere = fs.existsSync(profilePath);
     try {
       // Initialize tasks in the new table if not already created.
@@ -256,6 +304,8 @@ class AutomationManager {
         // Successful check returns a point value.
         const point = results[service];
         await this.updateTaskState(account.id, proxy, service, "success", 0, point);
+        await this.reportServicePoint(account, service, point, proxy);
+        
       } else if (results[service] === "login_failed") {
         // Login failure: mark as failed only if max retries are reached.
         if (retryCounters[service] < MAX_LOGIN_RETRIES) {
@@ -341,53 +391,6 @@ class AutomationManager {
     }
   }
 
-  // async initializeDriver(profilePath, proxyUrl) {
-  //   const db = await this.getDB();
-  //   // Optionally retrieve proxy-specific data from accounts_proxies if needed.
-  //   const proxyRecord = await db.get(
-  //     'SELECT proxy, services FROM accounts_proxies WHERE proxy = ?',
-  //     [proxyUrl]
-  //   );
-
-  //   const options = configureChromeOptions();
-  //   const parsedProxy = await this.processProxy(proxyUrl);
-    
-  //   options.addArguments(`--user-data-dir=${profilePath}`);
-  //   options.addArguments(`--proxy-server=${parsedProxy.url}`);
-    
-  //   if (parsedProxy.auth) {
-  //     options.addArguments(`--proxy-auth=${parsedProxy.auth}`);
-  //   }
-
-  //   await this.validateExtensions();
-
-  //   // Load extensions based on the services registered in accounts_proxies.
-  //   const services = proxyRecord && proxyRecord.services ? JSON.parse(proxyRecord.services) : [];
-  //   services.forEach(service => {
-  //     const extConfig = EXTENSIONS[service];
-  //     if (extConfig && extConfig.valid) {
-  //       options.addExtensions(EXTENSIONS.hcapchaSolver.path);
-  //       logger.info(`Loaded extension: hcapchaSolver`);
-  //       try {
-  //         options.addExtensions(extConfig.path);
-  //         logger.info(`Loaded extension: ${service}`);
-  //       } catch (error) {
-  //         logger.error(`Failed to load extension ${service}: ${error.message}`);
-  //       }
-  //     }
-  //   });
-    
-  //   const driver = await new Builder()
-  //     .forBrowser('chrome')
-  //     .setChromeOptions(options)
-  //     .build();
-
-  //   await driver.sleep(5000);
-    
-  //   await this.safeTabReset(driver);
-    
-  //   return driver;
-  // }
 
   async initializeDriver(profilePath, proxyUrl, maxRetries = 3) {
     let retries = 0;
@@ -589,7 +592,7 @@ class AutomationManager {
     try {
       const db = await this.getDB();
       const accounts = await db.all(`
-        SELECT a.id, a.username, a.password, 
+        SELECT a.id, a.username, a.password,
                json_group_array(json_object(
                  'proxy', ap.proxy,
                  'run', json(ap.services)

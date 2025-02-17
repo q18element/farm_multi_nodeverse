@@ -1,65 +1,61 @@
-// testDepinedService.js
+// node_handler/testVoltix.js
 const { Builder } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
-const mtmService = require('./mtm'); 
-const { tabReset, clickElement, safeClick, enterText } = require('./automationHelpers');
-const layeredgeService = require('./layeredge');
-// Utility function to prompt user for OTP from the terminal
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
+const voltixService = require('./voltix');
+const { tabReset } = require('./automationHelpers');
 
-(async function testDepinedService() {
-  // Initialize Chrome driver using default or custom options.
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+(async function testVoltixService() {
+  // Set up Chrome with both the Voltix and Phantom wallet extensions.
   const options = new chrome.Options();
   options.addArguments('start-maximized');
   options.addArguments('--disable-blink-features=AutomationControlled');
-  options.addExtensions("././crxs/metamask.crx");
+  // Update the paths to your CRX files if necessary.
+  options.addExtensions("./../crxs/voltix.crx");
+  options.addExtensions("./../crxs/phantom.crx");
 
   const driver = await new Builder().forBrowser('chrome').setChromeOptions(options).build();
 
-  await driver.sleep(10000)
-
-  await tabReset(driver)
+  await driver.sleep(10000);
+  await tabReset(driver);
 
   try {
+    console.log("Starting Voltix login automation...");
 
-    console.log("Starting MTM setup...");
-
+    // Use the provided 12-word recovery key for Phantom setup.
     const recoveryKeyArray = [
-      "decade",
-      "bless",
-      "twice",
-      "candy",
-      "tube",
-      "donate",
-      "middle",
-      "laugh",
-      "pottery",
-      "ginger",
-      "assume",
-      "summer"
-    ]
-    ;
-    layeredgeService.seedPhrase = recoveryKeyArray.join(' ')
-    await layeredgeService.login(driver)
-    // await mtmService.setupOldWallet(driver, recoveryKeyArray, "dummy_proxy");
-    // await mtmService.lockMetamask(driver);
-    // await mtmService.setupOldWallet(driver, recoveryKeyArray, "dummy_proxy");
+      "credit",
+      "better",
+      "tent",
+      "idea",
+      "pink",
+      "canvas",
+      "desk",
+      "collect",
+      "story",
+      "report",
+      "neutral",
+      "trust"
+    ];
 
-    // console.log("Login Done.");
-
-    // // Call the check method to submit the OTP and retrieve token/pubKey
-    // const result = await mtmService.check(driver, testEmail, "1234");
-
-    // console.log("DepinedService check completed. Result:");
-    // console.log(result);
-
+    // Call the Voltix service login method.
+    const result = await voltixService.login(driver, recoveryKeyArray, "dummy_proxy");
+    const points = await voltixService.check(driver, "dummy_user", "dummy_proxy");
+    
+    if(result) {
+      console.log("Voltix login automation completed successfully.");
+      console.log(`Voltix point value: ${points}`);
+    } else {
+      console.log("Voltix login automation failed.");
+    }
   } catch (error) {
     console.error("Test encountered an error:", error);
-    sleep(99999999);
+    await sleep(99999999);
   } finally {
-    sleep(99999999);
-    console.log("Test success.");
+    await sleep(99999999);
+    console.log("Test complete.");
   }
 })();

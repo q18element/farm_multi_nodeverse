@@ -4,8 +4,29 @@ const { processAccountsAndProxies } = require('./proxy_handler/assign_proxy');
 const { resetDB } = require('./db_utils');
 const fs = require('fs');
 const path = require('path');
-const readline = require('readline');
-const { MultiSelect } = require('enquirer');
+
+// Use yargs to parse command-line arguments
+const yargs = require('yargs/yargs');
+const { hideBin } = require('yargs/helpers');
+const argv = yargs(hideBin(process.argv))
+  .option('reset', {
+    alias: 'r',
+    type: 'boolean',
+    description: 'Reset DB and delete profiles folder'
+  })
+  .option('proxy', {
+    alias: 'p',
+    type: 'boolean',
+    description: 'Process proxies and assign them to accounts'
+  })
+  .option('services', {
+    alias: 's',
+    type: 'array',
+    description: 'List of services to run',
+    choices: ['gradient', 'toggle', 'bless', 'openloop', 'blockmesh', 'despeed', 'depined']
+  })
+  .help()
+  .argv;
 
 // Ensure required directories exist
 const directories = ['./output', './profiles', './db', './config'];
@@ -16,23 +37,9 @@ directories.forEach(dir => {
   }
 });
 
-// Helper function to ask a question and return a Promise for the answer
-function askQuestion(query) {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-  return new Promise(resolve => rl.question(query, answer => {
-    rl.close();
-    resolve(answer.trim().toLowerCase());
-  }));
-}
-
 async function main() {
   try {
-    // Ask if user wants to reset the DB
-    const resetAnswer = await askQuestion('Có muốn xóa data cũ kh (profile, cache db) (y/n): ');
-    if (resetAnswer === 'y' || resetAnswer === 'yes') {
+    if (argv.reset) {
       console.log('Resetting the database...');
       await resetDB();
 
@@ -48,23 +55,19 @@ async function main() {
       console.log('Skipping database reset.');
     }
 
-    // Ask if user wants to process proxies and assign them to accounts
-    const proxyAnswer = await askQuestion('Có check và gán proxy lại cho các account kh? (y/n): ');
-    if (proxyAnswer === 'y' || proxyAnswer === 'yes') {
+    if (argv.proxy) {
       console.log('Processing proxies from ./config/proxy.txt ...');
       await processProxies("./config/proxy.txt");
 
-      // Use Enquirer's MultiSelect prompt to allow selection of multiple services
-      const multiSelectPrompt = new MultiSelect({
-        name: 'services',
-        message: 'Select the services to run:',
-        choices: ['gradient', 'toggle', 'bless', 'openloop', 'blockmesh', 'despeed', 'depined']
-      });
-      const service_chosen = await multiSelectPrompt.run();
-      console.log('Selected services:', service_chosen);
+      const servicesChosen = argv.services;
+      if (!servicesChosen || servicesChosen.length === 0) {
+        console.error('No services provided. Please specify services using the --services option.');
+        process.exit(1);
+      }
+      console.log('Selected services:', servicesChosen);
 
       console.log('Processing accounts and proxies from ./config/accounts.txt ...');
-      await processAccountsAndProxies("./config/accounts.txt", './output', service_chosen);
+      await processAccountsAndProxies("./config/accounts.txt", './output', servicesChosen);
     } else {
       console.log('Skipping proxy and account processing.');
     }

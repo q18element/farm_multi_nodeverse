@@ -21,6 +21,11 @@ async function initDB() {
       password TEXT
     );
 
+    CREATE TABLE IF NOT EXISTS phantom_keys (
+      id INTEGER PRIMARY KEY,
+      key TEXT UNIQUE
+    );
+
     CREATE TABLE IF NOT EXISTS accounts_proxies (
       account_id INTEGER,
       proxy TEXT UNIQUE,

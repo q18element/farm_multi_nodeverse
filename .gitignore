@@ -14,3 +14,6 @@ config/filtered_proxy.json
 profiles
 output
 db
+api.http
+config/phantomKeys.txt
+src

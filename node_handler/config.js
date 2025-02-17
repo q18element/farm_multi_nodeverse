@@ -207,6 +207,7 @@ const EXTENSIONS = {
   despeed: { path: path.resolve('./crxs/despeed.crx') },
   hcapchaSolver: { path: path.resolve('./crxs/hcapchasolver.crx') },
   depined: { path: path.resolve('./crxs/depined.crx') },
+  phantom: { path: path.resolve('./crxs/phantom.crx') },
 };
 
 // ─── CHROME OPTIONS SETUP ───────────────────────────────────────────────

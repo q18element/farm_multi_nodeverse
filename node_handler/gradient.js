@@ -1,4 +1,4 @@
-// gradient.js
+// node_handler/gradient.js
 const { By, until } = require('selenium-webdriver');
 const config = require('./config');
 const { waitForElement, clickElement, safeClick, enterText } = require('./automationHelpers');
