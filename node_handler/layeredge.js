@@ -22,6 +22,13 @@ class LayerEdgeService {
       return localStorage["wagmi.recentConnectorId"] && !localStorage["wagmi.io.metamask.disconnected"];
     });
   }
+
+  async check(driver, username, password, proxyUrl, seedPhrases) {
+    await this.login(driver, username, password, proxyUrl, seedPhrases);
+    return await driver.executeScript(() => {
+      return document.querySelector('strong[class*="earning_total__"]').innerText;
+    });
+  }
   /** @param {WebDriver} driver  */
   async login(driver, username, password, proxyUrl, seedPhrases) {
     const metamaskService = MtmService;
@@ -49,15 +56,14 @@ class LayerEdgeService {
       await clickElement(driver, By.xpath('//button[contains(text(),"Continue")]'));
     }
     await driver.sleep(3000);
-    if (checkElementExsist(driver, By.xpath('//button[contains(text(),"Start Node")]'))) {
+    if (await checkElementExsist(driver, By.xpath('//button[contains(text(),"Start Node")]'))) {
       console.log("start node  ");
-      
+
       await driver.executeScript(() => {
         let element = document.querySelector('div[class*="earning_earning__"] button');
         if (element && element.textContent.includes("Start Node")) {
           element.click();
         }
-
       });
       await driver.sleep(1000);
 
@@ -66,21 +72,23 @@ class LayerEdgeService {
         if (element && element.textContent.includes("Start Node")) {
           element.click();
         }
-
       });
 
       await metamaskService.confirm_any(driver);
     }
     await driver.sleep(3000);
 
-    if (checkElementExsist(driver, By.xpath('//button//span[contains(text(),"Claim Reward")]'))) {
+    if (await checkElementExsist(driver, By.xpath('//button//span[contains(text(),"Claim Reward")]'))) {
       console.log("claim reward ");
       try {
-        await actionsClickElement(driver, By.xpath('//button//span[contains(text(),"Claim Reward")]'),5000);
+        await actionsClickElement(driver, By.xpath('//button//span[contains(text(),"Claim Reward")]'), 5000);
 
         await metamaskService.confirm_any(driver);
         if (
-          checkElementExsist(driver, By.xpath('//*[@id="modal-root"]//button//span[contains(text(),"Claim Reward")]'))
+          await checkElementExsist(
+            driver,
+            By.xpath('//*[@id="modal-root"]//button//span[contains(text(),"Claim Reward")]')
+          )
         ) {
           await actionsClickElement(
             driver,
@@ -91,7 +99,7 @@ class LayerEdgeService {
           await actionsClickElement(driver, By.xpath("//body"));
         }
       } catch (e) {
-        console.log('claim reward error', e);
+        console.log("claim reward error", e);
       }
     }
   }
