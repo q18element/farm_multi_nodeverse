@@ -194,35 +194,45 @@ class MtmService {
             // await waitForElement(driver, By.xpath('//div[@id="app-content"]//div'));
             await driver.sleep(2000);
 
-            try {
-              let btn_xpath =
-                '//button[(@data-testid="confirmation-submit-button" or @data-testid="confirm-btn" or @data-testid="page-container-footer-next" or @data-testid="confirm-footer-button") and not(@disabled)]';
+            // try {
+            //   let btn_xpath =
+            //     '//button[(@data-testid="confirmation-submit-button" or @data-testid="confirm-btn" or @data-testid="page-container-footer-next" or @data-testid="confirm-footer-button") and not(@disabled)]';
 
-              const button = await driver.wait(until.elementLocated(By.xpath(btn_xpath)), 5000);
+            //   const button = await driver.wait(until.elementLocated(By.xpath(btn_xpath)), 5000);
 
+            //   if (button) {
+            //     await driver.actions().move({ origin: button }).click().perform();
+            //     await driver.switchTo().window(currentWindow);
+            //     return true;
+            //   }
+            // } catch (e) {
+            //   console.log("Button not found or not clickable:", e.message);
+            // }
 
-              if (button) {
-                await driver.actions().move({ origin: button }).click().perform();
-                await driver.switchTo().window(currentWindow);
-                return true;
-              }
-            } catch (e) {
-              console.log("Button not found or not clickable:", e.message);
-              throw e;
-            }
+            const { Key } = require('selenium-webdriver');
+
+      // Send Tab key 5 times
+      for (let i = 0; i < 5; i++) {
+        await driver.actions().sendKeys(Key.TAB).perform();
+      }
+      
+      // Press Enter
+      await driver.actions().sendKeys(Key.ENTER).perform();
           }
         }
 
         // Add a small delay between window checks
         await driver.sleep(500);
       } catch (e) {
-        console.log("Error during window checks:", e.message);
+        throw new Error("Error during window checks: " + e.message);
       }
     }
 
     // If we get here, we didn't find and confirm any MetaMask popup
     await driver.switchTo().window(currentWindow);
-    return false;
+
+
+    
   }
   /** @param {WebDriver} driver  */
   async setupOldWallet(driver, seedPhrases, proxyUrl) {

@@ -1,8 +1,14 @@
 const log4js = require("log4js");
-const { By, WebDriver } = require("selenium-webdriver");
+const { By, WebDriver, WebElement } = require("selenium-webdriver");
 
 const MtmService = require("./mtm");
-const { waitForElement, clickElement } = require("./automationHelpers");
+const {
+  waitForElement,
+  clickElement,
+  enterText,
+  checkElementExsist,
+  actionsClickElement,
+} = require("./automationHelpers");
 
 class LayerEdgeService {
   constructor() {
@@ -19,7 +25,7 @@ class LayerEdgeService {
   /** @param {WebDriver} driver  */
   async login(driver, username, password, proxyUrl, seedPhrases) {
     const metamaskService = MtmService;
-    seedPhrases = this.seedPhrase;
+    seedPhrases = seedPhrases || this.seedPhrase;
     await metamaskService.setupOldWallet(driver, seedPhrases.split(" "));
     await driver.get("https://dashboard.layeredge.io/");
     if (!(await this._isLoggedIn(driver))) {
@@ -30,10 +36,63 @@ class LayerEdgeService {
       await driver.sleep(3000);
       await metamaskService.confirm_any(driver);
       await driver.sleep(3000);
+      /** @type {WebElement} */
+    }
+    let element = await waitForElement(
+      driver,
+      By.xpath(
+        '(//*[text()="Please enter your invite code to access the platform"] |  //*[contains(text(),"Lightnode")] )[1]'
+      )
+    );
+    if ((await element.getText()).includes("Please enter your invite code to access the platform")) {
+      await enterText(driver, By.xpath('//input[@placeholder="Enter your invite code"]'), "aSwVnVxy");
+      await clickElement(driver, By.xpath('//button[contains(text(),"Continue")]'));
+    }
+    await driver.sleep(3000);
+    if (checkElementExsist(driver, By.xpath('//button[contains(text(),"Start Node")]'))) {
+      console.log("start node  ");
+      
+      await driver.executeScript(() => {
+        let element = document.querySelector('div[class*="earning_earning__"] button');
+        if (element && element.textContent.includes("Start Node")) {
+          element.click();
+        }
+
+      });
+      await driver.sleep(1000);
+
+      await driver.executeScript(() => {
+        let element = document.querySelector('div[class*="earning_earning__"] button');
+        if (element && element.textContent.includes("Start Node")) {
+          element.click();
+        }
+
+      });
+
+      await metamaskService.confirm_any(driver);
+    }
+    await driver.sleep(3000);
+
+    if (checkElementExsist(driver, By.xpath('//button//span[contains(text(),"Claim Reward")]'))) {
+      console.log("claim reward ");
       try {
-        await clickElement(driver, By.xpath('//button[contains(text(),"Start Node")]'));
+        await actionsClickElement(driver, By.xpath('//button//span[contains(text(),"Claim Reward")]'),5000);
+
         await metamaskService.confirm_any(driver);
-      } catch (e) {}
+        if (
+          checkElementExsist(driver, By.xpath('//*[@id="modal-root"]//button//span[contains(text(),"Claim Reward")]'))
+        ) {
+          await actionsClickElement(
+            driver,
+            By.xpath('//*[@id="modal-root"]//button//span[contains(text(),"Claim Reward")]')
+          );
+          await metamaskService.confirm_any(driver);
+          await waitForElement(driver, By.xpath('//*[@id="modal-root"]//button//span[contains(text(),"Claimed")]'));
+          await actionsClickElement(driver, By.xpath("//body"));
+        }
+      } catch (e) {
+        console.log('claim reward error', e);
+      }
     }
   }
 }

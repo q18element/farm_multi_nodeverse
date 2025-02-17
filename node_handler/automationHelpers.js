@@ -1,5 +1,5 @@
 // automationHelpers.js
-const { By, until } = require('selenium-webdriver');
+const { By, until, WebDriver } = require('selenium-webdriver');
 const config = require('./config');
 const fs = require('fs');
 const {
@@ -15,6 +15,10 @@ async function waitForElement(driver, selector, timeout = config.timeouts.elemen
   }
 }
 
+/** @param {WebDriver} driver  */
+async function actionsClickElement(driver, selector) {
+  await driver.actions().move({ origin: await waitForElement(driver, selector) }).click().perform();
+}
 async function checkElementExsist(driver, selector, timeout = config.timeouts.element) {
   try {
     await driver.wait(until.elementLocated(selector), timeout);
@@ -181,5 +185,6 @@ module.exports = {
   clearAndEnterText,
   waitForUrlToContain,
   getAttribute,
-  switchToIframe
+  switchToIframe,
+  actionsClickElement
 };
