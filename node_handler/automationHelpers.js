@@ -235,5 +235,6 @@ module.exports = {
   clearAndEnterText,
   waitForUrlToContain,
   getAttribute,
-  switchToIframe
+  switchToIframe,
+  actionsClickElement
 };
