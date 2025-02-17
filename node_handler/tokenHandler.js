@@ -1,4 +1,4 @@
-// tokenHandler.js
+// node_handler/tokenHandler.js
 const log4js = require('log4js');
 const config = require('./config');
 const { waitForElement } = require('./automationHelpers');

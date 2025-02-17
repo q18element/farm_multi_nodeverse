@@ -1,4 +1,4 @@
-// automationHelpers.js
+// node_handler/automationHelpers.js
 const { By, until } = require('selenium-webdriver');
 const config = require('./config');
 const fs = require('fs');
@@ -162,6 +162,56 @@ async function switchToIframe(driver, selector, timeout = config.timeouts.elemen
   }
 }
 
+/**
+ * Utility function to switch to a window containing a specific URL substring.
+ * @param {WebDriver} driver
+ * @param {string} urlPart - The substring to search for in the URL.
+ * @param {number} timeout - Timeout in milliseconds.
+ * @returns {Promise<string|null>} - The window handle or null if not found.
+ */
+async function switchToWindowContainingUrl(driver, urlPart, timeout = 10000) {
+  const start = Date.now();
+  while ((Date.now() - start) < timeout) {
+    let handles = await driver.getAllWindowHandles();
+    for (let handle of handles) {
+      await driver.switchTo().window(handle);
+      let currentUrl = await driver.getCurrentUrl();
+      if (currentUrl.includes(urlPart)) {
+        return handle;
+      }
+    }
+    await driver.sleep(500);
+  }
+  return null;
+}
+
+
+/**
+ * Utility function to wait for a new window to open.
+ * @param {WebDriver} driver
+ * @param {Array<string>} currentHandles - Array of current window handles.
+ * @param {number} timeout - Timeout in milliseconds.
+ * @returns {Promise<string|null>} - The new window handle or null if not found.
+ */
+async function waitForNewWindow(driver, currentHandles, timeout = 10000) {
+  let newHandle = null;
+  const start = Date.now();
+  while ((Date.now() - start) < timeout) {
+    let handles = await driver.getAllWindowHandles();
+    if (handles.length > currentHandles.length) {
+      for (let handle of handles) {
+        if (!currentHandles.includes(handle)) {
+          newHandle = handle;
+          break;
+        }
+      }
+      if (newHandle) break;
+    } 
+    await driver.sleep(500);
+  }
+  return newHandle;
+}
+
 
 module.exports = {
   waitForElement,
@@ -181,5 +231,7 @@ module.exports = {
   clearAndEnterText,
   waitForUrlToContain,
   getAttribute,
-  switchToIframe
+  switchToIframe,
+  switchToWindowContainingUrl,
+  waitForNewWindow
 };
