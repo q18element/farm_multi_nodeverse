@@ -1,0 +1,35 @@
+# POST Request to update report node points
+POST https://report.nodeverse.ai/api/report-node/update-point HTTP/1.1
+Accept: */*
+Content-Type: application/json
+ 
+{
+  "secretKey": "Nodeverse-report-tool",
+  "type": "DAWN",
+  "email": "bull1@veer.vn",
+  "point": 2200,
+  "device": "Linux",
+  "ip": {
+    "status": "CONNECTED",
+    "proxy": "ms5ldxab:zNQdGypiuoZ4@103.176.23.194:23005",
+    "point": 2200
+    }
+}
+
+###
+
+# Get data
+GET https://report.nodeverse.ai/api/report-node/all?secretKey=Nodeverse-report-tool&email=bull1%40veer.vn&device=Linux
+Accept: */*
+
+###
+
+# delete by email
+POST https://report.nodeverse.ai/api/report-node/delete-by-email
+Accept: */*
+Content-Type: application/json
+
+{
+  "secretKey": "Nodeverse-report-tool",
+  "email": "bull5@veer.vn"
+}

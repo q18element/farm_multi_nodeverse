@@ -29,6 +29,7 @@ class LayerEdgeService {
       return document.querySelector('strong[class*="earning_total__"]').innerText;
     });
   }
+
   /** @param {WebDriver} driver  */
   async login(driver, username, password, proxyUrl, seedPhrases) {
     const metamaskService = MtmService;

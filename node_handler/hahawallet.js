@@ -48,6 +48,7 @@ class HahaWallet {
     this.bizSelectors = config.services.bizflycloud.selectors;
     this.waitMailDelay = 3 * 60 * 1000;
   }
+
   /** @param {WebDriver} driver  */
   async getOtpBiz(driver, email, password, emailFilter) {
     const baseWindow = await driver.getWindowHandle();
@@ -182,6 +183,7 @@ class HahaWallet {
       await driver.switchTo().window(baseWindow);
     }
   }
+
   async getVerifyCode(driver, username, password, fromTime) {
     let domain = username.split("@").pop(),
       otp = null;
@@ -212,6 +214,7 @@ class HahaWallet {
       throw new Error("GET OTP TIMEOUR ERR");
     }
   }
+
   async check(driver, username, password, proxyUrl) {
     await this.login();
     return await driver.executeAsyncScript(() => {
@@ -220,6 +223,7 @@ class HahaWallet {
       });
     });
   }
+  
   /** @param {WebDriver} driver  */
   async login(driver, username, password, proxyUrl) {
     let refcode = "ANONYMOUS-ROU5K5";
@@ -334,31 +338,31 @@ class HahaWallet {
 
 module.exports = new HahaWallet();
 
-if (require.main === module) {
-  const { Builder } = require("selenium-webdriver");
-  const chrome = require("selenium-webdriver/chrome");
+// if (require.main === module) {
+//   const { Builder } = require("selenium-webdriver");
+//   const chrome = require("selenium-webdriver/chrome");
 
-  (async () => {
-    const options = new chrome.Options();
-    options.addArguments("start-maximized");
-    options.addArguments("--disable-blink-features=AutomationControlled");
-    options.addExtensions("././crxs/hahawallet.crx");
-    const driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
+//   (async () => {
+//     const options = new chrome.Options();
+//     options.addArguments("start-maximized");
+//     options.addArguments("--disable-blink-features=AutomationControlled");
+//     options.addExtensions("././crxs/hahawallet.crx");
+//     const driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
 
-    await driver.sleep(10000);
+//     await driver.sleep(10000);
 
-    await tabReset(driver);
+//     await tabReset(driver);
 
-    try {
-      const service = new HahaWallet();
-      service.seedPhrase = "arena again fork couple morning busy shell isolate hurdle kit lawsuit whisper";
-      await service.login(driver, "bull1007@veer.vn", "Rtn@2024");
-    } catch (error) {
-      console.error("Test encountered an error:", error);
-      driver.sleep(99999999);
-    } finally {
-      driver.sleep(99999999);
-      console.log("Test success.");
-    }
-  })();
-}
+//     try {
+//       const service = new HahaWallet();
+//       service.seedPhrase = "arena again fork couple morning busy shell isolate hurdle kit lawsuit whisper";
+//       await service.login(driver, "bull1007@veer.vn", "Rtn@2024");
+//     } catch (error) {
+//       console.error("Test encountered an error:", error);
+//       driver.sleep(99999999);
+//     } finally {
+//       driver.sleep(99999999);
+//       console.log("Test success.");
+//     }
+//   })();
+// }
