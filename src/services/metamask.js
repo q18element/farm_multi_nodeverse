@@ -7,6 +7,8 @@ const path = require("path");
 const { AutomationAcions } = require("../utils");
 const BaseService = require("./baseService");
 
+
+
 async function copyRecoveryPhrase(driver) {
   try {
     const chipElements = await driver.findElements(By.css('[data-testid^="recovery-phrase-chip-"]'));
