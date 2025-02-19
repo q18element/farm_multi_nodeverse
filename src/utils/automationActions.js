@@ -122,6 +122,19 @@ class AutomationAcions {
     throw new Error("No new window found");
   }
 
+  async switchToWindowContainTitle(title) {
+    const originalWindow = await this.driver.getWindowHandle();
+    const windows = await this.driver.getAllWindowHandles();
+    for (let handle of windows) {
+      await this.driver.switchTo().window(handle);
+      if (await this.driver.getTitle() === title) {
+        return;
+      }
+    }
+    await this.driver.switchTo().window(originalWindow);
+    throw new Error(`No window found with title: ${title}`);
+  }
+
   async closeAllOtherTabs() {
     const currentHandle = await this.driver.getWindowHandle();
     const handles = await this.driver.getAllWindowHandles();

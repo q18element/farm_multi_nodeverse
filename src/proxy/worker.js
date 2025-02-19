@@ -1,10 +1,7 @@
 // proxy/worker.js
 const { parentPort } = require("worker_threads");
 const request = require("request");
-const log4js = require("log4js");
-
-// Get the logger instance
-const logger = log4js.getLogger();
+const {logger} = require("../utils");
 
 const headers = {
   'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
@@ -45,15 +42,15 @@ const services = {
 };
 
 const skipDomains = [
+  // "https://app.gradient.network",
+  "https://toggle.pro/sign-in",
+  "https://openloop.so/auth/login",
   "https://bless.network",
-  'https://app.gradient.network',
-  'https://toggle.pro/sign-in',
-  'https://openloop.so/auth/login',
-  'https://app.blockmesh.xyz/',
+  "https://app.blockmesh.xyz/",
   "https://app.despeed.net/",
   "https://app.depined.org/onboarding"
-
 ];
+
 
 // Function to test a proxy against a list of domains
 async function testProxy(proxyUrl, domains) {
@@ -64,7 +61,7 @@ async function testProxy(proxyUrl, domains) {
   };
 
   for (let domain of domains) {
-    if (domain in skipDomains) {
+    if (skipDomains.includes(domain)) {
       results.success.push(services[domain]);
       logger.info(`Skipping ${domain}, automatically adding to success.`);
       continue;

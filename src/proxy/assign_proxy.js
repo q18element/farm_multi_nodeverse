@@ -74,7 +74,7 @@ function assignProxiesToAccounts(accounts, proxies, service_chosen) {
   });
 }
 
-async function saveFailedProxies(proxies, outputDir = './output') {
+async function saveFailedProxies(proxies, outputDir = '../output') {
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
   }
@@ -88,7 +88,7 @@ async function saveFailedProxies(proxies, outputDir = './output') {
   logger.info(`Total failed proxies saved: ${failedProxies.length}`);
 }
 
-async function processAccountsAndProxies(accountFilePath, outputDir = './output', service_chosen) {
+async function processAccountsAndProxies(accountFilePath, outputDir = '../output', service_chosen) {
   try {
     const db = await initDB();
     

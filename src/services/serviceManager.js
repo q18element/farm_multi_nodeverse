@@ -1,7 +1,7 @@
 const {AutomationAcions} = require('../utils');
 const GradientService = require('./gradient');
 // const ToggleService = require('./toggleService');
-// const BlessService = require('./blessService');
+const BlessService = require('./bless');
 // ... import other services as needed
 
 class ServiceManager {
@@ -13,7 +13,7 @@ class ServiceManager {
 
     this.registerService('gradient', new GradientService(driver));
     // this.registerService('toggle', new ToggleService());
-    // this.registerService('bless', new BlessService());
+    this.registerService('bless', new BlessService(driver));
     // ... register additional services here.
   }
 

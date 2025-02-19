@@ -1,3 +1,4 @@
+// src/services/baseService.js
 class BaseService {
     constructor(serviceName, config) {
       this.serviceName = serviceName;
@@ -24,4 +25,3 @@ class BaseService {
   }
   
 module.exports = BaseService;
-  

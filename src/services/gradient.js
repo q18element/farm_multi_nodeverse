@@ -1,3 +1,4 @@
+// src/services/gradient.js
 const BaseService = require('./baseService');
 const {
   AutomationAcions,
@@ -13,7 +14,7 @@ const {
 class GradientService extends BaseService {
   constructor(driver) {
     super('gradient', gradientConfig);
-    this.driver = driver; // Store driver
+    this.driver = driver;
     this.auto = new AutomationAcions(driver); // Pass the driver once
   }
 

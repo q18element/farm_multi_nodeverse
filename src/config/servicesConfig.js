@@ -56,7 +56,7 @@ const services = {
         emailInput: By.xpath('//*[@id="email"]'),
         loginButton: By.xpath('/html/body/div/main/div/div/div[2]/div[3]/button'),
         loginConfirmElement: By.xpath('/html/body/div/main/div/div[1]/h1'),
-        dashboardElement: By.xpath('/html/body/div/main/div/div[1]/h1')
+        dashboardElement: By.xpath('/html/body/div/main/div/div[1]/h1'),
       }
     },
     blockmesh: {
@@ -126,8 +126,9 @@ const services = {
         loginButton: By.xpath('//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[3]/button'),
         loginConfirmElement: By.xpath('//*[@id="mail-box-toggle"]/div[3]'),
         inboxElement: By.xpath('//*[@id="mail-box-toggle"]/div[3]'),
-        firstMail: By.xpath('//*[@id="mail-item-0"]/div'),
-        refreshButton: By.xpath('//*[@id="mail-box-toggle"]/div[3]/div/div/div[1]/div[1]/div[3]/a')
+        latestMail: By.xpath('//*[@id="mail-item-0"]/div'),
+        refreshButton: By.xpath('//*[@id="mail-box-toggle"]/div[3]/div/div/div[1]/div[1]/div[3]/a'),
+        otpText: By.xpath('//*[@id="mail-box-toggle"]/div[3]/div/div[2]/div/div[1]/h2')
       }
     },
     bizflycloud: {
@@ -140,7 +141,8 @@ const services = {
         loginConfirmElement: By.xpath('//*[@id="app"]/div/div/div[3]/div[1]/div[2]/div'),
         inboxElement: By.xpath('//*[@id="app"]/div/div/div[3]/div[1]/div[2]/div'),
         firstMail: By.xpath('//*[@id="threads_list"]/div[1]/div[3]/div[1]'),
-        refreshButton: By.xpath('//*[@id="refresh-threads-btn"]')
+        refreshButton: By.xpath('//*[@id="refresh-threads-btn"]'),
+        // otpText: By.xpath('//*[@id="threads_list"]/div[1]/div[3]/div[1
       }
     },
     mtm: {
