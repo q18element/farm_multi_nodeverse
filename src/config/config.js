@@ -8,7 +8,7 @@ const { By } = require('selenium-webdriver');
 
 
 // Ensure the output/log directory exists
-const logDir = path.resolve(__dirname, './output', 'log');
+const logDir = path.resolve(__dirname, '../output', 'log');
 
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir, { recursive: true });

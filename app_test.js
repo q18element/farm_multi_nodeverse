@@ -1,10 +1,11 @@
 // app_test.js
-const AutomationManager = require('./node_handler/automationManager');
-const { processProxies } = require('./proxy_handler/main');
-const { processAccountsAndProxies } = require('./proxy_handler/assign_proxy');
-const { resetDB } = require('./db_utils');
 const fs = require('fs');
 const path = require('path');
+const { processProxies } = require('./src/proxy/main');
+const { processAccountsAndProxies } = require('./src/proxy/assign_proxy');
+const { resetDB } = require('./src/db');
+const TaskAutomationManager = require('./src/automationTasksManager');
+
 
 // Use yargs to parse command-line arguments
 const yargs = require('yargs/yargs');
@@ -29,14 +30,6 @@ const argv = yargs(hideBin(process.argv))
   .help()
   .argv;
 
-// Ensure required directories exist
-const directories = ['./output', './profiles', './db', './config'];
-directories.forEach(dir => {
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-    console.log(`Created missing directory: ${dir}`);
-  }
-});
 
 async function main() {
   try {
@@ -65,7 +58,6 @@ async function main() {
         console.error('No services provided. Please specify services using the --services option.');
         process.exit(1);
       }
-      console.log('Selected services:', servicesChosen);
 
       console.log('Processing accounts and proxies from ./config/accounts.txt ...');
       await processAccountsAndProxies("./config/accounts.txt", './output', servicesChosen);
@@ -74,12 +66,21 @@ async function main() {
     }
 
     // Run automation manager
-    const manager = new AutomationManager();
+    const manager = new TaskAutomationManager();
     await manager.run();
 
   } catch (e) {
     console.error('Main error:', e);
   }
 }
+
+// Ensure required directories exist
+const directories = ['./output', './profiles'];
+directories.forEach(dir => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+    console.log(`Created missing directory: ${dir}`);
+  }
+});
 
 main();

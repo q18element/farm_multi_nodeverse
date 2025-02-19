@@ -1,4 +1,5 @@
-const logger = require('../utils/logger');
+// src/repositories/accountRepository.js
+const {logger} = require('../utils');
 
 class AccountRepository {
   constructor(db) {

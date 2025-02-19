@@ -137,7 +137,7 @@ class AutomationManager {
 
       // If there are no more pending tasks, quit the driver peacefully
       if (tasks.length === 0) {
-        logger.info(`[PROFILE DONE] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Not open this profile up.`);
+        logger.info(`[PROFILE DONE] [handleAccountProxyTask] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Not open this profile up.`);
         return; // Exit loop to prevent further execution
       }
 
@@ -164,6 +164,7 @@ class AutomationManager {
           await this.safeTabReset(driver);
         }
       }
+
     } catch (error) {
       logger.error(`[FATAL ERROR] ${account.username}: ${error.message}`);
       this.handleCleanup(profilePath, services);
@@ -203,7 +204,7 @@ class AutomationManager {
       tasks = await this.getPendingTasks(account, proxy);
 
       if (tasks.length === 0) {
-        logger.info(`[PROFILE DONE] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Closing driver.`);
+        logger.info(`[PROFILE DONE] [monitorServices] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Closing driver.`);
         await this.safeTabReset(driver);
         return;
       }

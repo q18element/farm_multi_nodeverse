@@ -1,12 +1,8 @@
 // src/drivers/driverFactory.js
 const { Builder } = require('selenium-webdriver');
 const proxyChain = require('proxy-chain');
-const path = require('path');
-const { configureChromeOptions, EXTENSIONS } = require('../config');
-const { validateExtensions } = require('../utils/fileUtils');
-const { sleep } = require('../utils/sleep');
-const AutomationAcions = require('../utils/automationActions');
-const logger = require('../utils/logger');
+const { configureChromeOptions, EXTENSIONS } = require('./chromeOptions');
+const { sleep, logger, AutomationAcions, validateExtensions } = require('../utils');
 
 async function processProxy(proxyUrl, maxRetries = 3) {
   let retries = 0;
@@ -69,8 +65,15 @@ async function initializeDriver(profilePath, proxyUrl, services = [], maxRetries
         .setChromeOptions(options)
         .build();
 
+      const script = `
+        Object.defineProperty(navigator, 'webdriver', {
+            get: () => undefined
+        });
+      `;
+      await driver.sendDevToolsCommand('Page.addScriptToEvaluateOnNewDocument', { source: script });
+
       await driver.sleep(5000);
-      await AutomationAcions.tabReset(driver);
+      await new AutomationAcions(driver).tabReset();
 
       logger.info(`[DRIVER SUCCESS] Driver initialized successfully for proxy ${proxyUrl}`);
       return driver;
@@ -87,4 +90,14 @@ async function initializeDriver(profilePath, proxyUrl, services = [], maxRetries
   }
 }
 
-module.exports = { initializeDriver, processProxy };
+async function cleanupDriver(driver) {
+  try {
+    if (driver) {
+      await driver.quit();
+    }
+  } catch (error) {
+    logger.error(`[CLEANUP ERROR] ${error.message}`);
+  }
+}
+
+module.exports = { initializeDriver, processProxy, cleanupDriver };

@@ -1,68 +1,91 @@
-// src/services/gradient.js
 const BaseService = require('./baseService');
-const AutomationActions = require('../utils/automationActions');
-const logger = require('../utils/logger');
-const config = require('../config/config');
+const {
+  AutomationAcions,
+  logger
+} = require('../utils');
+
+const {
+  services: {
+    gradient: gradientConfig
+  }
+} = require('../config');
 
 class GradientService extends BaseService {
   constructor(driver) {
-    super('gradient', config.services.gradient);
+    super('gradient', gradientConfig);
     this.driver = driver; // Store driver
-    this.helpers = new AutomationActions(driver); // Pass the driver once
+    this.auto = new AutomationAcions(driver); // Pass the driver once
   }
 
   async login(credentials) {
-    const { username, password } = credentials;
+    const username = credentials.username;
+    const password = credentials.password;
     logger.info(`Starting Gradient login for ${username}`);
 
     const { loginUrl, extensionUrl, selectors } = this.config;
-
     await this.driver.get(loginUrl);
+    logger.debug(`Navigated to login URL: ${loginUrl}`);
 
     try {
-      await this.helpers.waitForElement(selectors.dashboardElement, 20000);
+      await this.auto.waitForElement(selectors.dashboardElement, 20000);
       logger.info(`Already logged in to Gradient for ${username}`);
       return true;
     } catch (e) {
-      // Continue with login flow.
+      logger.debug(`Dashboard element not found, proceeding with login for ${username}`);
     }
 
-    await this.helpers.enterText(selectors.usernameInput, username);
-    await this.helpers.enterText(selectors.passwordInput, password);
-    await this.helpers.clickElement(selectors.loginButton);
+    await this.auto.enterText(selectors.usernameInput, username);
+    logger.debug(`Entered username for ${username}`);
+
+    await this.auto.enterText(selectors.passwordInput, password);
+    logger.debug(`Entered password for ${username}`);
+
+    await this.auto.clickElement(selectors.loginButton);
+    logger.debug(`Clicked login button for ${username}`);
+
     await this.driver.sleep(3000);
 
     await this.driver.get(extensionUrl);
-    await this.helpers.waitForElement(selectors.loginConfirmElement, 20000);
+    logger.debug(`Navigated to extension URL: ${extensionUrl}`);
 
+    await this.auto.waitForElement(selectors.loginConfirmElement, 20000);
+    await this.driver.sleep(2000);
     logger.info(`Login success for Gradient ${username}`);
     return true;
   }
 
   async check(credentials) {
-    const { username } = credentials;
+    const username = credentials.username;
     logger.info(`Checking Gradient status for ${username}`);
 
     const { extensionUrl, selectors } = this.config;
     await this.driver.get(extensionUrl);
+    logger.debug(`Navigated to extension URL: ${extensionUrl}`);
+
     await this.driver.sleep(2000);
 
-    await this.helpers.safeClick(selectors.gotItButton);
-    await this.helpers.safeClick(selectors.yesButton);
-    await this.helpers.safeClick(selectors.rewardSwitchButton);
+    await this.auto.safeClick(selectors.gotItButton);
+    logger.debug(`Clicked 'Got It' button if present for ${username}`);
+
+    await this.auto.safeClick(selectors.yesButton);
+    logger.debug(`Clicked 'Yes' button if present for ${username}`);
+
+    await this.auto.safeClick(selectors.rewardSwitchButton);
     logger.info(`Switched to rewards view for ${username}`);
 
     const getValueSafe = async (selector) => {
       try {
-        const element = await this.helpers.waitForElement(selector);
-        return await element.getText();
+        const element = await this.auto.waitForElement(selector);
+        const text = await element.getText();
+        logger.debug(`Fetched text for selector ${selector}: ${text}`);
+        return text;
       } catch (error) {
         logger.warn(`Element not found: ${selector}`);
         return 'N/A';
       }
     };
 
-    const [status, tapToday, uptime, todayReward, sessionReward] = await Promise.all([
+    const [sessionReward] = await Promise.all([
       getValueSafe(selectors.status),
       getValueSafe(selectors.tapToday),
       getValueSafe(selectors.uptime),
@@ -70,18 +93,13 @@ class GradientService extends BaseService {
       getValueSafe(selectors.sessionReward),
     ]);
 
-    logger.info(`Gradient status for ${username}:
-      Status: ${status}
-      Tap Today: ${tapToday}
-      Uptime: ${uptime}
-      Today's Reward: ${todayReward}
-      Session Reward: ${sessionReward}
-    `);
+    logger.info(`Gradient sessionReward for ${username} is ${sessionReward}`);
 
     let point = parseInt(sessionReward, 10);
     if (isNaN(point)) {
       point = 0;
     }
+    logger.debug(`Parsed session reward points for ${username}: ${point}`);
     return point;
   }
 }

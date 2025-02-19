@@ -1,9 +1,7 @@
+// src/config/index.js
 const { services } = require('./servicesConfig');
 const { timeouts } = require('./timeoutsConfig');
-const { MAX_LOGIN_RETRIES, PROFILE_CLEANUP_ON_FAILURE, CHECK_INTERVAL, STAGGER_DELAY, USER_AGENT, FAILED_TASKS_PATH } = require('./constants');
-const { EXTENSIONS } = require('./extensionsConfig');
-const { configureChromeOptions } = require('./chromeOptions');
-const { logger } = require('./logger');
+const { MAX_LOGIN_RETRIES, PROFILE_CLEANUP_ON_FAILURE, CHECK_INTERVAL, STAGGER_DELAY, USER_AGENT, FAILED_TASKS_PATH, randomUserAgent } = require('./constants');
 
 module.exports = {
   services,
@@ -14,7 +12,5 @@ module.exports = {
   STAGGER_DELAY,
   USER_AGENT,
   FAILED_TASKS_PATH,
-  EXTENSIONS,
-  configureChromeOptions,
-  logger,
+  randomUserAgent
 };

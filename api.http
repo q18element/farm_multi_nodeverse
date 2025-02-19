@@ -6,13 +6,13 @@ Content-Type: application/json
 {
   "secretKey": "Nodeverse-report-tool",
   "type": "DAWN",
-  "email": "bull1@veer.vn",
-  "point": 2200,
+  "email": "bull307@veer.vn",
+  "point": 16811,
   "device": "Linux",
   "ip": {
     "status": "CONNECTED",
     "proxy": "ms5ldxab:zNQdGypiuoZ4@103.176.23.194:23005",
-    "point": 2200
+    "point": 16811
     }
 }
 
