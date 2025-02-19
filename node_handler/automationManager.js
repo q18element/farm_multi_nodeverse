@@ -316,6 +316,7 @@ class AutomationManager {
         } else {
           logger.error(`[FAILURE] ${service} login failed after ${MAX_LOGIN_RETRIES} attempts`);
           await this.updateTaskState(account.id, proxy, service, "failed", 0, 0);
+          
           this.logFailedTask(account.username, proxy, service);
           const index = remainingTasks.indexOf(service);
           if (index > -1) {

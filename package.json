@@ -19,6 +19,7 @@
     "enquirer": "^2.4.1",
     "ethers": "^6.13.5",
     "fs": "^0.0.1-security",
+    "imap": "^0.8.19",
     "inquirer": "^12.4.1",
     "log4js": "^6.9.1",
     "node-fetch": "^2.7.0",

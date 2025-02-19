@@ -63,7 +63,7 @@ async function testProxy(proxyUrl, domains) {
   for (let domain of domains) {
     if (skipDomains.includes(domain)) {
       results.success.push(services[domain]);
-      logger.info(`Skipping ${domain}, automatically adding to success.`);
+      // logger.info(`Skipping ${domain}, automatically adding to success.`);
       continue;
     }
 
@@ -84,7 +84,7 @@ async function testProxy(proxyUrl, domains) {
         });
       });
       results.success.push(services[domain]);
-      logger.info(`Proxy ${proxyUrl} successfully pinged ${domain}`);
+      // logger.info(`Proxy ${proxyUrl} successfully pinged ${domain}`);
     } catch (err) {
       results.fail.push(services[domain]);
       logger.error(`Proxy ${proxyUrl} failed to ping ${domain}: ${err.message}`);

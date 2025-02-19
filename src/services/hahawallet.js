@@ -3,6 +3,7 @@ const { By, WebElement } = require("selenium-webdriver");
 const log4js = require("log4js");
 const { AutomationAcions } = require("../utils");
 const config = require("../config/config");
+
 class HahaWallet extends BaseService {
   constructor(driver) {
     super("Hahawallet", {});

@@ -98,6 +98,16 @@ class AutomationAcions {
     return await element.getText();
   }
 
+  async getTextSafe(selector) {
+    try {
+      const element = await this.waitForElement(selector, 5000);
+      return await element.getText();
+    } catch (error) {
+      logger.warn(`Failed to get text from ${selector}: ${error.message}`);
+      return 'N/A';
+    }
+  }  
+
   async selectDropdownByValue(selector, value) {
     const element = await this.waitForElement(selector);
     const options = await element.findElements(By.tagName("option"));

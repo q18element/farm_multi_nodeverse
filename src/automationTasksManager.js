@@ -239,7 +239,7 @@ class TaskAutomationManager {
         }
 
         // Process other services (or bless if allowed) as normal.
-        let loginState = await this.safeServiceCheck(() => this.serviceManager.checkLoginState(driver, service));
+        let loginState = await this.safeServiceCheck(() => this.serviceManager.checkLoginState(service));
 
         let loginSuccess = loginState;
 
@@ -301,7 +301,8 @@ class TaskAutomationManager {
         } else {
           logger.error(`[FAILURE] ${service} login failed after ${MAX_LOGIN_RETRIES} attempts`);
           await this.taskRepo.updateTaskState(account.id, proxy, service, "failed", 0, 0);
-          logFailedTask(account.username, proxy, service);
+          const entry = { account, proxy, service, timestamp: new Date().toISOString() };
+          logFailedTask(entry);
           const index = remainingTasks.indexOf(service);
           if (index > -1) {
             remainingTasks.splice(index, 1);

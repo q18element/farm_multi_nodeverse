@@ -5,6 +5,7 @@ const { AutomationAcions, logger } = require('../utils');
 const {
   services: { bless: blessConfig, bizflycloud: bizflycloudConfig, veer: veerConfig },
 } = require('../config');
+const {getLatestOtpForEmail} = require('./imapBizService');
 
 class BlessService extends BaseService {
   constructor(driver) {
@@ -44,8 +45,20 @@ class BlessService extends BaseService {
 
       return otpMatch ? otpMatch[0] : null;
     } catch (error) {
-      logger.error(`getOtpBiz failed: ${error.message}`);
+      // logger.error(`getOtpBiz failed: ${error.message}`);
       return null;
+    }
+  }
+
+  async getOtpBizImap(credentials) {
+    const email = credentials.username;
+    const password = credentials.password;
+    try {
+        const otp = await getLatestOtpForEmail(email, password);
+        return otp;
+    } catch (error) {
+        // logger.error(`getOtpBiz failed: ${error.message}`);
+        return null;
     }
   }
 
@@ -76,7 +89,7 @@ class BlessService extends BaseService {
 
       return otpMatch ? otpMatch[0] : null;
     } catch (error) {
-      logger.error(`getOtpVeer failed: ${error.message}`);
+      // logger.error(`getOtpVeer failed: ${error.message}`);
       return null;
     }
   }
@@ -85,7 +98,7 @@ class BlessService extends BaseService {
     const email = credentials.username;
 
     try {
-      logger.info(`Logging into Bless for ${email}`);
+      // logger.info(`Logging into Bless for ${email}`);
       await this.driver.get(this.config.loginUrl);
       await this.driver.sleep(3000);
 
@@ -103,7 +116,7 @@ class BlessService extends BaseService {
         if (domain === 'veer.vn') {
           otp = await this.getOtpVeer(credentials);
         } else if (['tourzy.us', 'dealhot.vn'].includes(domain)) {
-          otp = await this.getOtpBiz(credentials);
+          otp = await this.getOtpBizImap(credentials);
         } else {
           throw new Error(`Unsupported email domain: ${domain}`);
         }
@@ -111,7 +124,7 @@ class BlessService extends BaseService {
         if (otp) break;
 
         attempts++;
-        logger.info(`Retrying OTP retrieval for ${email}... (${attempts})`);
+        // logger.info(`Retrying OTP retrieval for ${email}... (${attempts})`);
         await this.driver.sleep(30000);
       }
 
@@ -125,7 +138,6 @@ class BlessService extends BaseService {
       }
 
       await this.auto.enterText(this.selectors.otpInput, otp);
-      await this.driver.sleep(3000);
 
       handles = await this.driver.getAllWindowHandles();
       for (const handle of handles) {
@@ -133,13 +145,12 @@ class BlessService extends BaseService {
         const title = await this.driver.getTitle();
         if (title.includes('Bless')) break;
       }
-
       await this.auto.waitForElement(this.selectors.dashboardElement, 20000);
 
-      logger.info(`Bless login successful for ${email}`);
+      // logger.info(`Bless login successful for ${email}`);
       return true;
     } catch (error) {
-      logger.error(`Bless login failed for ${email}: ${error.message}`);
+      // logger.error(`Bless login failed for ${email}: ${error.message}`);
       return false;
     }
   }
@@ -155,7 +166,7 @@ class BlessService extends BaseService {
         if (token && token !== 'ERROR') break;
 
         attempts++;
-        logger.info(`Retrying token retrieval for ${email}... (${attempts})`);
+        // logger.info(`Retrying token retrieval for ${email}... (${attempts})`);
         await this.driver.sleep(3000);
         await this.driver.navigate().refresh();
       }
@@ -165,10 +176,10 @@ class BlessService extends BaseService {
       const pubKey = await this.getPubKeyFromToken(token);
       const reward = await this.getReward(token, pubKey);
 
-      logger.info(`Bless reward for ${email}: ${reward}`);
+      // logger.info(`Bless reward for ${email}: ${reward}`);
       return reward;
     } catch (error) {
-      logger.error(`Bless check failed for ${email}: ${error.message}`);
+      // logger.error(`Bless check failed for ${email}: ${error.message}`);
       return false;
     }
   }

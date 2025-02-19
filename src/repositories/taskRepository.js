@@ -16,7 +16,7 @@ class TaskRepository {
           `INSERT INTO task_monitoring (account_id, proxy, service, state, retry_count) VALUES (?, ?, ?, 'pending', 0)`,
           [accountId, proxy, service]
         );
-        logger.info(`Initialized task for account ${accountId} on proxy ${proxy} - service: ${service}`);
+        // logger.info(`Initialized task for account ${accountId} on proxy ${proxy} - service: ${service}`);
       }
     }
   }

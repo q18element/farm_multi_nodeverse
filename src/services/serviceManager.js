@@ -1,8 +1,11 @@
 const {AutomationAcions} = require('../utils');
 const GradientService = require('./gradient');
-// const ToggleService = require('./toggleService');
 const BlessService = require('./bless');
-// ... import other services as needed
+const BlockmeshService = require('./blockmesh');
+const DepinedService = require('./depined');
+const DspeedService = require('./despeed');
+const OpenloopService = require('./openloop');
+const ToggleService = require('./toggle.js');
 
 class ServiceManager {
   constructor(driver) {
@@ -12,9 +15,12 @@ class ServiceManager {
     this.auto = new AutomationAcions(this.driver);
 
     this.registerService('gradient', new GradientService(driver));
-    // this.registerService('toggle', new ToggleService());
     this.registerService('bless', new BlessService(driver));
-    // ... register additional services here.
+    this.registerService('blockmesh', new BlockmeshService(driver));
+    this.registerService('depined', new DepinedService(driver));
+    this.registerService('despeed', new DspeedService(driver));
+    this.registerService('openloop', new OpenloopService(driver));
+    this.registerService('toggle', new ToggleService(driver));
   }
 
   registerService(serviceName, serviceInstance) {
@@ -26,16 +32,16 @@ class ServiceManager {
    * @param {WebDriver} driver
    * @param {string} serviceName
    */
-  async checkLoginState(driver, serviceName) {
+  async checkLoginState(serviceName) {
     const service = this.serviceRegistry.get(serviceName);
     if (!service) {
       throw new Error(`Service ${serviceName} is not registered`);
     }
     try {
       // Example: navigate to the extension URL and verify the login confirmation element.
-      await driver.get(service.config.extensionUrl);
-      await driver.navigate().refresh();
-      await driver.sleep(3000);
+      await this.driver.get(service.config.extensionUrl);
+      await this.driver.navigate().refresh();
+      await this.driver.sleep(3000);
       // Reuse helper methods (imported in your automationHelpers, etc.)
       
       await this.auto.waitForElement(driver, service.config.selectors.loginConfirmElement, service.config.timeouts.loginCheck);

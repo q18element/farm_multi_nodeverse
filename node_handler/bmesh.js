@@ -1,4 +1,4 @@
-// blockmesh.js
+// node_handler/bmesh.js
 const config = require('./config');
 const { waitForElement, clickElement, safeClick, enterText } = require('./automationHelpers');
 const log4js = require('log4js');

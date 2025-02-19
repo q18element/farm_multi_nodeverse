@@ -57,6 +57,7 @@ const services = {
         loginButton: By.xpath('/html/body/div/main/div/div/div[2]/div[3]/button'),
         loginConfirmElement: By.xpath('/html/body/div/main/div/div[1]/h1'),
         dashboardElement: By.xpath('/html/body/div/main/div/div[1]/h1'),
+        otpInput: By.xpath('//*[@id="app"]/div/div/div/div/div[3]/div/form/input[1]'),
       }
     },
     blockmesh: {

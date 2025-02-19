@@ -56,11 +56,11 @@ async function processProxies(inputFile) {
 
     // 2) Split proxies into chunks
     const proxyChunks = chunkArray(proxyList, PROXY_CHUNK_SIZE);
-    logger.info(`Splitting proxies into ${proxyChunks.length} chunks`);
+    // logger.info(`Splitting proxies into ${proxyChunks.length} chunks`);
 
     // 3) Create workers to process chunks
     const workerPromises = proxyChunks.map((chunk, index) => {
-      logger.info(`Processing chunk ${index + 1} of ${proxyChunks.length}`);
+      // logger.info(`Processing chunk ${index + 1} of ${proxyChunks.length}`);
       return processWithWorker(chunk);
     });
 

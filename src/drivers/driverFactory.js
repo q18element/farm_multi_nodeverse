@@ -10,7 +10,7 @@ async function processProxy(proxyUrl, maxRetries = 3) {
     try {
       const anonymized = await proxyChain.anonymizeProxy(`http://${proxyUrl}`);
       const parsed = new URL(anonymized);
-      logger.info(`[PROXY SUCCESS] Anonymized Proxy: ${anonymized}`);
+      // logger.info(`[PROXY SUCCESS] Anonymized Proxy: ${anonymized}`);
       return {
         url: `${parsed.protocol}//${parsed.hostname}:${parsed.port}`,
         auth: parsed.username && parsed.password ? `${parsed.username}:${parsed.password}` : null,
@@ -40,7 +40,7 @@ async function initializeDriver(profilePath, proxyUrl, services = [], maxRetries
 
       // Always add the hcapchaSolver extension.
       options.addExtensions(EXTENSIONS.hcapchaSolver.path);
-      logger.info(`Loaded extension: hcapchaSolver`);
+      // logger.info(`Loaded extension: hcapchaSolver`);
 
       // Validate all extensions before adding.
       await validateExtensions();
@@ -51,7 +51,7 @@ async function initializeDriver(profilePath, proxyUrl, services = [], maxRetries
         if (extConfig && extConfig.valid !== false) {
           try {
             options.addExtensions(extConfig.path);
-            logger.info(`Loaded extension: ${service}`);
+            // logger.info(`Loaded extension: ${service}`);
           } catch (error) {
             logger.error(`Failed to load extension ${service}: ${error.message}`);
           }

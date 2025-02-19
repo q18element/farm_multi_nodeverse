@@ -12,7 +12,7 @@ function ensureDirectory(dir) {
   }
 }
 
-function logFailedTask(entry, failedTasksPath) {
+function logFailedTask(entry, failedTasksPath='./output/failedTasks.json') {
   let data = [];
   if (fs.existsSync(failedTasksPath)) {
     data = JSON.parse(fs.readFileSync(failedTasksPath));
