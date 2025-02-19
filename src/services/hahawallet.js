@@ -195,9 +195,16 @@ class HahaWallet extends BaseService {
     };
     const isLoggedIn = async () => {
       const e = await this.auto.waitForElement(
-        By.xpath('(//p[text()="Legacy Wallet"] | //button[text()="GET STARTED"])[1]')
+        By.xpath('(//p[text()="Legacy Wallet"] | //button[text()="GET STARTED"] | //button[text()="Unlock"])[1]')
       );
-      return (await e.getText()) === "Legacy Wallet";
+      return (await e.getText()) !== "GET STARTED";
+    };
+
+    const isUnlockPage = async () => {
+      const e = await this.auto.waitForElement(
+        By.xpath('(//p[text()="Legacy Wallet"] | //button[text()="GET STARTED"] | //button[text()="Unlock"])[1]')
+      );
+      return (await e.getText()) === "Unlock";
     };
 
     const processVerify = async () => {
@@ -247,17 +254,25 @@ class HahaWallet extends BaseService {
       } else {
         await processVerify();
         try {
-          await actionsthis.auto.ClickElement(By.xpath('//button[text()="Skip"]'));
+          await this.auto.clickElement(By.xpath('//button[text()="Skip"]'));
         } catch (e) {}
       }
 
-      /** @type {WebElement} */
-      let verfifychecke = await this.auto.waitForElement(
-        By.xpath('(//button[text()="VERIFY"] | //input[@placeholder="Your Pin Code"])[1]')
-      );
-      if ((await verfifychecke.getText()).includes("VERIFY")) {
+      let verfifychecke = await (
+        await this.auto.waitForElement(
+          By.xpath(
+            '(//button[text()="VERIFY"] | //input[@placeholder="Your Pin Code"] | //button[text()="Skip" and not(@disabled)] )[1]'
+          )
+        )
+      ).getText();
+
+      if (verfifychecke.includes("VERIFY")) {
         await processVerify();
+        await this.auto.clickElement(By.xpath('//button[text()="Skip"]'), 5000);
+      } else if (verfifychecke.includes("Skip")) {
+        await this.auto.actionsClickElement(By.xpath('//button[text()="Skip"]'), 5000);
       }
+
       await passPincode();
 
       await this.auto.clickElement(By.xpath('//label[contains(text(),"I agree to HaHa")]//input'));
@@ -268,15 +283,23 @@ class HahaWallet extends BaseService {
       );
       let sps = seedPhrase.trim().split(" ");
       for (let i = 0; i < 12; i++) {
-        inputs[i].sendKeys(sps[i]);
+        await this.auto.enterText(
+          By.xpath(`(//input[@class="w-full bg-transparent border-none outline-none"])[${i + 1}]`),
+          sps[i]
+        );
       }
 
       await this.auto.clickElement(By.xpath('//button[text()="Continue" and not(@disabled)]'));
       await this.auto.clickElement(By.xpath('//button[text()="Start Using Wallet" and not(@disabled)]'));
       await driver.sleep(2000);
       await this.auto.safeClick(By.xpath('//button[text()="Skip for now" and not(@disabled)]'));
+    } else {
+      if (await isUnlockPage()) {
+        await this.auto.enterText(By.css('input[type="password"]'), pincode);
+        await this.auto.clickElement(By.xpath('//button[text()="Unlock" and not(@disabled)]'));
+      }
     }
-
+    await this.auto.waitForElement(By.xpath('//p[text()="Legacy Wallet"]'));
     // on wallet logged in
     if (
       await this.auto.checkElementExists(By.xpath('//div[contains(text(),"Click here to claim your daily karma!")]'))

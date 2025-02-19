@@ -1,7 +1,7 @@
 // src/utils/automationAcions.js
-const { By, until, WebDriver } = require('selenium-webdriver');
-const config = require('../config');
-const fs = require('fs');
+const { By, until, WebDriver } = require("selenium-webdriver");
+const config = require("../config");
+const fs = require("fs");
 
 class AutomationAcions {
   constructor(driver) {
@@ -30,8 +30,12 @@ class AutomationAcions {
     const element = await this.waitForElement(selector);
     await element.click();
   }
-  async  actionsClickElement(driver, selector) {
-    await this.driver.actions().move({ origin: await waitForElement(driver, selector) }).click().perform();
+  async actionsClickElement(selector) {
+    await this.driver
+      .actions()
+      .move({ origin: await waitForElement(driver, selector) })
+      .click()
+      .perform();
   }
   async safeClick(selector, timeout = 2000) {
     try {
@@ -58,7 +62,7 @@ class AutomationAcions {
         }
         await this.driver.switchTo().window(handles[0]);
       }
-      await this.driver.get('about:blank');
+      await this.driver.get("about:blank");
     } catch (error) {
       console.error(`[TAB CLEANUP ERROR] ${error.message}`);
     }
@@ -96,9 +100,9 @@ class AutomationAcions {
 
   async selectDropdownByValue(selector, value) {
     const element = await this.waitForElement(selector);
-    const options = await element.findElements(By.tagName('option'));
+    const options = await element.findElements(By.tagName("option"));
     for (let option of options) {
-      const optionValue = await option.getAttribute('value');
+      const optionValue = await option.getAttribute("value");
       if (optionValue === value) {
         await option.click();
         break;
@@ -115,7 +119,7 @@ class AutomationAcions {
         return;
       }
     }
-    throw new Error('No new window found');
+    throw new Error("No new window found");
   }
 
   async closeAllOtherTabs() {
@@ -132,7 +136,7 @@ class AutomationAcions {
 
   async takeScreenshot(filepath) {
     const image = await this.driver.takeScreenshot();
-    fs.writeFileSync(filepath, image, 'base64');
+    fs.writeFileSync(filepath, image, "base64");
   }
 
   async clearAndEnterText(selector, text) {

@@ -202,13 +202,10 @@ class MtmService extends BaseService {
 
             while (1) {
               await driver.executeScript(() => {
-                const e = document.querySelector(
+                document.querySelector(
                   'button[data-testid="confirmation-submit-button"]:not([disabled]), button[data-testid="confirm-btn"]:not([disabled]), button[data-testid="page-container-footer-next"]:not([disabled]), button[data-testid="confirm-footer-button"]:not([disabled])'
-                );
-                if (e) {
-                  e.click();
-                }
-              });
+                )?.click()
+              }); 
               await driver.sleep(1000)
             }
           }

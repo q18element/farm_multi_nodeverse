@@ -18,7 +18,7 @@ if (require.main === module) {
 
     try {
       await service.login({
-        username: "bull1010@veer.vn",
+        username: "bull1011@veer.vn",
         password: "Rtn@2024",
         seedPhrase: "arena again fork couple morning busy shell isolate hurdle kit lawsuit whisper",
       });
