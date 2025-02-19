@@ -17,6 +17,7 @@
     "console-stamp": "^3.1.2",
     "dotenv": "^16.4.7",
     "enquirer": "^2.4.1",
+    "ethers": "^6.13.5",
     "fs": "^0.0.1-security",
     "inquirer": "^12.4.1",
     "log4js": "^6.9.1",
