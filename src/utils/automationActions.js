@@ -1,10 +1,11 @@
 // src/utils/automationAcions.js
-const { By, until } = require('selenium-webdriver');
+const { By, until, WebDriver } = require('selenium-webdriver');
 const config = require('../config');
 const fs = require('fs');
 
 class AutomationAcions {
   constructor(driver) {
+    /** @type {WebDriver} */
     this.driver = driver;
   }
 
@@ -29,7 +30,9 @@ class AutomationAcions {
     const element = await this.waitForElement(selector);
     await element.click();
   }
-
+  async  actionsClickElement(driver, selector) {
+    await this.driver.actions().move({ origin: await waitForElement(driver, selector) }).click().perform();
+  }
   async safeClick(selector, timeout = 2000) {
     try {
       const element = await this.driver.wait(until.elementLocated(selector), timeout);
