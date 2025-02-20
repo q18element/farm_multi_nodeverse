@@ -8,6 +8,7 @@ const DB_PATH = path.resolve(__dirname, './cache.db');
 
 async function initDB() {
   // Open (or create) the database
+  console.log('DB_PATH :>> ', DB_PATH);
   const db = await open({
     filename: DB_PATH,
     driver: sqlite3.Database
@@ -46,7 +47,7 @@ async function initDB() {
       FOREIGN KEY(account_id) REFERENCES accounts(id)
     );
   `);
-
+  console.log('Database initialized.');
   return db;
 }
 

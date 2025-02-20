@@ -112,13 +112,3 @@ async function getLatestOtpForEmail(email, password) {
 module.exports = {
   getLatestOtpForEmail,
 };
-
-// OPTIONAL: Test the function using an async IIFE (only for debugging purposes)
-(async () => {
-  try {
-    const otp = await getLatestOtpForEmail('bull1000@tourzy.us', 'Rtn@2024');
-    console.log('OTP:', otp);
-  } catch (error) {
-    console.error('Error:', error);
-  }
-})();
