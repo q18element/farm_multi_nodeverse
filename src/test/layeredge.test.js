@@ -2,11 +2,11 @@ const Service = require("../services/layeredge");
 if (require.main === module) {
   const { Builder } = require("selenium-webdriver");
   const chrome = require("selenium-webdriver/chrome");
-
+  const path = require("path");
   (async () => {
     const options = new chrome.Options();
     options.addArguments("start-maximized");
-    options.addExtensions("./././crxs/mtm.crx");
+    options.addExtensions(path.resolve('./././crxs/mtm.crx'));
     options.addArguments("--disable-blink-features=AutomationControlled");
     options.setChromeBinaryPath()
     const driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();

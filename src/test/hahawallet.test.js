@@ -3,12 +3,12 @@ const HahaWallet = require("../services/hahawallet");
 if (require.main === module) {
   const { Builder } = require("selenium-webdriver");
   const chrome = require("selenium-webdriver/chrome");
-
+  const path = require("path");
   (async () => {
     const options = new chrome.Options();
     options.addArguments("start-maximized");
     options.addArguments("--disable-blink-features=AutomationControlled");
-    options.addExtensions("./././crxs/hahawallet.crx");
+    options.addExtensions(path.resolve('./././crxs/hahawallet.crx'));
     const driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
     const service = new HahaWallet(driver);
 
