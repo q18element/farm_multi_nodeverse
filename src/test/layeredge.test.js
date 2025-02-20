@@ -4,11 +4,15 @@ if (require.main === module) {
   const chrome = require("selenium-webdriver/chrome");
   const path = require("path");
   (async () => {
-    const options = new chrome.Options();
-    options.addArguments("start-maximized");
-    options.addExtensions(path.resolve('../../crxs/mtm.crx'));
-    options.addArguments("--disable-blink-features=AutomationControlled");
-    options.setChromeBinaryPath()
+    let options;
+
+    if (process.platform === "win32") {
+      options = new chrome.Options();
+      options.addArguments("start-maximized");
+      options.addArguments("--disable-blink-features=AutomationControlled");
+    } else if (process.platform === "linux") {
+      options = configureChromeOptions();
+    }
     const driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
     const service = new Service(driver);
 

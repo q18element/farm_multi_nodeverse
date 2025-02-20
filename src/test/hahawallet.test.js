@@ -1,3 +1,4 @@
+const { configureChromeOptions } = require("../config/config");
 const HahaWallet = require("../services/hahawallet");
 
 if (require.main === module) {
@@ -5,10 +6,18 @@ if (require.main === module) {
   const chrome = require("selenium-webdriver/chrome");
   const path = require("path");
   (async () => {
-    const options = new chrome.Options();
-    options.addArguments("start-maximized");
-    options.addArguments("--disable-blink-features=AutomationControlled");
-    options.addExtensions(path.resolve('../../crxs/hahawallet.crx'));
+    let options;
+
+    if (process.platform === "win32") {
+      options = new chrome.Options();
+      options.addArguments("start-maximized");
+      options.addArguments("--disable-blink-features=AutomationControlled");
+    } else if (process.platform === "linux") {
+      options = configureChromeOptions();
+    }
+
+    options.addExtensions(path.resolve("../../crxs/hahawallet.crx"));
+
     const driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
     const service = new HahaWallet(driver);
 
