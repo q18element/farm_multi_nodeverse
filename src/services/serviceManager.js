@@ -1,3 +1,4 @@
+// src/services/serviceManager.js
 const {AutomationAcions} = require('../utils');
 const GradientService = require('./gradient');
 const BlessService = require('./bless');
@@ -44,7 +45,7 @@ class ServiceManager {
       await this.driver.sleep(3000);
       // Reuse helper methods (imported in your automationHelpers, etc.)
       
-      await this.auto.waitForElement(driver, service.config.selectors.loginConfirmElement, service.config.timeouts.loginCheck);
+      await this.auto.waitForElement(service.config.selectors.loginConfirmElement, 10000);
       return true;
     } catch (error) {
       return false;
