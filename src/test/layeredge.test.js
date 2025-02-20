@@ -6,7 +6,7 @@ if (require.main === module) {
   (async () => {
     const options = new chrome.Options();
     options.addArguments("start-maximized");
-    options.addExtensions(path.resolve('./././crxs/mtm.crx'));
+    options.addExtensions(path.resolve('../../crxs/mtm.crx'));
     options.addArguments("--disable-blink-features=AutomationControlled");
     options.setChromeBinaryPath()
     const driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
