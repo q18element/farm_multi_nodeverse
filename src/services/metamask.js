@@ -4,7 +4,8 @@ const config = require("../config");
 const log4js = require("log4js");
 const fs = require("fs");
 const path = require("path");
-const { AutomationAcions } = require("../utils");
+const AutomationAcions = require('../utils/automationActions');
+const logger = require('../utils/logger');
 const BaseService = require("./baseService");
 
 

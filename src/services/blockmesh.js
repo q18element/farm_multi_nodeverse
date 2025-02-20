@@ -1,5 +1,6 @@
 const BaseService = require('./baseService');
-const { AutomationAcions, logger } = require('../utils');
+const AutomationAcions = require('../utils/automationActions');
+const logger = require('../utils/logger');
 const { services: { blockmesh: blockmeshConfig } } = require('../config');
 
 class BlockmeshService extends BaseService {

@@ -3,7 +3,7 @@ const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 const path = require('path');
 
-// You can change 'accounts.db' to any DB filename you prefer
+// You can change 'cache.db' to any DB filename you prefer
 const DB_PATH = path.resolve(__dirname, './cache.db');
 
 async function initDB() {
@@ -18,7 +18,10 @@ async function initDB() {
     CREATE TABLE IF NOT EXISTS accounts (
       id INTEGER PRIMARY KEY,
       username TEXT UNIQUE,
-      password TEXT
+      password TEXT,
+      seedphrase TEXT,
+      services TEXT,
+      profile_volume INTEGER
     );
 
     CREATE TABLE IF NOT EXISTS accounts_proxies (

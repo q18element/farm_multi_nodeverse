@@ -1,7 +1,8 @@
 const log4js = require("log4js");
 const { By, WebElement } = require("selenium-webdriver");
 const MetamaskService = require("./metamask");
-const { AutomationAcions } = require("../utils");
+const AutomationAcions = require('../utils/automationActions');
+const logger = require('../utils/logger');
 const {Wallet} = require("ethers");
 
 function seedPhraseToAddress(seedPhrase) {

@@ -1,4 +1,3 @@
-// proxy/assign_proxy.js
 const fs = require('fs');
 const path = require('path');
 const log4js = require('log4js');
@@ -6,6 +5,7 @@ const { initDB } = require('../db');
 
 const logger = log4js.getLogger();
 
+// Reads filtered proxies from the DB
 async function getFilteredProxiesFromDB(db) {
   const rows = await db.all('SELECT proxy, success, fail FROM filtered_proxies');
   return rows.map(row => ({
@@ -15,6 +15,7 @@ async function getFilteredProxiesFromDB(db) {
   }));
 }
 
+// (Legacy) reading from text file – kept for reference if needed
 function readAccountsFromFile(filePath) {
   return fs.readFileSync(filePath, 'utf8')
     .split('\n')
@@ -28,52 +29,104 @@ function readAccountsFromFile(filePath) {
     .filter(acc => acc.username && acc.password);
 }
 
+// Reads all account credentials from a CSV file.
+// Expected CSV headers: id,services,username,password,seedphrase,profile volume
+function readAccountsFromCSV(filePath) {
+  const data = fs.readFileSync(filePath, 'utf8');
+  const lines = data.split(/\r?\n/).filter(line => line.trim() !== '');
+  
+  if (lines.length < 2) return []; // no data
+
+  // Get header names from the first line
+  const headers = lines[0].split(',').map(header => header.trim());
+
+  const accounts = lines.slice(1).map(line => {
+    const values = line.split(',').map(val => val.trim());
+    let account = {};
+    
+    headers.forEach((header, index) => {
+      account[header] = values[index] || '';
+    });
+
+    // Convert numeric fields
+    if (account.id) {
+      account.id = parseInt(account.id, 10);
+    }
+    if (account['profile volume']) {
+      account.profileVolume = parseInt(account['profile volume'], 10);
+      delete account['profile volume'];
+    } else {
+      account.profileVolume = 1; // default to 1 if not specified
+    }
+
+    // Convert services to an array assuming they are space separated (e.g., "hahawallet layeredge")
+    if (account.services) {
+      account.services = account.services.split(' ').filter(item => item !== '');
+    }
+    
+    return account;
+  });
+
+  return accounts;
+}
+
+// Save all account credentials and their proxy associations into cache.db
 async function saveAccountProxyMappings(db, accountsWithProxies) {
   for (const account of accountsWithProxies) {
-    // Insert or ignore if account exsist
+    // Insert (or ignore) the account into the accounts table.
+    // Adjust the column names to match your DB schema.
     await db.run(
-      `INSERT OR IGNORE INTO accounts (username, password) VALUES (?, ?)`,
-      [account.username, account.password]
+      `INSERT OR IGNORE INTO accounts (username, password, seedphrase, services, profile_volume)
+       VALUES (?, ?, ?, ?, ?)`,
+      [
+        account.username,
+        account.password,
+        account.seedphrase || '',
+        JSON.stringify(account.services || []),
+        account.profileVolume
+      ]
     );
     
-    // Get account ID
-    const { id } = await db.get(
+    // Get the account ID (assuming username is unique)
+    const row = await db.get(
       'SELECT id FROM accounts WHERE username = ?',
       [account.username]
     );
+    const accountId = row.id;
 
     // Insert proxy associations
-    for (const proxy of account.proxies) {
+    for (const proxyMapping of account.proxies) {
       await db.run(
         `INSERT OR IGNORE INTO accounts_proxies (account_id, proxy, services) 
          VALUES (?, ?, ?)`,
-        [id, proxy.proxy, JSON.stringify(proxy.run)]
+        [accountId, proxyMapping.proxy, JSON.stringify(proxyMapping.run)]
       );
     }
   }
 }
 
-function assignProxiesToAccounts(accounts, proxies, service_chosen) {
+function assignProxiesToAccounts(accounts, proxies) {
   // Create a working copy of the proxy list
   const availableProxies = [...proxies];
   
   return accounts.map(account => {
-    // Take first 5 proxies from the available list (or empty array if <5 remain)
-    const assignedProxies = availableProxies.splice(0, 5);
+    // Determine number of proxies to assign from the account's profileVolume
+    const numProxies = account.profileVolume;
+    // Take the first numProxies from the available list (ensuring no duplicates)
+    const assignedProxies = availableProxies.splice(0, numProxies);
 
     return {
-      username: account.username,
-      password: account.password,
+      ...account,
       proxies: assignedProxies.map(proxy => ({
         proxy: proxy.proxy,
-        run: proxy.success.filter(service => 
-          service_chosen.includes(service)
-        ) // 
+        // Directly assign the account's services instead of filtering
+        run: account.services
       }))
     };
   });
 }
 
+// Save failed proxies to a text file in the output directory
 async function saveFailedProxies(proxies, outputDir = '../output') {
   if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir, { recursive: true });
@@ -88,21 +141,22 @@ async function saveFailedProxies(proxies, outputDir = '../output') {
   logger.info(`Total failed proxies saved: ${failedProxies.length}`);
 }
 
-async function processAccountsAndProxies(accountFilePath, outputDir = '../output', service_chosen) {
+async function processAccountsAndProxies(accountFilePath, outputDir = '../output') {
   try {
     const db = await initDB();
     
-    // Load data
+    // Load tested proxies from DB
     const proxyList = await getFilteredProxiesFromDB(db);
-    const accounts = readAccountsFromFile(accountFilePath);
+    // Read account credentials from CSV
+    const accounts = readAccountsFromCSV(accountFilePath);
     
-    // Assign proxies
-    const accountsWithProxies = assignProxiesToAccounts(accounts, proxyList, service_chosen);
+    // Assign proxies based on each account's profileVolume (ensuring no duplicates)
+    const accountsWithProxies = assignProxiesToAccounts(accounts, proxyList);
     
-    // Save to database
+    // Save account details and their proxy associations to the database
     await saveAccountProxyMappings(db, accountsWithProxies);
     
-    // Save failed proxies
+    // Save failed proxies to an output file
     await saveFailedProxies(proxyList, outputDir);
     
     await db.close();

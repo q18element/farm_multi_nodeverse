@@ -1,10 +1,12 @@
 const { By } = require('selenium-webdriver');
+const HahaWallet = require('../services/hahawallet');
 
 // ─── SERVICES CONFIGURATION ──────────────────────────────────────────────
 const services = {
     openloop: {
       loginUrl: "chrome-extension://effapmdildnpkiaeghlkicpfflpiambm/dist/popup/index.html",
       extensionUrl: "chrome-extension://effapmdildnpkiaeghlkicpfflpiambm/dist/popup/index.html",
+      loginCheckUrl: "chrome-extension://effapmdildnpkiaeghlkicpfflpiambm/dist/popup/index.html",
       selectors: {
         continueButton: By.xpath('//*[@id="app"]/div/div/div[1]/div/div/a/button'),
         usernameInput: By.css('.el-input-wrapper[type="email"] > .relative > input.el-input'),
@@ -19,6 +21,7 @@ const services = {
     gradient: {
       loginUrl: "https://app.gradient.network/",
       extensionUrl: "chrome-extension://caacbgbklghmpodbdafajbgdnegacfmo/popup.html",
+      loginCheckUrl: "chrome-extension://caacbgbklghmpodbdafajbgdnegacfmo/popup.html",
       selectors: {
         usernameInput: By.xpath('/html/body/div[1]/div[2]/div/div/div/div[2]/div[1]/input'),
         passwordInput: By.xpath('/html/body/div[1]/div[2]/div/div/div/div[2]/div[2]/span/input'),
@@ -38,6 +41,7 @@ const services = {
     toggle: {
       loginUrl: "https://toggle.pro/sign-in",
       extensionUrl: "chrome-extension://bnkekngmddejlfdeefjilpfdhomeomgb/index.html",
+      loginCheckUrl: "chrome-extension://bnkekngmddejlfdeefjilpfdhomeomgb/index.html",
       selectors: {
         usernameInput: By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/div[1]/div/input'),
         passwordInput: By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/div[2]/div/input'),
@@ -52,6 +56,7 @@ const services = {
     bless: {
       loginUrl: "https://bless.network/dashboard?ref=Y06FN1",
       extensionUrl: "https://bless.network/dashboard",
+      loginCheckUrl: "https://bless.network/dashboard",
       selectors: {
         emailInput: By.xpath('//*[@id="email"]'),
         loginButton: By.xpath('/html/body/div/main/div/div/div[2]/div[3]/button'),
@@ -63,7 +68,7 @@ const services = {
     blockmesh: {
       loginUrl: "chrome-extension://obfhoiefijlolgdmphcekifedagnkfjp/js/popup.html",
       extensionUrl: "chrome-extension://obfhoiefijlolgdmphcekifedagnkfjp/js/popup.html",
-      checkUrl: "https://app.blockmesh.xyz/ui/dashboard",
+      loginCheckUrl: "chrome-extension://obfhoiefijlolgdmphcekifedagnkfjp/js/popup.html",
       selectors: {
         usernameInput: By.xpath('//*[@id="mount_to"]/div[2]/div[2]/form/div[1]/input'),
         passwordInput: By.xpath('//*[@id="mount_to"]/div[2]/div[2]/form/div[2]/input'),
@@ -72,12 +77,14 @@ const services = {
         emailDashboardInput: By.xpath('//*[@id="email"]'),
         passwordDashboardInput: By.xpath('//*[@id="password"]'),
         loginDashboardButton: By.xpath('//*[@id="content"]/form/div/div/div[4]/button'),
-        pointValue: By.xpath('/html/body/div[2]/main/div/div/div[4]/div[5]/div/div[2]/div/span')
+        pointValue: By.xpath('/html/body/div[2]/main/div/div/div[4]/div[5]/div/div[2]/div/span'),
+        loginConfirmElement: By.xpath('//*[@id="mount_to"]/div[2]/div[3]/button[1]/a'),
       }
     },
     despeed: {
       loginUrl: "https://app.despeed.net/login",
       extensionUrl: "chrome-extension://ofpfdpleloialedjbfpocglfggbdpiem/popup.html",
+      loginCheckUrl: "chrome-extension://ofpfdpleloialedjbfpocglfggbdpiem/popup.html",
       selectors: {
         usernameInput: By.xpath('//*[@id="root"]/section/div/div/div/div[2]/form/div[1]/div/input'),
         passwordInput: By.xpath('//*[@id="root"]/section/div/div/div/div[2]/form/div[2]/div/input'),
@@ -93,6 +100,7 @@ const services = {
     depined: {
       loginUrl: "https://app.depined.org/onboarding",
       extensionUrl: "chrome-extension://pjlappmodaidbdjhmhifbnnmmkkicjoc/popup.html",
+      loginCheckUrl: "chrome-extension://pjlappmodaidbdjhmhifbnnmmkkicjoc/popup.html",
       selectors: {
         usernameInput: By.xpath('//*[@id="email"]'),
         passwordInput: By.xpath('//*[@id="password"]'),
@@ -101,6 +109,13 @@ const services = {
         loginConfirmElement: By.xpath('//*[@id="connect-button"]/span[normalize-space(text()) = "Connected"]'),
         loginConfirmDashboard: By.xpath('//*[@id="root"]/div[3]/div[3]/div[1]/div[4]/div[1]/div[1]'),
         pointValue: By.xpath('//*[@id="container"]/div[3]/div[1]/div[2]/span'),
+      }
+    },
+    hahawallet: {
+      loginUrl: "https://hahawallet.com/",
+      loginCheckUrl: "chrome-extension://andhndehpcjpmneneealacgnmealilal/home.html",
+      selectors: {
+        loginConfirmElement: By.xpath('//p[text()="Legacy Wallet"]'),
       }
     },
     hcapcha: {

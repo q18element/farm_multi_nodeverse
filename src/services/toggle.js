@@ -1,6 +1,7 @@
 // src/services/toggle.js
 const BaseService = require('./baseService');
-const { AutomationAcions, logger } = require('../utils');
+const AutomationAcions = require('../utils/automationActions');
+const logger = require('../utils/logger');
 const { services: { toggle: toggleConfig } } = require('../config');
 
 class ToggleService extends BaseService {

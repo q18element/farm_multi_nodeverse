@@ -1,6 +1,7 @@
 // src/services/openloop.js
 const BaseService = require('./baseService');
-const { AutomationAcions, logger } = require('../utils');
+const AutomationAcions = require('../utils/automationActions');
+const logger = require('../utils/logger');
 const { services: { openloop: openloopConfig } } = require('../config');
 
 class OpenloopService extends BaseService {

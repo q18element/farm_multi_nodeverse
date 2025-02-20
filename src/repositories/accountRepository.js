@@ -9,7 +9,7 @@ class AccountRepository {
   async loadAccounts() {
     try {
       const accounts = await this.db.all(`
-        SELECT a.id, a.username, a.password,
+        SELECT a.*,
                json_group_array(json_object(
                  'proxy', ap.proxy,
                  'run', json(ap.services)

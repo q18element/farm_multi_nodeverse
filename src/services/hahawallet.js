@@ -1,7 +1,9 @@
+// src/services/hahawallet.js
 const BaseService = require("./baseService");
 const { By, WebElement } = require("selenium-webdriver");
 const log4js = require("log4js");
-const { AutomationAcions } = require("../utils");
+const AutomationAcions = require('../utils/automationActions');
+const logger = require('../utils/logger');
 const config = require("../config/config");
 
 class HahaWallet extends BaseService {
@@ -11,38 +13,39 @@ class HahaWallet extends BaseService {
     this.veerSelectors = config.services.veer.selectors;
     this.bizSelectors = config.services.bizflycloud.selectors;
     this.waitMailDelay = 3 * 60 * 1000;
+    this.driver = driver;
     this.auto = new AutomationAcions(driver);
   }
 
   /** @param {WebDriver} driver  */
   async getOtpBiz(email, password, emailFilter) {
     const driver = this.auto.driver;
-    const baseWindow = await driver.getWindowHandle();
-    await driver.switchTo().newWindow("tab");
-    await driver.get(config.services.bizflycloud.loginUrl);
+    const baseWindow = await this.driver.getWindowHandle();
+    await this.driver.switchTo().newWindow("tab");
+    await this.driver.get(config.services.bizflycloud.loginUrl);
     try {
-      console.log(await driver.getCurrentUrl());
+      console.log(await this.driver.getCurrentUrl());
 
       const isLogin = await this.auto.checkElementExists(this.bizSelectors.inboxElement, 5000);
 
       if (!isLogin) {
         await this.auto.enterText(this.bizSelectors.emailInput, email);
-        await driver.sleep(500);
+        await this.driver.sleep(500);
         await this.auto.clickElement(this.bizSelectors.nextButton);
-        await driver.sleep(5000);
+        await this.driver.sleep(5000);
         await this.auto.enterText(this.bizSelectors.passwordInput, password);
-        await driver.sleep(500);
+        await this.driver.sleep(500);
         await this.auto.clickElement(this.bizSelectors.loginButton);
         await this.auto.waitForElement(this.bizSelectors.inboxElement, 45000);
       }
 
       // logged in
-      await driver.sleep(1000);
+      await this.driver.sleep(1000);
       await this.auto.clickElement(this.bizSelectors.refreshButton);
-      await driver.sleep(3000);
+      await this.driver.sleep(3000);
 
       /** @type {EmailThread[]} */
-      const emails = await driver.executeAsyncScript(() => {
+      const emails = await this.driver.executeAsyncScript(() => {
         fetch("https://mail.bizflycloud.vn/api/threads?in=INBOX&limit=50&offset=0", {
           headers: {
             "x-auth-token": localStorage.webmailToken,
@@ -72,31 +75,31 @@ class HahaWallet extends BaseService {
     } catch (error) {
       this.logger.error("Error extracting OTP:", error);
     } finally {
-      await driver.close();
+      await this.driver.close();
 
-      await driver.switchTo().window(baseWindow);
+      await this.driver.switchTo().window(baseWindow);
     }
   }
 
   /** @param {WebDriver} driver  */
   async getOtpVeer(email, password, filter) {
     const driver = this.auto.driver;
-    const baseWindow = await driver.getWindowHandle();
-    await driver.switchTo().newWindow("tab");
-    await driver.get("https://mail.veer.vn");
+    const baseWindow = await this.driver.getWindowHandle();
+    await this.driver.switchTo().newWindow("tab");
+    await this.driver.get("https://mail.veer.vn");
     try {
-      console.log(await driver.getCurrentUrl());
+      console.log(await this.driver.getCurrentUrl());
       const isLogin = await this.auto.checkElementExists(this.veerSelectors.inboxElement, 5000);
       if (!isLogin) {
         // Wait for and enter the email
         await this.auto.enterText(this.veerSelectors.emailInput, email);
         await this.auto.enterText(this.veerSelectors.passwordInput, password);
-        await driver.sleep(500);
+        await this.driver.sleep(500);
         await this.auto.clickElement(this.veerSelectors.loginButton);
-        await driver.sleep(500);
+        await this.driver.sleep(500);
         await this.auto.waitForElement(this.veerSelectors.inboxElement);
 
-        const emails = await driver.executeAsyncScript(() => {
+        const emails = await this.driver.executeAsyncScript(() => {
           fetch("https://mail.veer.vn/api/search", {
             headers: {
               "content-type": "application/json",
@@ -122,14 +125,14 @@ class HahaWallet extends BaseService {
           }
         }
       }
-      await driver.sleep(3000);
+      await this.driver.sleep(3000);
       await this.auto.clickElement(this.veerSelectors.refreshButton);
-      await driver.sleep(3000);
+      await this.driver.sleep(3000);
     } catch (error) {
       console.error("Error extracting OTP:", error);
     } finally {
-      await driver.close();
-      await driver.switchTo().window(baseWindow);
+      await this.driver.close();
+      await this.driver.switchTo().window(baseWindow);
     }
   }
 
@@ -158,7 +161,7 @@ class HahaWallet extends BaseService {
         return otp;
       }
 
-      await driver.sleep(5000);
+      await this.driver.sleep(5000);
     }
     if (otp == null) {
       throw new Error("GET OTP TIMEOUR ERR");
@@ -167,7 +170,7 @@ class HahaWallet extends BaseService {
 
   async check(creds) {
     await this.login(creds);
-    return await driver.executeAsyncScript(() => {
+    return await this.driver.executeAsyncScript(() => {
       chrome.storage.local.get("data", (data) => {
         arguments[arguments.length - 1](data.data.KarmaController.karma.point);
       });
@@ -177,7 +180,6 @@ class HahaWallet extends BaseService {
   /** @param {WebDriver} driver  */
   async login(creds) {
     const { username, password, seedPhrase } = creds;
-    const driver = this.auto.driver;
 
     let refcode = "ANONYMOUS-ROU5K5";
     let pincode = "12345678";
@@ -209,7 +211,7 @@ class HahaWallet extends BaseService {
     };
 
     const processVerify = async () => {
-      await driver.sleep(5000);
+      await this.driver.sleep(5000);
       // let code = await self.getVerifyCode( username, password, fromTime);
       let code = await self.getVerifyCode(username, password, 0);
 
@@ -222,14 +224,14 @@ class HahaWallet extends BaseService {
       await this.auto.clickElement(By.xpath('//button[text()="VERIFY"]'));
     };
 
-    await driver.get("chrome-extension://andhndehpcjpmneneealacgnmealilal/home.html");
-    await driver.sleep(2000);
+    await this.driver.get("chrome-extension://andhndehpcjpmneneealacgnmealilal/home.html");
+    await this.driver.sleep(2000);
     if (!(await isLoggedIn())) {
       await this.auto.clickElement(By.xpath('//button[text()="GET STARTED"]'));
 
       await enterAccount();
 
-      await driver.executeScript(() => {
+      await this.driver.executeScript(() => {
         document.querySelector('input[placeholder="Referral Code"]')
           ? null
           : document
@@ -238,7 +240,7 @@ class HahaWallet extends BaseService {
               )
               .click();
       });
-      await driver.sleep(500);
+      await this.driver.sleep(500);
       await this.auto.enterText(By.css('input[placeholder="Referral Code"]'), refcode);
       await this.auto.clickElement(By.xpath('//button[text()="CONTINUE" and not(@disabled)]'));
 
@@ -279,7 +281,7 @@ class HahaWallet extends BaseService {
       await this.auto.clickElement(By.xpath('//label[contains(text(),"I agree to HaHa")]//input'));
       // await this.auto.clickElement( By.xpath('//button[text()="Create a New Wallet" and not(@disabled)]'));
       await this.auto.clickElement(By.xpath('//button[text()="Import Existing Wallet" and not(@disabled)]'));
-      let inputs = await driver.findElements(
+      let inputs = await this.driver.findElements(
         By.xpath('//input[@class="w-full bg-transparent border-none outline-none"]')
       );
       let sps = seedPhrase.trim().split(" ");
@@ -292,7 +294,7 @@ class HahaWallet extends BaseService {
 
       await this.auto.clickElement(By.xpath('//button[text()="Continue" and not(@disabled)]'));
       await this.auto.clickElement(By.xpath('//button[text()="Start Using Wallet" and not(@disabled)]'));
-      await driver.sleep(2000);
+      await this.driver.sleep(2000);
       await this.auto.safeClick(By.xpath('//button[text()="Skip for now" and not(@disabled)]'));
     } else {
       if (await isUnlockPage()) {

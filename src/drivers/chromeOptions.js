@@ -37,6 +37,7 @@ const EXTENSIONS = {
   despeed: { path: path.resolve('./crxs/despeed.crx') },
   hcapchaSolver: { path: path.resolve('./crxs/hcapchasolver.crx') },
   depined: { path: path.resolve('./crxs/depined.crx') },
+  hahawallet: { path: path.resolve('./crxs/hahawallet.crx') },
 };
 
 module.exports = { 

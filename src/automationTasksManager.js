@@ -30,6 +30,7 @@ class TaskAutomationManager {
     this.taskRepo = null;
     this.accountRepo = null;
     this.db = null;
+    this.auto = null;
   }
 
   async getDB() {
@@ -339,8 +340,9 @@ class TaskAutomationManager {
   }
 
   async safeTabReset(driver) {
+    this.auto = new AutomationAcions(driver);
     try {
-      await new AutomationAcions(driver).tabReset();
+      await this.auto.tabReset();
     } catch (error) {
       logger.warn(`[TAB RESET ERROR] Failed to reset tab: ${error.message}`);
     }

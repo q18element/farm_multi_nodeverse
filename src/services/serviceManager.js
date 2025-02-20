@@ -6,7 +6,8 @@ const BlockmeshService = require('./blockmesh');
 const DepinedService = require('./depined');
 const DspeedService = require('./despeed');
 const OpenloopService = require('./openloop');
-const ToggleService = require('./toggle.js');
+const ToggleService = require('./toggle');
+const HahaWallet = require('./hahawallet');
 
 class ServiceManager {
   constructor(driver) {
@@ -22,6 +23,7 @@ class ServiceManager {
     this.registerService('despeed', new DspeedService(driver));
     this.registerService('openloop', new OpenloopService(driver));
     this.registerService('toggle', new ToggleService(driver));
+    this.registerService('hahawallet', new HahaWallet(driver));
   }
 
   registerService(serviceName, serviceInstance) {
@@ -40,7 +42,7 @@ class ServiceManager {
     }
     try {
       // Example: navigate to the extension URL and verify the login confirmation element.
-      await this.driver.get(service.config.extensionUrl);
+      await this.driver.get(service.config.loginCheckUrl);
       await this.driver.navigate().refresh();
       await this.driver.sleep(3000);
       // Reuse helper methods (imported in your automationHelpers, etc.)

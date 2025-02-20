@@ -1,6 +1,7 @@
 // src/services/depined.js
 const BaseService = require('./baseService');
-const { AutomationAcions, logger } = require('../utils');
+const AutomationAcions = require('../utils/automationActions');
+const logger = require('../utils/logger');
 const { services: { depined: depinedConfig } } = require('../config');
 
 class DepinedService extends BaseService {
