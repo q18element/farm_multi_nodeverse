@@ -1,6 +1,6 @@
 // src/services/despeed.js
 const BaseService = require('./baseService');
-const AutomationAcions = require('../utils/automationActions');
+const {AutomationAcions} = require('../utils/automationActions');
 const logger = require('../utils/logger');
 const { services: { despeed: despeedConfig, hcapchaSolver: hcapchaSolverConfig } } = require('../config');
 

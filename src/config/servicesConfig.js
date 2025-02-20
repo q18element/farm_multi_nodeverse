@@ -1,5 +1,4 @@
 const { By } = require('selenium-webdriver');
-const HahaWallet = require('../services/hahawallet');
 
 // ─── SERVICES CONFIGURATION ──────────────────────────────────────────────
 const services = {

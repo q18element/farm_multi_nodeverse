@@ -1,5 +1,5 @@
 // src/services/serviceManager.js
-const {AutomationAcions} = require('../utils');
+const {AutomationAcions} = require('../utils/automationActions');
 const GradientService = require('./gradient');
 const BlessService = require('./bless');
 const BlockmeshService = require('./blockmesh');
@@ -14,7 +14,7 @@ class ServiceManager {
     // Create a registry mapping service names to service instances.
     this.serviceRegistry = new Map();
     this.driver = driver;
-    this.auto = new AutomationAcions(this.driver);
+    this.auto = new AutomationAcions(driver);
 
     this.registerService('gradient', new GradientService(driver));
     this.registerService('bless', new BlessService(driver));

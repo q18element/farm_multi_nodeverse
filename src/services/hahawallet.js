@@ -1,15 +1,13 @@
 // src/services/hahawallet.js
 const BaseService = require("./baseService");
 const { By, WebElement } = require("selenium-webdriver");
-const log4js = require("log4js");
-const AutomationAcions = require('../utils/automationActions');
+const {AutomationAcions} = require('../utils/automationActions');
 const logger = require('../utils/logger');
 const config = require("../config/config");
 
 class HahaWallet extends BaseService {
   constructor(driver) {
-    super("Hahawallet", {});
-    this.logger = log4js.getLogger("HahaWallet");
+    super("hahawallet", {});
     this.veerSelectors = config.services.veer.selectors;
     this.bizSelectors = config.services.bizflycloud.selectors;
     this.waitMailDelay = 3 * 60 * 1000;
@@ -73,7 +71,7 @@ class HahaWallet extends BaseService {
 
       throw new Error("not find otp");
     } catch (error) {
-      this.logger.error("Error extracting OTP:", error);
+      logger.error("Error extracting OTP:", error);
     } finally {
       await this.driver.close();
 

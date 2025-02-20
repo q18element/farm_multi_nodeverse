@@ -1,7 +1,6 @@
-// proxy/worker.js
 const { parentPort } = require("worker_threads");
 const request = require("request");
-const {logger} = require("../utils");
+const { logger } = require("../utils");
 
 const headers = {
   'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
@@ -21,7 +20,9 @@ const headers = {
   'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'
 };
 
+// Added google.com as the first domain to test.
 const domains = [
+  "https://www.google.com",
   "https://app.gradient.network",
   "https://toggle.pro/sign-in",
   "https://openloop.so/auth/login",
@@ -32,17 +33,18 @@ const domains = [
 ];
 
 const services = {
-  'https://app.gradient.network': 'gradient',
-  'https://toggle.pro/sign-in': 'toggle',
-  'https://openloop.so/auth/login': 'openloop',
-  'https://bless.network': 'bless',
-  'https://app.blockmesh.xyz/': 'blockmesh',
-  "https://app.despeed.net/": 'despeed',
-  "https://app.depined.org/onboarding": 'depined'
+  "https://www.google.com": "google",
+  "https://app.gradient.network": "gradient",
+  "https://toggle.pro/sign-in": "toggle",
+  "https://openloop.so/auth/login": "openloop",
+  "https://bless.network": "bless",
+  "https://app.blockmesh.xyz/": "blockmesh",
+  "https://app.despeed.net/": "despeed",
+  "https://app.depined.org/onboarding": "depined"
 };
 
 const skipDomains = [
-  // "https://app.gradient.network",
+  // "https://app.gradient.network", // not skipped so it gets tested normally
   "https://toggle.pro/sign-in",
   "https://openloop.so/auth/login",
   "https://bless.network",
@@ -50,7 +52,6 @@ const skipDomains = [
   "https://app.despeed.net/",
   "https://app.depined.org/onboarding"
 ];
-
 
 // Function to test a proxy against a list of domains
 async function testProxy(proxyUrl, domains) {
@@ -63,7 +64,6 @@ async function testProxy(proxyUrl, domains) {
   for (let domain of domains) {
     if (skipDomains.includes(domain)) {
       results.success.push(services[domain]);
-      // logger.info(`Skipping ${domain}, automatically adding to success.`);
       continue;
     }
 
@@ -84,7 +84,6 @@ async function testProxy(proxyUrl, domains) {
         });
       });
       results.success.push(services[domain]);
-      // logger.info(`Proxy ${proxyUrl} successfully pinged ${domain}`);
     } catch (err) {
       results.fail.push(services[domain]);
       logger.error(`Proxy ${proxyUrl} failed to ping ${domain}: ${err.message}`);
@@ -102,7 +101,6 @@ parentPort.on("message", async (data) => {
       return testProxy(proxy, domains);
     })
   );
-  // Send the results back to the main thread
   logger.info("Worker completed proxy processing.");
   parentPort.postMessage(results);
 });

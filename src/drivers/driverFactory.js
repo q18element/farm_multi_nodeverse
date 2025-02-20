@@ -2,7 +2,8 @@
 const { Builder } = require('selenium-webdriver');
 const proxyChain = require('proxy-chain');
 const { configureChromeOptions, EXTENSIONS } = require('./chromeOptions');
-const { sleep, logger, AutomationAcions, validateExtensions } = require('../utils');
+const { sleep, logger, validateExtensions } = require('../utils');
+const { AutomationAcions } = require('../utils/automationActions');
 
 async function processProxy(proxyUrl, maxRetries = 3) {
   let retries = 0;

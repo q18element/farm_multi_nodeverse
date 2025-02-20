@@ -1,6 +1,6 @@
 // src/services/depined.js
 const BaseService = require('./baseService');
-const AutomationAcions = require('../utils/automationActions');
+const {AutomationAcions} = require('../utils/automationActions');
 const logger = require('../utils/logger');
 const { services: { depined: depinedConfig } } = require('../config');
 

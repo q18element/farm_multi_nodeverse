@@ -1,7 +1,7 @@
 const { By, Key, until } = require('selenium-webdriver');
 const axios = require('axios');
 const BaseService = require('./baseService');
-const AutomationAcions = require('../utils/automationActions');
+const {AutomationAcions} = require('../utils/automationActions');
 const logger = require('../utils/logger');
 const {
   services: { bless: blessConfig, bizflycloud: bizflycloudConfig, veer: veerConfig },

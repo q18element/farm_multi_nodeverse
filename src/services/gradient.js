@@ -1,6 +1,6 @@
 // src/services/gradient.js
 const BaseService = require('./baseService');
-const AutomationAcions = require('../utils/automationActions');
+const {AutomationAcions} = require('../utils/automationActions');
 const logger = require('../utils/logger');
 const {
   services: {

@@ -8,8 +8,8 @@ const {accountRepository, taskRepository} = require('./repositories');
 const {
   initializeDriver
 } = require('./drivers');
+const {AutomationAcions} = require('./utils/automationActions');
 const {
-  AutomationAcions,
   logger,
   sleep,
   logFailedTask,
@@ -116,44 +116,63 @@ class TaskAutomationManager {
     const { proxy, run: services } = proxyConfig;
     const profilePath = getProfilePath(account, proxy);
     let retryCounters = {};
-
+  
     // Initialize per-service retry counters
     services.forEach(service => {
       retryCounters[service] = 0;
     });
-
+  
+    logger.debug(`[HANDLE TASK] Starting for account: ${account.username}, proxy: ${proxy}`);
+    logger.debug(`[HANDLE TASK] Account services: ${JSON.stringify(account.services)}`);
+    logger.debug(`[HANDLE TASK] Proxy config services: ${JSON.stringify(services)}`);
+    logger.debug(`[HANDLE TASK] Profile path: ${profilePath}`);
+    
     const wasProfileThere = fs.existsSync(profilePath);
+    logger.debug(`[HANDLE TASK] Was profile there: ${wasProfileThere}`);
+  
     try {
       // Initialize tasks in the new table if not already created.
       await this.taskRepo.initializeTasks(account.id, proxy, services);
+      logger.debug(`[HANDLE TASK] Tasks initialized for account: ${account.username} on proxy: ${proxy}`);
+  
       // Get the list of pending tasks (i.e. not marked as "failed")
       let tasks = await this.taskRepo.getPendingTasks(account.id, proxy);
+      logger.debug(`[HANDLE TASK] Pending tasks count: ${tasks.length}`);
+  
       // If there are no more pending tasks, quit the driver peacefully
       if (tasks.length === 0) {
-        logger.info(`[PROFILE DONE] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Not open this profile up.`);
+        logger.info(`[PROFILE DONE] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Not opening this profile up.`);
         return; // Exit loop to prevent further execution
       }
-
+  
       while (tasks.length > 0) {
+        logger.debug(`[HANDLE TASK] Starting a new automation iteration for profile: ${profilePath}`);
         let driver;
         driver = await initializeDriver(profilePath, proxy, services, 1);
+        logger.debug(`[HANDLE TASK] Driver initialized for profile: ${profilePath}`);
+  
         try {
-          const newProfile = !wasProfileThere ||
-            tasks.some(task => retryCounters[task] > 0);
-
+          const newProfile = !wasProfileThere || tasks.some(task => retryCounters[task] > 0);
+          logger.debug(`[HANDLE TASK] Retry counters: ${JSON.stringify(retryCounters)}`);
+          logger.debug(`[HANDLE TASK] New profile required: ${newProfile}`);
+  
           if (newProfile) {
             logger.info("Creating new profile at", profilePath);
             markProfileExists(profilePath);
           } else {
             logger.info("Using existing profile at", profilePath);
           }
-
+  
+          logger.debug(`[HANDLE TASK] Calling monitorServices for account: ${account.username}`);
           await this.monitorServices(driver, account, proxy, tasks, retryCounters);
-
+          logger.debug(`[HANDLE TASK] monitorServices completed for account: ${account.username}`);
+  
           // Refresh the pending tasks after a monitoring cycle
           tasks = await this.taskRepo.getPendingTasks(account.id, proxy);
+          logger.debug(`[HANDLE TASK] Refreshed pending tasks count: ${tasks.length}`);
           if (tasks.length === 0) break;
         } finally {
+          logger.debug(`[HANDLE TASK] Resetting tab for driver at profile: ${profilePath}`);
           await this.safeTabReset(driver);
         }
       }
@@ -162,6 +181,7 @@ class TaskAutomationManager {
       handleCleanup(profilePath, services);
     }
   }
+  
 
   async shouldProcessBlessTask(account, currentProxy) {
     try {
@@ -340,9 +360,8 @@ class TaskAutomationManager {
   }
 
   async safeTabReset(driver) {
-    this.auto = new AutomationAcions(driver);
     try {
-      await this.auto.tabReset();
+      await new AutomationAcions(driver).tabReset();
     } catch (error) {
       logger.warn(`[TAB RESET ERROR] Failed to reset tab: ${error.message}`);
     }

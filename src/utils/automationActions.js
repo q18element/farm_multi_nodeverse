@@ -191,4 +191,4 @@ class AutomationAcions {
   }
 }
 
-module.exports = AutomationAcions;
+module.exports = {AutomationAcions};
