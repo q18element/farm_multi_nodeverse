@@ -1,3 +1,4 @@
+// src/services/layeredge.js
 const log4js = require("log4js");
 const { By, WebElement } = require("selenium-webdriver");
 const MetamaskService = require("./metamask");
@@ -5,10 +6,9 @@ const {AutomationAcions} = require('../utils/automationActions');
 const logger = require('../utils/logger');
 const {Wallet} = require("ethers");
 
-function seedPhraseToAddress(seedPhrase) {
-  return  Wallet.fromPhrase(seedPhrase).address;
+function seedphraseToAddress(seedphrase) {
+  return  Wallet.fromPhrase(seedphrase).address;
 }
-
 
 class LayerEdgeService {
   constructor(driver) {
@@ -32,10 +32,10 @@ class LayerEdgeService {
   }
 
   /** @param {WebDriver} driver  */
-  async login({ seedPhrase }) {
+  async login({ seedphrase }) {
     const driver = this.auto.driver;
     const metamaskService = this.metamaskService;
-    await metamaskService.setupOldWallet(seedPhrase);
+    await metamaskService.setupOldWallet(seedphrase);
     await driver.get("https://dashboard.layeredge.io/");
     if (!(await this._isLoggedIn())) {
       console.log("login");
@@ -97,6 +97,7 @@ class LayerEdgeService {
         console.log("claim reward error", e);
       }
     }
+    return true;
   }
 }
 

@@ -177,7 +177,7 @@ class HahaWallet extends BaseService {
 
   /** @param {WebDriver} driver  */
   async login(creds) {
-    const { username, password, seedPhrase } = creds;
+    const { username, password, seedphrase } = creds;
 
     let refcode = "ANONYMOUS-ROU5K5";
     let pincode = "12345678";
@@ -282,7 +282,7 @@ class HahaWallet extends BaseService {
       let inputs = await this.driver.findElements(
         By.xpath('//input[@class="w-full bg-transparent border-none outline-none"]')
       );
-      let sps = seedPhrase.trim().split(" ");
+      let sps = seedphrase.trim().split(" ");
       for (let i = 0; i < 12; i++) {
         await this.auto.enterText(
           By.xpath(`(//input[@class="w-full bg-transparent border-none outline-none"])[${i + 1}]`),
@@ -309,6 +309,7 @@ class HahaWallet extends BaseService {
 
       await this.auto.safeClick(By.xpath('//button[text()="Claim"]'), 5000);
     }
+    return true;
   }
 }
 

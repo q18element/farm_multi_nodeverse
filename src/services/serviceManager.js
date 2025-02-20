@@ -8,6 +8,7 @@ const DspeedService = require('./despeed');
 const OpenloopService = require('./openloop');
 const ToggleService = require('./toggle');
 const HahaWallet = require('./hahawallet');
+const LayerEdgeService = require('./layeredge');
 
 class ServiceManager {
   constructor(driver) {
@@ -24,6 +25,8 @@ class ServiceManager {
     this.registerService('openloop', new OpenloopService(driver));
     this.registerService('toggle', new ToggleService(driver));
     this.registerService('hahawallet', new HahaWallet(driver));
+    this.registerService('layeredge', new LayerEdgeService(driver));
+    
   }
 
   registerService(serviceName, serviceInstance) {

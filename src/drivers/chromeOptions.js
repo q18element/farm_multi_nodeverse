@@ -38,6 +38,7 @@ const EXTENSIONS = {
   hcapchaSolver: { path: path.resolve('./crxs/hcapchasolver.crx') },
   depined: { path: path.resolve('./crxs/depined.crx') },
   hahawallet: { path: path.resolve('./crxs/hahawallet.crx') },
+  layeredge: { path: path.resolve('./crxs/mtm.crx') },
 };
 
 module.exports = { 
