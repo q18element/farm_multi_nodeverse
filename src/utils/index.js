@@ -1,15 +1,5 @@
-// src/utils/index.js
-const logger = require('./logger');
-const { sleep } = require('./sleep');
-const { validateExtensions, ensureDirectory, logFailedTask, getProfilePath, markProfileExists, handleCleanup } = require('./fileUtils');
+export { sleep };
 
-module.exports = {
-  logger,
-  sleep,
-  validateExtensions,
-  ensureDirectory,
-  logFailedTask,
-  getProfilePath,
-  markProfileExists,
-  handleCleanup,
-};
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

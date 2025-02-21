@@ -1,14 +1,10 @@
-// node_handler/mtm.js
-const { By, until, Key } = require("selenium-webdriver");
-const config = require("../config");
-const log4js = require("log4js");
-const fs = require("fs");
-const path = require("path");
-const {AutomationAcions} = require('../utils/automationActions');
-const logger = require('../utils/logger');
-const BaseService = require("./baseService");
-
-
+import { By } from "selenium-webdriver";
+import config from "../config/config.js";
+import log4js from "log4js";
+import fs from "fs";
+import path from "path";
+import { AutomationAcions } from "../utils/automationActions.js";
+import BaseService from "./baseService.js";
 
 async function copyRecoveryPhrase(driver) {
   try {
@@ -95,53 +91,53 @@ async function fillImportSrpRecoveryWords(driver, recoveryKeyArray) {
   }
 }
 
-class MtmService extends BaseService {
+export default class MetamaskService extends BaseService {
   constructor(driver) {
     super("MtmService", {});
     this.logger = log4js.getLogger("MtmService");
-    this.auto = new AutomationAcions(driver);
+    this.wd = new AutomationAcions(driver);
   }
 
   async setupNewWallet() {
-    const driver = this.auto.driver;
+    const driver = this.wd.driver;
     try {
       this.logger.info(`Starting Mtm setup`);
       const { loginUrl, selectors } = config.services.mtm;
       await driver.get(loginUrl);
 
       await driver.sleep(3000);
-      await this.auto.clickElement(selectors.agreeCheckbox);
+      await this.wd.clickElement(selectors.agreeCheckbox);
       await driver.sleep(1000);
-      await this.auto.clickElement(selectors.createWalletButton);
+      await this.wd.clickElement(selectors.createWalletButton);
 
-      await this.auto.clickElement(selectors.agreeCheckbox2);
-      await this.auto.scrollToElement(selectors.iagreeButton);
-      await this.auto.clickElement(selectors.iagreeButton);
+      await this.wd.clickElement(selectors.agreeCheckbox2);
+      await this.wd.scrollToElement(selectors.iagreeButton);
+      await this.wd.clickElement(selectors.iagreeButton);
 
-      await this.auto.enterText(selectors.passwordInput, "Rtn@2024");
-      await this.auto.enterText(selectors.passwordRepeatInput, "Rtn@2024");
-      await this.auto.clickElement(selectors.iunderstandCheckbox);
-      await this.auto.clickElement(selectors.createNewWalletButton);
+      await this.wd.enterText(selectors.passwordInput, "Rtn@2024");
+      await this.wd.enterText(selectors.passwordRepeatInput, "Rtn@2024");
+      await this.wd.clickElement(selectors.iunderstandCheckbox);
+      await this.wd.clickElement(selectors.createNewWalletButton);
 
-      await this.auto.scrollToElement(selectors.secureMyWalletButton);
-      await this.auto.clickElement(selectors.secureMyWalletButton);
+      await this.wd.scrollToElement(selectors.secureMyWalletButton);
+      await this.wd.clickElement(selectors.secureMyWalletButton);
 
-      await this.auto.clickElement(selectors.revealMySecretButton);
+      await this.wd.clickElement(selectors.revealMySecretButton);
       const recoveryKeyArray = await copyRecoveryPhrase(driver);
-      await this.auto.clickElement(selectors.nextButton);
+      await this.wd.clickElement(selectors.nextButton);
 
       await driver.sleep(5000);
       await fillRecoveryInputsWithClickAndSendKeys(driver, recoveryKeyArray);
-      await this.auto.clickElement(selectors.confirmButton);
+      await this.wd.clickElement(selectors.confirmButton);
 
       await driver.sleep(1000);
-      await this.auto.clickElement(selectors.doneButton);
+      await this.wd.clickElement(selectors.doneButton);
       await driver.sleep(1000);
-      await this.auto.clickElement(selectors.nextButton2);
+      await this.wd.clickElement(selectors.nextButton2);
       await driver.sleep(1000);
-      await this.auto.clickElement(selectors.doneButton2);
+      await this.wd.clickElement(selectors.doneButton2);
       await driver.sleep(7777);
-      await this.auto.waitForElement(selectors.mainetText);
+      await this.wd.waitForElement(selectors.mainetText);
 
       this.logger.info(`Mtm setup success on proxy `);
       return true;
@@ -153,15 +149,15 @@ class MtmService extends BaseService {
 
   async lockMetamask() {
     try {
-      await this.auto.driver.sleep(1000);
-      await this.auto.clickElement(By.css('span[style*="./images/icons/more-vertical.svg"]'));
-      await this.auto.clickElement(By.xpath('//button//div[text()="Lock MetaMask"]'));
+      await this.wd.driver.sleep(1000);
+      await this.wd.clickElement(By.css('span[style*="./images/icons/more-vertical.svg"]'));
+      await this.wd.clickElement(By.xpath('//button//div[text()="Lock MetaMask"]'));
     } catch (e) {}
   }
 
   /** @param {WebDriver} driver  */
   async confirm_any() {
-    const driver = this.auto.driver;
+    const driver = this.wd.driver;
     let currentWindow = await driver.getWindowHandle();
     const timeout = 10; // timeout in seconds
     const startTime = Date.now();
@@ -205,11 +201,13 @@ class MtmService extends BaseService {
 
             while (1) {
               await driver.executeScript(() => {
-                document.querySelector(
-                  'button[data-testid="confirmation-submit-button"]:not([disabled]), button[data-testid="confirm-btn"]:not([disabled]), button[data-testid="page-container-footer-next"]:not([disabled]), button[data-testid="confirm-footer-button"]:not([disabled])'
-                )?.click()
-              }); 
-              await driver.sleep(1000)
+                document
+                  .querySelector(
+                    'button[data-testid="confirmation-submit-button"]:not([disabled]), button[data-testid="confirm-btn"]:not([disabled]), button[data-testid="page-container-footer-next"]:not([disabled]), button[data-testid="confirm-footer-button"]:not([disabled])'
+                  )
+                  ?.click();
+              });
+              await driver.sleep(1000);
             }
           }
         }
@@ -226,7 +224,7 @@ class MtmService extends BaseService {
   /** @param {WebDriver} driver  */
   async setupOldWallet(seedPhrase) {
     console.log(seedPhrase);
-    const driver = this.auto.driver;
+    const driver = this.wd.driver;
     try {
       this.logger.info(`Starting Mtm setup`);
       const { loginUrl, selectors } = config.services.mtm;
@@ -236,46 +234,46 @@ class MtmService extends BaseService {
       let currentUrl = await driver.getCurrentUrl();
 
       if (currentUrl.endsWith("#unlock")) {
-        await this.auto.clickElement(By.xpath('//div[@class="unlock-page__links"]//a'));
+        await this.wd.clickElement(By.xpath('//div[@class="unlock-page__links"]//a'));
         await fillImportSrpRecoveryWords(driver, seedPhrase);
-        await this.auto.enterText(By.xpath('//*[@id="password"]'), "Rtn@2024");
-        await this.auto.enterText(By.xpath('//*[@id="confirm-password"]'), "Rtn@2024");
-        await this.auto.clickElement(By.xpath('//button[@data-testid="create-new-vault-submit-button"]'));
+        await this.wd.enterText(By.xpath('//*[@id="password"]'), "Rtn@2024");
+        await this.wd.enterText(By.xpath('//*[@id="confirm-password"]'), "Rtn@2024");
+        await this.wd.clickElement(By.xpath('//button[@data-testid="create-new-vault-submit-button"]'));
         await driver.sleep(1000);
-        await this.auto.safeClick(selectors.doneButton);
+        await this.wd.safeClick(selectors.doneButton);
         await driver.sleep(1000);
-        await this.auto.safeClick(selectors.nextButton2);
+        await this.wd.safeClick(selectors.nextButton2);
         await driver.sleep(1000);
-        await this.auto.safeClick(selectors.doneButton2);
+        await this.wd.safeClick(selectors.doneButton2);
         await driver.sleep(7777);
-        await this.auto.waitForElement(selectors.mainetText);
+        await this.wd.waitForElement(selectors.mainetText);
       } else {
         await driver.sleep(3000);
-        await this.auto.clickElement(selectors.agreeCheckbox);
-        await this.auto.scrollToElement(selectors.importWalletButton);
-        await this.auto.clickElement(selectors.importWalletButton);
+        await this.wd.clickElement(selectors.agreeCheckbox);
+        await this.wd.scrollToElement(selectors.importWalletButton);
+        await this.wd.clickElement(selectors.importWalletButton);
 
-        await this.auto.clickElement(selectors.agreeCheckbox2);
-        await this.auto.scrollToElement(selectors.iagreeButton);
-        await this.auto.clickElement(selectors.iagreeButton);
+        await this.wd.clickElement(selectors.agreeCheckbox2);
+        await this.wd.scrollToElement(selectors.iagreeButton);
+        await this.wd.clickElement(selectors.iagreeButton);
 
         await driver.sleep(2000);
         await fillImportSrpRecoveryWords(driver, seedPhrase);
-        await this.auto.clickElement(selectors.confirmSecretInputButton);
+        await this.wd.clickElement(selectors.confirmSecretInputButton);
 
-        await this.auto.enterText(selectors.passwordInput, "Rtn@2024");
-        await this.auto.enterText(selectors.passwordRepeatInput, "Rtn@2024");
-        await this.auto.clickElement(selectors.iunderstandCheckbox);
-        await this.auto.clickElement(selectors.createNewWalletButton);
+        await this.wd.enterText(selectors.passwordInput, "Rtn@2024");
+        await this.wd.enterText(selectors.passwordRepeatInput, "Rtn@2024");
+        await this.wd.clickElement(selectors.iunderstandCheckbox);
+        await this.wd.clickElement(selectors.createNewWalletButton);
 
         await driver.sleep(1000);
-        await this.auto.clickElement(selectors.doneButton);
+        await this.wd.clickElement(selectors.doneButton);
         await driver.sleep(1000);
-        await this.auto.clickElement(selectors.nextButton2);
+        await this.wd.clickElement(selectors.nextButton2);
         await driver.sleep(1000);
-        await this.auto.clickElement(selectors.doneButton2);
+        await this.wd.clickElement(selectors.doneButton2);
         await driver.sleep(7777);
-        await this.auto.waitForElement(selectors.mainetText);
+        await this.wd.waitForElement(selectors.mainetText);
 
         this.logger.info(`Mtm setup success on proxy`);
         return true;
@@ -286,5 +284,3 @@ class MtmService extends BaseService {
     }
   }
 }
-
-module.exports = MtmService;

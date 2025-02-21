@@ -2,6 +2,7 @@
   "name": "farm_extenode",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,6 +16,7 @@
     "chrome-remote-interface": "^0.33.2",
     "chromedriver": "^131.0.5",
     "console-stamp": "^3.1.2",
+    "csvtojson": "^2.0.10",
     "dotenv": "^16.4.7",
     "enquirer": "^2.4.1",
     "ethers": "^6.13.5",

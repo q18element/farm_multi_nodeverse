@@ -1,63 +1,70 @@
 // src/services/layeredge.js
-const log4js = require("log4js");
-const { By, WebElement } = require("selenium-webdriver");
-const MetamaskService = require("./metamask");
-const {AutomationAcions} = require('../utils/automationActions');
-const logger = require('../utils/logger');
-const {Wallet} = require("ethers");
+import log4js from "log4js";
+import { By } from "selenium-webdriver";
+import MetamaskService from "./metamask.js";
+import BaseService from "./baseService.js";
+import { EXTENSIONS } from "../config.js";
 
-function seedphraseToAddress(seedphrase) {
-  return  Wallet.fromPhrase(seedphrase).address;
-}
+export default class LayerEdgeService extends BaseService {
+  static get serviceName() {
+    return "layeredge";
+  }
+  static get requiredExtensions() {
+    return [EXTENSIONS.metamask.path];
+  }
 
-class LayerEdgeService {
   constructor(driver) {
+    super({
+      serviceName: "layeredge",
+      config: {},
+      driver,
+    });
     this.logger = log4js.getLogger("LayerEdgeService");
-    this.auto = new AutomationAcions(driver);
     this.metamaskService = new MetamaskService(driver);
   }
 
   /** @param {WebDriver} driver */
   async _isLoggedIn() {
-    return await this.auto.driver.executeScript(() => {
+    return await this.wd.driver.executeScript(() => {
       return localStorage["wagmi.recentConnectorId"] && !localStorage["wagmi.io.metamask.disconnected"];
     });
   }
 
   async check(creds) {
     await this.login(creds);
-    return await this.auto.driver.executeScript(() => {
+    return await this.wd.driver.executeScript(() => {
       return document.querySelector('strong[class*="earning_total__"]').innerText;
     });
   }
 
   /** @param {WebDriver} driver  */
   async login({ seedphrase }) {
-    const driver = this.auto.driver;
+    const driver = this.wd.driver;
     const metamaskService = this.metamaskService;
     await metamaskService.setupOldWallet(seedphrase);
+
     await driver.get("https://dashboard.layeredge.io/");
     if (!(await this._isLoggedIn())) {
       console.log("login");
-      await this.auto.clickElement(By.css('button[class*="inviteModal_submitButton__"]:not(:disabled)'));
+      await this.wd.clickElement(By.css('button[class*="inviteModal_submitButton__"]:not(:disabled)'));
       await driver.sleep(500);
-      await this.auto.clickElement(By.xpath('//div[text()="MetaMask" ]'));
+      await this.wd.clickElement(By.xpath('//div[text()="MetaMask" ]'));
       await driver.sleep(3000);
       await metamaskService.confirm_any();
       await driver.sleep(3000);
       /** @type {WebElement} */
     }
-    let element = await this.auto.waitForElement(
+    let element = await this.wd.waitForElement(
       By.xpath(
         '(//*[text()="Please enter your invite code to access the platform"] |  //*[contains(text(),"Lightnode")] )[1]'
       )
     );
     if ((await element.getText()).includes("Please enter your invite code to access the platform")) {
-      await this.auto.enterText(By.xpath('//input[@placeholder="Enter your invite code"]'), "aSwVnVxy");
-      await this.auto.clickElement(By.xpath('//button[contains(text(),"Continue")]'));
+      await this.wd.enterText(By.xpath('//input[@placeholder="Enter your invite code"]'), "aSwVnVxy");
+      await this.wd.clickElement(By.xpath('//button[contains(text(),"Continue")]'));
     }
     await driver.sleep(3000);
-    if (await this.auto.checkElementExists(By.xpath('//button[contains(text(),"Start Node")]'))) {
+    if (await this.wd.checkElementExists(By.xpath('//button[contains(text(),"Start Node")]'))) {
       console.log("start node  ");
 
       await driver.executeScript(() => {
@@ -80,19 +87,21 @@ class LayerEdgeService {
     await driver.sleep(3000);
 
     if (
-      await this.auto.checkElementExists(By.xpath(`//button[contains(@class, 'button_btn__') and span="Claim Reward"]`))
+      await this.wd.checkElementExists(By.xpath(`//button[contains(@class, 'button_btn__') and span="Claim Reward"]`))
     ) {
       console.log("claim reward ");
       try {
-        await this.auto.clickElement(By.xpath(`//button[contains(@class, 'button_btn__') and span="Claim Reward"]`), 5000);
+        await this.wd.clickElement(
+          By.xpath(`//button[contains(@class, 'button_btn__') and span="Claim Reward"]`),
+          5000
+        );
         await driver.sleep(1000);
-        await this.auto.clickElement(By.css('#modal-root button'))
+        await this.wd.clickElement(By.css("#modal-root button"));
         await metamaskService.confirm_any();
-        await this.auto.waitForElement(By.xpath(`(//button[contains(@class, 'button_btn__') and span="Claimed"])[2]`))
+        await this.wd.waitForElement(By.xpath(`(//button[contains(@class, 'button_btn__') and span="Claimed"])[2]`));
         await driver.executeScript(() => {
           window.location.reload();
-        })
-        
+        });
       } catch (e) {
         console.log("claim reward error", e);
       }
@@ -100,5 +109,3 @@ class LayerEdgeService {
     return true;
   }
 }
-
-module.exports = LayerEdgeService;
