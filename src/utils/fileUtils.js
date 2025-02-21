@@ -23,10 +23,9 @@ function logFailedTask(entry, failedTasksPath='./output/failedTasks.json') {
 }
 
 
-function getProfilePath(account, proxy) {
+function getProfilePath(proxy) {
   const sanitizedProxy = proxy.replace(/[:@.]/g, '_'); // Replace problematic characters
-  sanitizedUsername = account.username.replace(/[:@.]/g, '_');
-  return path.join(__dirname, '../../', 'profiles', `${sanitizedUsername}_${sanitizedProxy}`);
+  return path.join(__dirname, '../../', 'profiles', `${sanitizedProxy}`);
 }
 
 function profileExists(profilePath) {

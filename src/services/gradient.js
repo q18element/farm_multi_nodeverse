@@ -41,13 +41,14 @@ class GradientService extends BaseService {
     await this.auto.clickElement(selectors.loginButton);
     // logger.debug(`Clicked login button for ${username}`);
 
-    await this.driver.sleep(3000);
+    // await this.driver.sleep(3000);
 
-    await this.driver.get(extensionUrl);
-    // logger.debug(`Navigated to extension URL: ${extensionUrl}`);
+    // await this.driver.get(extensionUrl);
+    // // logger.debug(`Navigated to extension URL: ${extensionUrl}`);
+    await this.auto.safeClick(selectors.xButton, 3000);
 
-    await this.auto.waitForElement(selectors.loginConfirmElement, 20000);
-    await this.driver.sleep(2000);
+    await this.auto.waitForElement(selectors.loginSuccess, 20000);
+    await this.driver.sleep(1000);
     // logger.info(`Login success for Gradient ${username}`);
     return true;
   }

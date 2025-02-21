@@ -5,7 +5,7 @@ class TaskRepository {
     this.db = db;
   }
 
-  async initializeTasks(accountId, proxy, services) {
+  async initializeAutomations(accountId, proxy, services) {
     for (const service of services) {
       const existing = await this.db.get(
         `SELECT id FROM task_monitoring WHERE account_id = ? AND proxy = ? AND service = ?`,
@@ -21,10 +21,10 @@ class TaskRepository {
     }
   }
 
-  async getPendingTasks(accountId, proxy) {
+  async getPendingAutomations(profileId) {
     const rows = await this.db.all(
-      `SELECT service FROM task_monitoring WHERE account_id = ? AND proxy = ? AND state != 'failed'`,
-      [accountId, proxy]
+      `SELECT service FROM task_monitoring WHERE profile_id = ? AND state != 'failed'`,
+      [profileId]
     );
     return rows.map(row => row.service);
   }

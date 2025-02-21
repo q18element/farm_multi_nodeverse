@@ -41,7 +41,6 @@ class AutomationManager {
   }
 
   async run() {
-    
     try {
       const accounts = await this.loadAccountData();
       const taskPromises = [];

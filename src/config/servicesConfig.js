@@ -11,7 +11,7 @@ const services = {
         usernameInput: By.css('.el-input-wrapper[type="email"] > .relative > input.el-input'),
         passwordInput: By.css('.el-input-wrapper[type="password"] > .relative > input.el-input'),
         loginButton: By.css('.btn.btn-white.mt-3'),
-        loginConfirmElement: By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[3]/div/div/div/div[1]/a/img'),
+        loginCheckElement: By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[3]/div/div/div/div[1]/a/img'),
         status: By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[1]/span'),
         quality: By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[1]/span'),
         earnings: By.xpath('//*[@id="app"]/div/div/div[1]/div/div/div[2]/div[2]/div[2]/span')
@@ -25,7 +25,9 @@ const services = {
         usernameInput: By.xpath('/html/body/div[1]/div[2]/div/div/div/div[2]/div[1]/input'),
         passwordInput: By.xpath('/html/body/div[1]/div[2]/div/div/div/div[2]/div[2]/span/input'),
         loginButton: By.xpath('/html/body/div[1]/div[2]/div/div/div/div[4]/button[1]'),
-        loginConfirmElement: By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[3]/div/div[2]'),
+        xButton: By.xpath('/html/body/div[3]/div/div[2]/div/div[2]/div/div/div/div[1]/div'),
+        loginSuccess: By.xpath('/html/body/div[1]/div[1]/div[2]/main/div/div/div[1]'),
+        loginCheckElement: By.xpath('//*[@id="root-gradient-extension-popup-20240807"]/div/div[3]/div/div[2]'),
         dashboardElement: By.xpath('/html/body/div[1]/div[1]/div[2]/main/div/div/div[1]'),
         gotItButton: By.xpath('/html/body/div[3]/div/div[2]/div/div[1]/div/div/div/button'),
         yesButton: By.xpath('/html/body/div[2]/div/div[2]/div/div[1]/div/div/div/button'),
@@ -45,7 +47,7 @@ const services = {
         usernameInput: By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/div[1]/div/input'),
         passwordInput: By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/div[2]/div/input'),
         loginButton: By.xpath('/html/body/div/div[1]/div/div/div/div[5]/form/button/div'),
-        loginConfirmElement: By.xpath('//*[@id="root"]/div/div/div[4]/p'),
+        loginCheckElement: By.xpath('//*[@id="root"]/div/div/div[4]/p'),
         dashboardElement: By.xpath('/html/body/div/div[1]/div[2]/div[1]/div[1]/h1'),
         quality: By.xpath('//*[@id="root"]/div/div/div[2]/div/div/div/p'),
         epoch: By.xpath('//*[@id="root"]/div/div/div[4]/div[1]/p'),
@@ -59,7 +61,7 @@ const services = {
       selectors: {
         emailInput: By.xpath('//*[@id="email"]'),
         loginButton: By.xpath('/html/body/div/main/div/div/div[2]/div[3]/button'),
-        loginConfirmElement: By.xpath('/html/body/div/main/div/div[1]/h1'),
+        loginCheckElement: By.xpath('/html/body/div/main/div/div[1]/h1'),
         dashboardElement: By.xpath('/html/body/div/main/div/div[1]/h1'),
         otpInput: By.xpath('//*[@id="app"]/div/div/div/div/div[3]/div/form/input[1]'),
       }
@@ -77,7 +79,7 @@ const services = {
         passwordDashboardInput: By.xpath('//*[@id="password"]'),
         loginDashboardButton: By.xpath('//*[@id="content"]/form/div/div/div[4]/button'),
         pointValue: By.xpath('/html/body/div[2]/main/div/div/div[4]/div[5]/div/div[2]/div/span'),
-        loginConfirmElement: By.xpath('//*[@id="mount_to"]/div[2]/div[3]/button[1]/a'),
+        loginCheckElement: By.xpath('//*[@id="mount_to"]/div[2]/div[3]/button[1]/a'),
       }
     },
     despeed: {
@@ -91,7 +93,7 @@ const services = {
         hcapchaCheckbox: By.css('div#checkbox[role="checkbox"]'),
         hcapchaChecked: By.xpath('//iframe[contains(@data-hcaptcha-response, "ey")]'),
         loginButton: By.xpath('//*[@id="root"]/section/div/div/div/div[2]/form/div[5]/button'),
-        loginConfirmElement: By.xpath('//*[@id="app-container"]/div/div[4]/div/div[1]/div[2]'),
+        loginCheckElement: By.xpath('//*[@id="app-container"]/div/div[4]/div/div[1]/div[2]'),
         loginConfirmDashboard: By.xpath('//*[@id="root"]/div[1]/div/div/div[1]/div[2]/div/div/div/main/div/div[1]/div/div[1]/div/div[1]/h3'),
         pointValue: By.xpath('//*[@id="app-container"]/div/div[4]/div/div[1]/div[2]/h3'),
       }
@@ -105,7 +107,7 @@ const services = {
         passwordInput: By.xpath('//*[@id="password"]'),
         loginButton: By.xpath('//*[@id="modal"]/div/div[2]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[3]/div[4]/div/div'),
         connectButton: By.xpath('//*[@id="connect-button"]'),
-        loginConfirmElement: By.xpath('//*[@id="connect-button"]/span[normalize-space(text()) = "Connected"]'),
+        loginCheckElement: By.xpath('//*[@id="connect-button"]/span[normalize-space(text()) = "Connected"]'),
         loginConfirmDashboard: By.xpath('//*[@id="root"]/div[3]/div[3]/div[1]/div[4]/div[1]/div[1]'),
         pointValue: By.xpath('//*[@id="container"]/div[3]/div[1]/div[2]/span'),
       }
@@ -114,7 +116,7 @@ const services = {
       loginUrl: "https://hahawallet.com/",
       loginCheckUrl: "chrome-extension://andhndehpcjpmneneealacgnmealilal/home.html",
       selectors: {
-        loginConfirmElement: By.xpath('//p[text()="Legacy Wallet"]'),
+        loginCheckElement: By.xpath('//p[text()="Legacy Wallet"]'),
       }
     },
     hcapcha: {
@@ -139,7 +141,7 @@ const services = {
         emailInput: By.xpath('//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[1]/input'),
         passwordInput: By.xpath('//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[2]/input'),
         loginButton: By.xpath('//*[@id="app"]/div/div[1]/div[2]/div/div[2]/div/div[2]/form/div[3]/button'),
-        loginConfirmElement: By.xpath('//*[@id="mail-box-toggle"]/div[3]'),
+        loginCheckElement: By.xpath('//*[@id="mail-box-toggle"]/div[3]'),
         inboxElement: By.xpath('//*[@id="mail-box-toggle"]/div[3]'),
         latestMail: By.xpath('//*[@id="mail-item-0"]/div'),
         refreshButton: By.xpath('//*[@id="mail-box-toggle"]/div[3]/div/div/div[1]/div[1]/div[3]/a'),
@@ -153,7 +155,7 @@ const services = {
         passwordInput: By.xpath('//*[@id="app"]/div/div/main/div/div/div/div/div/div/div/div/div[2]/form/div/div/div/input'),
         nextButton: By.xpath('//*[@id="app"]/div/div/main/div/div/div/div[1]/div/div/div/div/div[1]/form/div[1]/div/button'),
         loginButton: By.xpath('//*[@id="app"]/div/div/main/div/div/div/div/div/div/div/div/div[2]/form/div/div/div/div/button'),
-        loginConfirmElement: By.xpath('//*[@id="app"]/div/div/div[3]/div[1]/div[2]/div'),
+        loginCheckElement: By.xpath('//*[@id="app"]/div/div/div[3]/div[1]/div[2]/div'),
         inboxElement: By.xpath('//*[@id="app"]/div/div/div[3]/div[1]/div[2]/div'),
         firstMail: By.xpath('//*[@id="threads_list"]/div[1]/div[3]/div[1]'),
         refreshButton: By.xpath('//*[@id="refresh-threads-btn"]'),

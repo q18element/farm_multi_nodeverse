@@ -15,8 +15,9 @@ const {
   logFailedTask,
   getProfilePath,
   markProfileExists,
-  handleCleanup
+  handleCleanup,
 } = require('./utils');
+
 const {
   MAX_LOGIN_RETRIES,
   CHECK_INTERVAL,
@@ -24,13 +25,15 @@ const {
 } = require('./config');
 
 
+
 class TaskAutomationManager {
   constructor() {
     this.serviceManager = null;
-    this.taskRepo = null;
-    this.accountRepo = null;
+    this.auto = null;
     this.db = null;
     this.auto = null;
+    this.task_monitoring_tables = null;
+    this.accounts_table = null;
   }
 
   async getDB() {
@@ -42,17 +45,19 @@ class TaskAutomationManager {
 
   async run() {
     try {
-      const db = await this.getDB();
-      this.accountRepo = new accountRepository(db);
-      this.taskRepo = new taskRepository(db);
-
-      const accounts = await this.accountRepo.loadAccounts();
+      
+      // Calling database
+      const db = await initDB();
+      this.task_monitoring_tables = new taskRepository(db);
+      this.accounts_table = new accountRepository(db);
+      
+      const accounts = await this.accounts_table.loadAccounts();
       const taskPromises = [];
 
       for (const account of accounts) {
-        for (const proxyConfig of account.proxies) {
+        for (const profileConfig of account.proxies) {
           taskPromises.push(
-            this.handleAccountProxyTask(account, proxyConfig)
+            this.handleProfileTasks(account, profileConfig)
               .catch(e => logger.error(`Task failed: ${e.message}`))
           );
           await sleep(STAGGER_DELAY);
@@ -67,95 +72,59 @@ class TaskAutomationManager {
     }
   }
 
-  /**
-   * Report a service’s point to the external API endpoint.
-   * @param {object} account - The account object (includes username, etc.).
-   * @param {string} service - The name of the service (e.g. "gradient", "bless").
-   * @param {number} point - The point value returned by check function.
-   * @param {string} proxy - The proxy string in use (e.g. "user:pass@host:port").
-   */
-  async reportServicePoint(account, service, point, proxy) {
-    // Convert service name to uppercase for "type" as requested:
-    const type = service.toUpperCase();
 
-    // Build request body as shown in your example
-    const requestBody = {
-      secretKey: 'Nodeverse-report-tool',
-      type: type,
-      // If your "account.username" is an email, you can use it directly here.
-      email: account.username,
-      point: point,
-      // Or something like: email: account.email, if your DB has an actual email field
-      device: os.type(), // e.g. "Linux", "Windows_NT", etc.
-      ip: {
-        status: 'CONNECTED',
-        proxy: proxy,
-        point: point
-      }
-    };
-
-    try {
-      const response = await fetch('https://report.nodeverse.ai/api/report-node/update-point', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(requestBody)
-      });
-      const data = await response.json();
-
-      if (response.ok) {
-        logger.info(`[REPORT SUCCESS] ${service} -> ${point} for ${account.username}. API response: ${JSON.stringify(data)}`);
-      } else {
-        logger.error(`[REPORT FAILED] Status: ${response.status}, body: ${JSON.stringify(data)}`);
-      }
-    } catch (error) {
-      logger.error(`[REPORT ERROR] Could not report point for ${service}, account ${account.username}. Error: ${error.message}`);
-    }
-  }
-
-  async handleAccountProxyTask(account, proxyConfig) {
-    const { proxy, run: services } = proxyConfig;
-    const profilePath = getProfilePath(account, proxy);
+  async handleProfileTasks(profile_id, task_ids) {
+    // proxy: "aaa:xxx@1.1.1.1:2222"
+    // task_ids = ["1", "2", "3",...]
+    // tasks: [
+    // "gradient": {
+    //   "username": "user",
+    //   "password": "pass"
+    //   }
+    // }, 
+    // "bless": {
+    //   "username": "user",
+    //   "password": "pass"
+    // }, 
+    // "despeed": {
+    //   "username": "user",
+    //   "password": "pass",
+    //   "seedphrase": "s s s s s s s s ..."
+    // }
+    // ]
+    const profilePath = getProfilePath(profile);
     let retryCounters = {};
   
     // Initialize per-service retry counters
-    services.forEach(service => {
+    tasks.forEach(service => {
       retryCounters[service] = 0;
     });
   
-    logger.debug(`[HANDLE TASK] Starting for account: ${account.username}, proxy: ${proxy}`);
-    logger.debug(`[HANDLE TASK] Account services: ${JSON.stringify(account.services)}`);
-    logger.debug(`[HANDLE TASK] Proxy config services: ${JSON.stringify(services)}`);
-    logger.debug(`[HANDLE TASK] Profile path: ${profilePath}`);
-    
     const wasProfileThere = fs.existsSync(profilePath);
-    logger.debug(`[HANDLE TASK] Was profile there: ${wasProfileThere}`);
   
     try {
       // Initialize tasks in the new table if not already created.
-      await this.taskRepo.initializeTasks(account.id, proxy, services);
-      logger.debug(`[HANDLE TASK] Tasks initialized for account: ${account.username} on proxy: ${proxy}`);
+      await this.task_monitoring_tables.initializeAutomations(profile.id, profile, tasks);
   
-      // Get the list of pending tasks (i.e. not marked as "failed")
-      let tasks = await this.taskRepo.getPendingTasks(account.id, proxy);
-      logger.debug(`[HANDLE TASK] Pending tasks count: ${tasks.length}`);
+      // inside automationTask is service: {"service": "gradient", credentials: {username: "user", password: "pass", ...}, state: "pending", retry_count: 0}}
+      // inside automationTasks is list of automationTask
+      let automationTasks = await this.task_monitoring_tables.getPendingAutomations(profile.id);
   
       // If there are no more pending tasks, quit the driver peacefully
-      if (tasks.length === 0) {
+      if (automationTasks.length === 0) {
         logger.info(`[PROFILE DONE] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Not opening this profile up.`);
         return; // Exit loop to prevent further execution
       }
+
+      let services = Object.keys(tasks);
   
-      while (tasks.length > 0) {
-        logger.debug(`[HANDLE TASK] Starting a new automation iteration for profile: ${profilePath}`);
+      while (automationTasks.length > 0) {
         let driver;
         driver = await initializeDriver(profilePath, proxy, services, 1);
-        logger.debug(`[HANDLE TASK] Driver initialized for profile: ${profilePath}`);
   
         try {
-          const newProfile = !wasProfileThere || tasks.some(task => retryCounters[task] > 0);
-          logger.debug(`[HANDLE TASK] Retry counters: ${JSON.stringify(retryCounters)}`);
-          logger.debug(`[HANDLE TASK] New profile required: ${newProfile}`);
-  
+          const newProfile = !wasProfileThere || automationTasks.some(task => retryCounters[task] > 0);
+       
           if (newProfile) {
             logger.info("Creating new profile at", profilePath);
             markProfileExists(profilePath);
@@ -163,16 +132,12 @@ class TaskAutomationManager {
             logger.info("Using existing profile at", profilePath);
           }
   
-          logger.debug(`[HANDLE TASK] Calling monitorServices for account: ${account.username}`);
-          await this.monitorServices(driver, account, proxy, tasks, retryCounters);
-          logger.debug(`[HANDLE TASK] monitorServices completed for account: ${account.username}`);
+          await this.executeAutomationTasks(driver, profile, automationTasks, retryCounters);
   
           // Refresh the pending tasks after a monitoring cycle
-          tasks = await this.taskRepo.getPendingTasks(account.id, proxy);
-          logger.debug(`[HANDLE TASK] Refreshed pending tasks count: ${tasks.length}`);
-          if (tasks.length === 0) break;
+          automationTasks = await this.task_monitoring_tables.getPendingAutomations(profile.id);
+          if (automationTasks.length === 0) break;
         } finally {
-          logger.debug(`[HANDLE TASK] Resetting tab for driver at profile: ${profilePath}`);
           await this.safeTabReset(driver);
         }
       }
@@ -211,17 +176,17 @@ class TaskAutomationManager {
     }
   }
 
-  async monitorServices(driver, account, proxy, tasks, retryCounters) {
+  async executeAutomationTasks(driver, account, proxy, tasks, retryCounters) {
     while (tasks.length > 0) {
 
       if (tasks.length === 0) {
-        logger.info(`[PROFILE DONE] [monitorServices] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Closing driver.`);
+        logger.info(`[PROFILE DONE] [executeAutomationTasks] All tasks for ${account.username} on proxy ${proxy} have failed or completed. Closing driver.`);
         await this.safeTabReset(driver);
         return;
       }
 
-      const checkResults = await this.checkServices(driver, account, proxy, tasks, retryCounters);
-      const { shouldRetry, remainingTasks } = await this.processCheckResults(
+      const checkResults = await this.doTask(driver, account, proxy, tasks, retryCounters);
+      const { shouldRetry, remainingTasks } = await this.processAutomationResults(
         checkResults,
         tasks,
         retryCounters,
@@ -296,7 +261,7 @@ class TaskAutomationManager {
     return results;
   }
 
-  async processCheckResults(results, tasks, retryCounters, account, proxy) {
+  async processAutomationResults(results, tasks, retryCounters, account, proxy) {
     let shouldRetry = false;
     const remainingTasks = [...tasks];
   
@@ -310,18 +275,18 @@ class TaskAutomationManager {
       if (results[service] !== false && results[service] !== "login_failed") {
         // Successful check returns a point value.
         const point = results[service];
-        await this.taskRepo.updateTaskState(account.id, proxy, service, "success", 0, point);
+        await this.task_monitoring_tables.updateTaskState(account.id, proxy, service, "success", 0, point);
         await this.reportServicePoint(account, service, point, proxy);
         
       } else if (results[service] === "login_failed") {
         // Login failure: mark as failed only if max retries are reached.
         if (retryCounters[service] < MAX_LOGIN_RETRIES) {
           logger.warn(`[RETRY] ${service} login failed for ${account.username}. Attempt ${retryCounters[service]}/${MAX_LOGIN_RETRIES}`);
-          await this.taskRepo.updateTaskState(account.id, proxy, service, "pending", 0, 0);
+          await this.task_monitoring_tables.updateTaskState(account.id, proxy, service, "pending", 0, 0);
           shouldRetry = true;
         } else {
           logger.error(`[FAILURE] ${service} login failed after ${MAX_LOGIN_RETRIES} attempts`);
-          await this.taskRepo.updateTaskState(account.id, proxy, service, "failed", 0, 0);
+          await this.task_monitoring_tables.updateTaskState(account.id, proxy, service, "failed", 0, 0);
           const entry = { account, proxy, service, timestamp: new Date().toISOString() };
           logFailedTask(entry);
           const index = remainingTasks.indexOf(service);
@@ -332,7 +297,7 @@ class TaskAutomationManager {
       } else {
         // Check failure (login was successful but check returned false).
         logger.warn(`[CHECK FAILURE] ${service} check returned false for ${account.username}`);
-        await this.taskRepo.updateTaskState(account.id, proxy, service, "pending", 0, 0);
+        await this.task_monitoring_tables.updateTaskState(account.id, proxy, service, "pending", 0, 0);
         // Continue to retry check failures without marking them as failed.
         shouldRetry = true;
       }
@@ -364,6 +329,51 @@ class TaskAutomationManager {
       await new AutomationAcions(driver).tabReset();
     } catch (error) {
       logger.warn(`[TAB RESET ERROR] Failed to reset tab: ${error.message}`);
+    }
+  }
+
+    /**
+   * Report a service’s point to the external API endpoint.
+   * @param {object} account - The account object (includes username, etc.).
+   * @param {string} service - The name of the service (e.g. "gradient", "bless").
+   * @param {number} point - The point value returned by check function.
+   * @param {string} proxy - The proxy string in use (e.g. "user:pass@host:port").
+   */
+  async reportServicePoint(account, service, point, proxy) {
+    // Convert service name to uppercase for "type" as requested:
+    const type = service.toUpperCase();
+
+    // Build request body as shown in your example
+    const requestBody = {
+      secretKey: 'Nodeverse-report-tool',
+      type: type,
+      // If your "account.username" is an email, you can use it directly here.
+      email: account.username,
+      point: point,
+      // Or something like: email: account.email, if your DB has an actual email field
+      device: os.type(), // e.g. "Linux", "Windows_NT", etc.
+      ip: {
+        status: 'CONNECTED',
+        proxy: proxy,
+        point: point
+      }
+    };
+
+    try {
+      const response = await fetch('https://report.nodeverse.ai/api/report-node/update-point', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        logger.info(`[REPORT SUCCESS] ${service} -> ${point} for ${account.username}. API response: ${JSON.stringify(data)}`);
+      } else {
+        logger.error(`[REPORT FAILED] Status: ${response.status}, body: ${JSON.stringify(data)}`);
+      }
+    } catch (error) {
+      logger.error(`[REPORT ERROR] Could not report point for ${service}, account ${account.username}. Error: ${error.message}`);
     }
   }
 }
