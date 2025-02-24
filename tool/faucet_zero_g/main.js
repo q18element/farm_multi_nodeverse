@@ -78,7 +78,7 @@ function isProxyClaimable(px) {
 
 function saveTime(name) {
   try {
-    fs.writeFileSync(`./temp/${convertNameToDirName(name)}`, Date.now());
+    fs.writeFileSync(`./temp/${convertNameToDirName(name)}`, Date.now().toString());
   } catch (e) {
     console.error("failed save time " + name + " " + e);
   }

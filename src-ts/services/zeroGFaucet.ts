@@ -1,8 +1,9 @@
 import { By } from "selenium-webdriver";
 import BaseService, { BaseServiceOptions } from "./baseService.js";
-import { seedphraseOrPrivateKeyToEthAddress } from "../utils/web3.js";
 import MetamaskService from "./metamask.js";
-
+import fs from "fs";
+import path from "path";
+import { time } from "console";
 export default class ZeroGFaucetService extends BaseService {
   metamaskServcie: MetamaskService;
   constructor(opts: BaseServiceOptions) {
@@ -36,84 +37,120 @@ export default class ZeroGFaucetService extends BaseService {
   async uploadFile() {
     const { seedphrase } = this.account;
     const auto = this.auto;
+    const driver = auto.driver;
     await this.metamaskServcie.setupOldWallet(seedphrase);
+    await auto.get("https://chainlist.org/chain/16600");
 
+    if (
+      await driver.executeAsyncScript(async (callback: any) => {
+        try {
+          // @ts-ignore
+          await window.ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0x40d8" }],
+          });
+        } catch (error: any) {
+          if (error.code === 4902) {
+            // @ts-ignore
+            window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: "0x40d8",
+                  chainName: "0G-Newton-Testnet",
+                  nativeCurrency: {
+                    name: "0G Testnet",
+                    symbol: "A0GI",
+                    decimals: 18,
+                  },
+                  rpcUrls: ["https://evmrpc-testnet.0g.ai"],
+                  blockExplorerUrls: ["https://chainscan-newton.0g.ai"],
+                },
+              ],
+            });
+
+            callback(true);
+          }
+        }
+      })
+    ) {
+      await auto.sleep(2000);
+
+      await this.metamaskServcie.confirmAny();
+      await auto.sleep(2000);
+    }
     await auto.get("https://storagescan-newton.0g.ai/tool");
     await auto.sleep(2000);
+
     let e = await auto.waitForElement(
       By.xpath('(//div[text()="Please connect your wallet first."]  | //p[text()="Browse File"])[1]')
     );
-    if (!(await e.getText()).includes("Please connect your wallet first.")) {
-      await auto.clickElement(By.xpath("//w3m-button"));
+    if ((await e.getText()).includes("Please connect your wallet first.")) {
+      this.logger.info("Connecting Metamask");
+      await auto.actionsClickElement(By.xpath("//w3m-button"));
+      await auto.sleep(1000);
+      try {
+        await auto.driver.wait(async () => {
+          return await auto.driver.executeScript(() => {
+            try {
+              // @ts-ignore
+              return document.querySelector("body > w3m-modal").shadowRoot.querySelector("wui-flex");
+            } catch (e) {
+              return false;
+            }
+          });
+        }, 10000);
+      } catch (e) {
+        await auto.get("https://storagescan-newton.0g.ai/tool");
+        await auto.sleep(1000);
+        await auto.actionsClickElement(By.xpath("//w3m-button"));
+        await auto.driver.wait(async () => {
+          return await auto.driver.executeScript(() => {
+            try {
+              // @ts-ignore
+              return document.querySelector("body > w3m-modal").shadowRoot.querySelector("wui-flex");
+            } catch (e) {
+              return false;
+            }
+          });
+        });
+      }
+      await auto.sleep(1000);
+
       await auto.driver.executeScript(() => {
         // @ts-ignore
         document
           .querySelector("body > w3m-modal")
           .shadowRoot.querySelector("wui-flex > wui-card > w3m-router")
           .shadowRoot.querySelector("div > w3m-connect-view")
-          .shadowRoot.querySelector("wui-flex > wui-list-wallet:nth-child(4)");
+          .shadowRoot.querySelector("wui-flex > wui-list-wallet:nth-child(4)") // @ts-ignore
+          .click();
       });
       await auto.sleep(1000);
       await this.metamaskServcie.confirmAny();
-      await auto.waitForElement(By.xpath('//p[text()="Browse File"])[1]'));
+      await auto.waitForElement(By.xpath('//p[text()="Browse File"]'));
+    } else {
+      this.logger.info("Metamask already connected");
     }
+
+    await auto.sleep(3000);
+
+    await auto.sleep(1000);
+    const randomName = Math.random().toString(36).slice(2);
+    const path_ = path.resolve(`./temp/zerog/${randomName}.txt`);
+    fs.mkdirSync(path.dirname(path_), { recursive: true });
+    fs.writeFileSync(path_, Math.random().toString(32).slice(2));
+    await (await auto.waitForElement(By.css('[name="file"]'))).sendKeys(path_);
+    this.logger.info("Uploading file");
+    await auto.waitForElement(By.xpath('//*[text()="Upload prepared"]'));
+    await auto.sleep(1000);
+    await auto.clickElement(By.xpath('//button[text()="Upload" and not(disabled)]'));
+    await auto.sleep(1000);
+    await this.metamaskServcie.confirmAny();
+    await auto.sleep(5000);
+    this.logger.info("Uploaded file");
+    await auto.waitForElement(By.xpath('//*[text()="Upload completed"]'));
 
     await auto.sleep(2000);
-
-    if (
-      await auto.driver.executeScript(() => {
-        try {
-          if (
-            // @ts-ignore
-            document
-              .querySelector(
-                "body > div > div.px-\\[35px\\].sm\\:px-\\[40px\\].min-h-\\[calc\\(100vh-224px\\)\\] > div.pt-\\[56px\\].sm\\:pt-\\[23px\\].flex.flex-col.items-center.justify-center.z-10.relative > div.flex.w-full.justify-between > div.flex.gap-\\[16px\\] > w3m-button"
-              )
-              .shadowRoot.querySelector("w3m-account-button")
-              .shadowRoot.querySelector("wui-account-button")
-              .shadowRoot.querySelector("button > wui-text").textContent == " Switch Network"
-          ) {
-            // @ts-ignore
-            document
-              .querySelector("body > w3m-modal")
-              .shadowRoot.querySelector("wui-flex > wui-card > w3m-router")
-              .shadowRoot.querySelector("div > w3m-unsupported-chain-view")
-              .shadowRoot.querySelector("wui-flex > wui-flex:nth-child(2) > wui-list-network") // @ts-ignore
-              .click();
-            return true;
-          }
-        } catch (e) {
-          return false;
-        }
-      })
-    ) {
-      await this.metamaskServcie.confirmAny();
-      auto.sleep(2000);
-    }
-    auto.sleep(1000);
-
-    await auto.driver.executeScript(() => {
-      // @ts-ignore
-      function createRandomFileAndSetToInput(inputElement, minSize = 10, maxSize = 1024) {
-        const fileSize = Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize;
-
-        let randomContent = "";
-        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        for (let i = 0; i < fileSize; i++) {
-          randomContent += characters.charAt(Math.floor(Math.random() * characters.length));
-        }
-
-        const fileName = `randomfile_${Date.now()}.txt`;
-
-        const file = new File([randomContent], fileName, { type: "text/plain" });
-
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(file);
-
-        inputElement.files = dataTransfer.files;
-
-        inputElement.dispatchEvent(new Event("change"));
-      }
-    });
   }
 }
