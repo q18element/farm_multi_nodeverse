@@ -45,8 +45,8 @@ export default class WebDriverHelper {
   async get(url: string): Promise<void> {
     const driver = this.driver;
     await driver.get(url);
-    await driver.wait(() => {
-      return driver.executeScript("return document.readyState").then((state) => {
+    await driver.wait(async () => {
+      return await driver.executeScript("return document.readyState").then((state) => {
         return state === "complete";
       });
     }, this.defaultTimeout.timeouts.pageLoad);
@@ -240,5 +240,9 @@ export default class WebDriverHelper {
     } catch (error: any) {
       throw new Error(`Failed to switch to iframe: ${selector} - ${error.message}`);
     }
+  }
+
+  async sleep(ms: number) {
+    await this.driver.sleep(ms);
   }
 }

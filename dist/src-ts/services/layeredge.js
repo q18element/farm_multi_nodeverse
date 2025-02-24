@@ -38,7 +38,7 @@ export default class LayerEdgeService extends BaseService {
             await driver.sleep(500);
             await auto.clickElement(By.xpath('//div[text()="MetaMask" ]'));
             await driver.sleep(3000);
-            await metamaskService.confirm_any();
+            await metamaskService.confirmAny();
             await driver.sleep(3000);
             /** @type {WebElement} */
         }
@@ -65,7 +65,7 @@ export default class LayerEdgeService extends BaseService {
                     element.click();
                 }
             });
-            await metamaskService.confirm_any();
+            await metamaskService.confirmAny();
         }
         await driver.sleep(3000);
         if (await auto.checkElementExists(By.xpath(`//*[contains(@class, "wrapper_main__")]//button[contains(@class, 'button_btn__') and span="Claim Reward"]`))) {
@@ -74,7 +74,7 @@ export default class LayerEdgeService extends BaseService {
                 await auto.actionsClickElement(By.xpath(`//*[contains(@class, "wrapper_main__")]//button[contains(@class, 'button_btn__') and span="Claim Reward"]`), 5000);
                 await driver.sleep(1000);
                 await auto.clickElement(By.css("#modal-root button"));
-                await metamaskService.confirm_any();
+                await metamaskService.confirmAny();
                 await driver.sleep(2000);
                 // await auto.waitForElement(By.xpath(`(//button[contains(@class, 'button_btn__') and span="Claimed"])[2]`));
                 await driver.executeScript(() => {

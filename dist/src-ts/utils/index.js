@@ -32,15 +32,26 @@ function parseHttpProxyAuth(proxy) {
 function convertNameToDirName(name) {
     return name.replace(/[^a-zA-Z0-9]/g, "_");
 }
+async function checkProxy(proxy, retries = 3) {
+    while (retries > 0) {
+        try {
+            const agent = new HttpsProxyAgent(parseHttpProxyAuth(proxy));
+            await fetch("https://google.com", { agent });
+            return true;
+        }
+        catch (error) {
+            retries--;
+        }
+    }
+    return false;
+}
 /** check a list proxy and return list of working proxy */
 async function checkProxyWorks(...proxies) {
     let workedProxies = [];
     let pm = [];
     for (let proxy of proxies) {
         try {
-            proxy = parseHttpProxyAuth(proxy);
-            const agent = new HttpsProxyAgent(proxy);
-            pm.push(fetch("https://google.com", { agent })
+            pm.push(checkProxy(proxy)
                 .then(() => {
                 console.log("Check proxy", proxy, "OK");
                 workedProxies.push(proxy);

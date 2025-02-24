@@ -165,7 +165,7 @@ export default class MetamaskService extends BaseService {
         }
         catch (e) { }
     }
-    async confirm_any() {
+    async confirmAny() {
         const auto = this.auto;
         const driver = auto.driver;
         let currentWindow = await driver.getWindowHandle();

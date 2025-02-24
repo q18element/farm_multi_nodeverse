@@ -8,7 +8,7 @@ import { checkProxyWorks, convertNameToDirName } from "./utils/index.js";
 export default class MainApp {
     _accountcsv; // Path to account file
     _proxycsv; // Path to proxy file
-    _db_path;
+    _dbPath;
     _db;
     _serviceCache; // cache account services
     _proxies;
@@ -16,7 +16,7 @@ export default class MainApp {
     logger;
     constructor({ wd }) {
         wd = wd || "./";
-        this._db_path = path.resolve(wd, "./data/profile_data.db");
+        this._dbPath = path.resolve(wd, "./data/profile_data.db");
         this._accountcsv = path.resolve(wd, "./input/accounts.csv");
         this._proxycsv = path.resolve(wd, "./input/proxy.csv");
         this.browserManager = new BrowserManager({
@@ -31,7 +31,7 @@ export default class MainApp {
         // Process command line arguments
     }
     async getDB() {
-        return this._db ? this._db : (this._db = await DatabaseManager.open({ dbPath: this._db_path }));
+        return this._db ? this._db : (this._db = await DatabaseManager.open({ dbPath: this._dbPath }));
     }
     /** read all account on account.csv */
     async getAccounts() {

@@ -15,7 +15,7 @@ interface MainAppOptions {
 export default class MainApp {
   protected _accountcsv: string; // Path to account file
   protected _proxycsv: string; // Path to proxy file
-  protected _db_path: string;
+  protected _dbPath: string;
   protected _db?: DatabaseManager;
   protected _serviceCache: { [accountUsername: string]: { [profileIndex: string]: BaseService[] } }; // cache account services
   protected _proxies: string[];
@@ -26,7 +26,7 @@ export default class MainApp {
   constructor({ wd }: MainAppOptions) {
     wd = wd || "./";
 
-    this._db_path = path.resolve(wd, "./data/profile_data.db");
+    this._dbPath = path.resolve(wd, "./data/profile_data.db");
     this._accountcsv = path.resolve(wd, "./input/accounts.csv");
     this._proxycsv = path.resolve(wd, "./input/proxy.csv");
     this.browserManager = new BrowserManager({
@@ -43,7 +43,7 @@ export default class MainApp {
   }
 
   protected async getDB(): Promise<DatabaseManager> {
-    return this._db ? this._db : (this._db = await DatabaseManager.open({ dbPath: this._db_path }));
+    return this._db ? this._db : (this._db = await DatabaseManager.open({ dbPath: this._dbPath }));
   }
 
   /** read all account on account.csv */
