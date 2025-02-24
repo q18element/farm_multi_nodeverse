@@ -9,7 +9,7 @@ import { checkProxyWorks, convertNameToDirName } from "./utils/index.js";
 import BaseService from "./services/baseService.js";
 
 interface MainAppOptions {
-  wd: string;
+  wd: string; // working directory
 }
 
 export default class MainApp {
@@ -109,7 +109,7 @@ export default class MainApp {
 
       this._serviceCache[account.username][i] = _services;
       for (const service of _services) {
-        await service.load(account);
+        await service.load();
       }
     }
   }

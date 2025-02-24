@@ -48,10 +48,10 @@ async function checkProxyWorks(...proxies) {
                 .catch(() => {
                 console.log("Check proxy", proxy, "FAIL");
             }));
-            await Promise.all(pm);
         }
         catch (error) { }
     }
+    await Promise.all(pm);
     return workedProxies;
 }
 async function processProxy(proxyUrl, maxRetries = 3) {

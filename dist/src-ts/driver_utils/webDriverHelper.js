@@ -3,13 +3,46 @@ import fs from "fs";
 export default class WebDriverHelper {
     driver;
     defaultTimeout;
+    assignedTab;
+    _assignedTab;
     constructor(driver, config = undefined) {
         this.driver = driver;
         this.defaultTimeout = config || {
             timeouts: {
                 element: 60000,
+                pageLoad: 60000,
             },
         };
+        this.assignedTab = {};
+        this._assignedTab = [];
+    }
+    async assignTab(tabName) {
+        if (this.assignedTab[tabName]) {
+            await this.driver.switchTo().window(this.assignedTab[tabName]);
+            return;
+        }
+        const currentHandle = await this.driver.getWindowHandle();
+        if (this._assignedTab.includes(currentHandle)) {
+            await this.driver.switchTo().newWindow("tab");
+            const newHandle = await this.driver.getWindowHandle();
+            this.assignedTab[tabName] = newHandle;
+            this._assignedTab.push(newHandle);
+        }
+        else {
+            this.assignedTab[tabName] = currentHandle;
+            this._assignedTab.push(currentHandle);
+        }
+        // Switch to the assigned tab
+        await this.driver.switchTo().window(this.assignedTab[tabName]);
+    }
+    async get(url) {
+        const driver = this.driver;
+        await driver.get(url);
+        await driver.wait(() => {
+            return driver.executeScript("return document.readyState").then((state) => {
+                return state === "complete";
+            });
+        }, this.defaultTimeout.timeouts.pageLoad);
     }
     async waitForElement(selector, timeout = undefined) {
         timeout = timeout || this.defaultTimeout.timeouts.element || 60000;

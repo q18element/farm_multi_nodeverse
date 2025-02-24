@@ -39,6 +39,9 @@ export default abstract class BaseService {
   }
 
   /** this function run on service start to makesure service account is logged in */
-  abstract load(credentials: Account): Promise<void>;
-  abstract check(credentials: Account): Promise<any>;
+  abstract load(): Promise<void>;
+  /** this will check and return point then back to load state */
+  abstract check(): Promise<any>;
+  /** run daily tab */
+  abstract daily(): Promise<void>;
 }

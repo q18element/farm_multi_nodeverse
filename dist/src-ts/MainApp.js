@@ -87,7 +87,7 @@ export default class MainApp {
             }
             this._serviceCache[account.username][i] = _services;
             for (const service of _services) {
-                await service.load(account);
+                await service.load();
             }
         }
     }

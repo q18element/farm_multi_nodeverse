@@ -2,7 +2,6 @@ import { By, WebDriver } from "selenium-webdriver";
 import fs from "fs";
 import path from "path";
 import BaseService, { BaseServiceOptions } from "./baseService.js";
-import { Account } from "../database/AccountRepository.js";
 
 async function copyRecoveryPhrase(driver: WebDriver) {
   try {
@@ -118,16 +117,21 @@ const config = {
   },
 };
 export default class MetamaskService extends BaseService {
-  load(credentials: Account): Promise<void> {
+  daily(): Promise<void> {
     throw new Error("Method not implemented.");
   }
-  check(credentials: Account): Promise<void> {
+  protected extensionId: string;
+  load(): Promise<void> {
+    throw new Error("Method not implemented.");
+  }
+  check(): Promise<void> {
     throw new Error("Method not implemented.");
   }
   constructor(opts: BaseServiceOptions) {
     super(opts);
+    this.extensionId = "nkbihfbeogaeaoehlefnkodbefgpgknn";
   }
-  
+
   async setupNewWallet() {
     const auto = this.auto;
     const driver = auto.driver;
@@ -225,57 +229,90 @@ export default class MetamaskService extends BaseService {
   async setupOldWallet(seedphrase: string) {
     const auto = this.auto;
     const driver = auto.driver;
+    const prevTab = await driver.getWindowHandle();
+    await driver.switchTo().newWindow("tab");
     this.logger.info(`Starting Mtm setup`);
     const { loginUrl, selectors } = config.services.mtm;
-    await driver.get(loginUrl);
-    driver.sleep(2000);
+    try {
+      const current = await driver.getWindowHandle();
+      await auto.get(loginUrl);
+      driver.sleep(2000);
+      await driver.switchTo().window(current);
+      let e = await auto.waitForElement(
+        By.xpath('(//*[@id="onboarding__terms-checkbox"] | //button[text()="Unlock"])[1]')
+      );
+      if ((await e.getText()) === "Unlock") {
+        await auto.clickElement(By.xpath('//div[@class="unlock-page__links"]//a'));
+        await fillImportSrpRecoveryWords(driver, seedphrase);
+        await auto.enterText(By.xpath('//*[@id="password"]'), "Rtn@2024");
+        await auto.enterText(By.xpath('//*[@id="confirm-password"]'), "Rtn@2024");
+        await auto.clickElement(By.xpath('//button[@data-testid="create-new-vault-submit-button"]'));
+        await driver.sleep(1000);
+        if (await auto.safeClick(selectors.doneButton)) {
+          await driver.sleep(1000);
+          await auto.safeClick(selectors.nextButton2);
+          await driver.sleep(1000);
+          await auto.safeClick(selectors.doneButton2);
+          await driver.sleep(7777);
+        }
 
-    let e = await auto.waitForElement(
-      By.xpath('(//*[@id="onboarding__terms-checkbox"] | //button[text()="Unlock"])[1]')
-    );
-    if ((await e.getText()) === "Unlock") {
-      await auto.clickElement(By.xpath('//div[@class="unlock-page__links"]//a'));
-      await fillImportSrpRecoveryWords(driver, seedphrase);
-      await auto.enterText(By.xpath('//*[@id="password"]'), "Rtn@2024");
-      await auto.enterText(By.xpath('//*[@id="confirm-password"]'), "Rtn@2024");
-      await auto.clickElement(By.xpath('//button[@data-testid="create-new-vault-submit-button"]'));
-      await driver.sleep(1000);
-      await auto.safeClick(selectors.doneButton);
-      await driver.sleep(1000);
-      await auto.safeClick(selectors.nextButton2);
-      await driver.sleep(1000);
-      await auto.safeClick(selectors.doneButton2);
-      await driver.sleep(7777);
-      await auto.waitForElement(selectors.mainetText);
-    } else {
-      await driver.sleep(3000);
-      await auto.clickElement(selectors.agreeCheckbox);
-      await auto.scrollToElement(selectors.importWalletButton);
-      await auto.clickElement(selectors.importWalletButton);
+        await auto.waitForElement(selectors.mainetText);
+      } else {
+        await driver.sleep(3000);
+        await auto.clickElement(selectors.agreeCheckbox);
+        await auto.scrollToElement(selectors.importWalletButton);
+        await auto.clickElement(selectors.importWalletButton);
 
-      await auto.clickElement(selectors.agreeCheckbox2);
-      await auto.scrollToElement(selectors.iagreeButton);
-      await auto.clickElement(selectors.iagreeButton);
+        await auto.clickElement(selectors.agreeCheckbox2);
+        await auto.scrollToElement(selectors.iagreeButton);
+        await auto.clickElement(selectors.iagreeButton);
 
-      await driver.sleep(2000);
-      await fillImportSrpRecoveryWords(driver, seedphrase);
-      await auto.clickElement(selectors.confirmSecretInputButton);
+        await driver.sleep(2000);
+        await fillImportSrpRecoveryWords(driver, seedphrase);
+        await auto.clickElement(selectors.confirmSecretInputButton);
 
-      await auto.enterText(selectors.passwordInput, "Rtn@2024");
-      await auto.enterText(selectors.passwordRepeatInput, "Rtn@2024");
-      await auto.clickElement(selectors.iunderstandCheckbox);
-      await auto.clickElement(selectors.createNewWalletButton);
+        await auto.enterText(selectors.passwordInput, "Rtn@2024");
+        await auto.enterText(selectors.passwordRepeatInput, "Rtn@2024");
+        await auto.clickElement(selectors.iunderstandCheckbox);
+        await auto.clickElement(selectors.createNewWalletButton);
 
-      await driver.sleep(1000);
-      await auto.clickElement(selectors.doneButton);
-      await driver.sleep(1000);
-      await auto.clickElement(selectors.nextButton2);
-      await driver.sleep(1000);
-      await auto.clickElement(selectors.doneButton2);
-      await driver.sleep(7777);
-      await auto.waitForElement(selectors.mainetText);
+        await driver.sleep(1000);
+        await auto.clickElement(selectors.doneButton);
+        await driver.sleep(1000);
+        await auto.clickElement(selectors.nextButton2);
+        await driver.sleep(1000);
+        await auto.clickElement(selectors.doneButton2);
+        await driver.sleep(2000);
+        await auto.waitForElement(selectors.mainetText);
 
-      this.logger.info(`Mtm setup success on proxy`);
+        this.logger.info(`Mtm setup success on proxy`);
+      }
+    } finally {
+      await this.resetMetamaskTab();
+      try {
+        await driver.switchTo().window(prevTab);
+      } catch (e) {
+        await driver.switchTo().window((await driver.getAllWindowHandles())[0]);
+      }
+    }
+  }
+
+  async resetMetamaskTab() {
+    const driver = this.auto.driver;
+    for (const tab of await driver.getAllWindowHandles()) {
+      try {
+        await driver.switchTo().window(tab);
+        if ((await driver.getCurrentUrl()).startsWith("chrome-extension://" + this.extensionId)) {
+          if ((await driver.getAllWindowHandles()).length == 1) {
+            await driver.switchTo().newWindow("tab");
+            await driver.switchTo().window(tab);
+            await driver.close();
+            break;
+          } else {
+            await driver.close();
+          }
+        }
+      } catch (e) {}
     }
   }
 }
