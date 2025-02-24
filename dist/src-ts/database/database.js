@@ -3,11 +3,11 @@ import { open } from "sqlite";
 import csv from "csvtojson";
 import AccountRepository from "./AccountRepository.js";
 export default class DatabaseManager {
-    db_path;
+    dbPath;
     db;
     _accountRepository;
-    constructor({ db_path }) {
-        this.db_path = db_path;
+    constructor({ dbPath }) {
+        this.dbPath = dbPath;
     }
     get profileRepository() {
         if (!this.db) {
@@ -18,8 +18,8 @@ export default class DatabaseManager {
         }
         return this._accountRepository;
     }
-    static async open({ db_path }) {
-        const profiledb = new DatabaseManager({ db_path: db_path });
+    static async open({ dbPath }) {
+        const profiledb = new DatabaseManager({ dbPath: dbPath });
         await profiledb.initDB();
         return profiledb;
     }
@@ -28,7 +28,7 @@ export default class DatabaseManager {
             return this.db;
         }
         const db = await open({
-            filename: this.db_path,
+            filename: this.dbPath,
             driver: sqlite3.Database,
         });
         await db.exec(`
@@ -53,7 +53,7 @@ export default class DatabaseManager {
           FOREIGN KEY(account_id) REFERENCES accounts(id)
       );
     `);
-        return this.db = db;
+        return (this.db = db);
     }
     async resetDB() {
         let db;

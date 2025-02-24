@@ -2,9 +2,12 @@ export { nameToServiceConfig, serviceToServiceConfig };
 
 import LayerEdgeService from "./layeredge.js";
 import { INSTALLED_EXTENSION, ExtensionInfo } from "../resources.js";
-import BaseService from "./baseService.js";
+import BaseService, { BaseServiceOptions } from "./baseService.js";
 
-const ServicesMapping: Record<string, { service: typeof BaseService; extensions: Array<ExtensionInfo> }> = {
+const ServicesMapping: Record<
+  string,
+  { service: new (opts: BaseServiceOptions) => BaseService; extensions: Array<ExtensionInfo> }
+> = {
   layeredge: {
     service: LayerEdgeService,
     extensions: [INSTALLED_EXTENSION.metamask],

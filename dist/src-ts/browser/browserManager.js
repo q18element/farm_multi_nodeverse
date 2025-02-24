@@ -2,13 +2,12 @@ import { Builder } from "selenium-webdriver";
 // @ts-ignore
 import chrome from "selenium-webdriver/chrome.js";
 import os from "os";
-import { PROFILES_PATH } from "../constants.js";
 import path from "path";
 import { parseHttpProxyAuth, processProxy } from "../utils/index.js";
 export default class BrowserManager {
     profileDir;
     constructor(opts) {
-        this.profileDir = opts?.profileDir || PROFILES_PATH;
+        this.profileDir = opts?.profileDir;
     }
     /**
      * Starts a new Chrome browser profile with the given options.
@@ -27,6 +26,9 @@ export default class BrowserManager {
             ...(args || []),
         ];
         if (profileDirName) {
+            if (!this.profileDir) {
+                throw Error('"profileDir" is required when "profileDirName" is provided');
+            }
             _args.push(`--user-data-dir=${path.join(this.profileDir, profileDirName)}`);
         }
         if (proxy) {

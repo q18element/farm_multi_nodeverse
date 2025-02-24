@@ -5,22 +5,22 @@ import csv from "csvtojson";
 import AccountRepository from "./AccountRepository.js";
 
 interface ProfileDatabaseConfig {
-  db_path: string;
+  dbPath: string;
 }
 
 export default class DatabaseManager {
-  protected db_path: string;
-  private db?:Database;
+  protected dbPath: string;
+  private db?: Database;
   private _accountRepository?: AccountRepository;
 
-  protected constructor({ db_path }: ProfileDatabaseConfig) {
-    this.db_path = db_path;
+  protected constructor({ dbPath }: ProfileDatabaseConfig) {
+    this.dbPath = dbPath;
   }
   get profileRepository() {
     if (!this.db) {
       throw new Error("Database not initialized");
     }
-    
+
     if (!this._accountRepository) {
       this._accountRepository = new AccountRepository(this.db);
     }
@@ -28,8 +28,8 @@ export default class DatabaseManager {
     return this._accountRepository;
   }
 
-  static async open({ db_path }: Partial<ProfileDatabaseConfig>) {
-    const profiledb = new DatabaseManager({ db_path: db_path! });
+  static async open({ dbPath }: Partial<ProfileDatabaseConfig>) {
+    const profiledb = new DatabaseManager({ dbPath: dbPath! });
     await profiledb.initDB();
     return profiledb;
   }
@@ -40,7 +40,7 @@ export default class DatabaseManager {
     }
 
     const db = await open({
-      filename: this.db_path,
+      filename: this.dbPath,
       driver: sqlite3.Database,
     });
 
@@ -66,8 +66,8 @@ export default class DatabaseManager {
           FOREIGN KEY(account_id) REFERENCES accounts(id)
       );
     `);
-    
-    return this.db = db;
+
+    return (this.db = db);
   }
 
   async resetDB(): Promise<void> {

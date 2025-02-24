@@ -1,25 +1,27 @@
 import path from "path";
 import csv from "csvtojson";
 import log4js from "log4js";
-import { DATABASE_PATH, ROOT_PATH } from "./constants.js";
 import DatabaseManager from "./database/database.js";
 import BrowserManager from "./browser/browserManager.js";
 import { nameToServiceConfig } from "./services/servicesMapping.js";
 import { checkProxyWorks, convertNameToDirName } from "./utils/index.js";
 export default class MainApp {
-    accountcsv; // Path to account file
-    proxycsv; // Path to proxy file
+    _accountcsv; // Path to account file
+    _proxycsv; // Path to proxy file
     _db_path;
     _db;
     _serviceCache; // cache account services
     _proxies;
     browserManager;
     logger;
-    constructor() {
-        this._db_path = DATABASE_PATH;
-        this.accountcsv = path.resolve(ROOT_PATH, "./input/accounts.csv");
-        this.proxycsv = path.resolve(ROOT_PATH, "./input/proxy.csv");
-        this.browserManager = new BrowserManager();
+    constructor({ wd }) {
+        wd = wd || "./";
+        this._db_path = path.resolve(wd, "./data/profile_data.db");
+        this._accountcsv = path.resolve(wd, "./input/accounts.csv");
+        this._proxycsv = path.resolve(wd, "./input/proxy.csv");
+        this.browserManager = new BrowserManager({
+            profileDir: path.resolve(wd, "./data/profiles"),
+        });
         this._proxies = [];
         this._serviceCache = {};
         this.processArgs();
@@ -29,16 +31,16 @@ export default class MainApp {
         // Process command line arguments
     }
     async getDB() {
-        return this._db ? this._db : (this._db = await DatabaseManager.open({ db_path: this._db_path }));
+        return this._db ? this._db : (this._db = await DatabaseManager.open({ dbPath: this._db_path }));
     }
     /** read all account on account.csv */
     async getAccounts() {
-        return await csv().fromFile(this.accountcsv);
+        return await csv().fromFile(this._accountcsv);
     }
     async __beforeRun() {
         const db = await this.getDB();
         await db.profileRepository.importAccounts(await this.getAccounts());
-        this._proxies = await checkProxyWorks(...(await csv().fromFile(this.proxycsv)).map((p) => p.proxy));
+        this._proxies = await checkProxyWorks(...(await csv().fromFile(this._proxycsv)).map((p) => p.proxy));
     }
     async run() {
         await this.__beforeRun();

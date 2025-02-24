@@ -1,10 +1,9 @@
 import { Builder, WebDriver } from "selenium-webdriver";
+// @ts-ignore
 import chrome from "selenium-webdriver/chrome.js";
-
 import os from "os";
-import { PROFILES_PATH } from "../constants.js";
 import path from "path";
-import { parseHttpProxyAuth } from "../utils/index.js";
+import { parseHttpProxyAuth, processProxy } from "../utils/index.js";
 
 interface ChromeStartedResponse {
   remoteDebuggingUrl?: number;
@@ -21,13 +20,13 @@ interface StartProfileOptions {
 }
 
 interface BrowserManagerOptions {
-  profileDir?: string;
+  profileDir: string;
 }
 
 export default class BrowserManager {
-  protected profileDir: string;
+  protected profileDir?: string;
   constructor(opts?: BrowserManagerOptions) {
-    this.profileDir = opts?.profileDir || PROFILES_PATH;
+    this.profileDir = opts?.profileDir;
   }
 
   /**
@@ -36,7 +35,6 @@ export default class BrowserManager {
    * @returns Selenium WebDriver
    */
   async startProfile({ profileDirName, proxy, args, driverPath, extensions }: StartProfileOptions): Promise<WebDriver> {
-    
     const options = new chrome.Options();
     const _args = [
       "--allow-pre-commit-input",
@@ -49,11 +47,20 @@ export default class BrowserManager {
     ];
 
     if (profileDirName) {
+      if (!this.profileDir) {
+        throw Error('"profileDir" is required when "profileDirName" is provided');
+      }
       _args.push(`--user-data-dir=${path.join(this.profileDir, profileDirName)}`);
     }
     if (proxy) {
-      _args.push(`--proxy-server=${parseHttpProxyAuth(proxy)}`);
+      let prox = await processProxy(parseHttpProxyAuth(proxy), 3);
+      _args.push(`--proxy-server=${prox?.url}`);
+
+      if (prox?.auth) {
+        _args.push(`--proxy-auth=${prox?.auth}`);
+      }
     }
+
     if (extensions) {
       if (Array.isArray(extensions)) {
         options.addExtensions(...extensions);

@@ -21,6 +21,7 @@
     "enquirer": "^2.4.1",
     "ethers": "^6.13.5",
     "fs": "^0.0.1-security",
+    "https-proxy-agent": "^7.0.6",
     "imap": "^0.8.19",
     "inquirer": "^12.4.1",
     "log4js": "^6.9.1",
@@ -39,6 +40,7 @@
   "devDependencies": {
     "@types/log4js": "^0.0.33",
     "@types/node": "^22.13.5",
+    "@types/node-fetch": "^2.6.12",
     "@types/selenium-webdriver": "^4.1.28",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",

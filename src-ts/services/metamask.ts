@@ -1,7 +1,7 @@
 import { By, WebDriver } from "selenium-webdriver";
 import fs from "fs";
 import path from "path";
-import BaseService, { ServiceOptions } from "./baseService.js";
+import BaseService, { BaseServiceOptions } from "./baseService.js";
 import { Account } from "../database/AccountRepository.js";
 
 async function copyRecoveryPhrase(driver: WebDriver) {
@@ -81,7 +81,7 @@ async function fillImportSrpRecoveryWords(driver: WebDriver, recoveryKeyArray: s
         await inputElement.clear();
         await inputElement.sendKeys(word);
       } else {
-        console.warn(`Skipping ${testid}: invalid index or no corresponding word.`);
+        // console.debug(`Skipping ${testid}: invalid index or no corresponding word.`);
       }
     }
   } catch (error) {
@@ -118,16 +118,16 @@ const config = {
   },
 };
 export default class MetamaskService extends BaseService {
-  login(credentials: Account): Promise<void> {
+  load(credentials: Account): Promise<void> {
     throw new Error("Method not implemented.");
   }
   check(credentials: Account): Promise<void> {
     throw new Error("Method not implemented.");
   }
-  constructor(opts: ServiceOptions) {
+  constructor(opts: BaseServiceOptions) {
     super(opts);
   }
-
+  
   async setupNewWallet() {
     const auto = this.auto;
     const driver = auto.driver;
@@ -230,9 +230,10 @@ export default class MetamaskService extends BaseService {
     await driver.get(loginUrl);
     driver.sleep(2000);
 
-    const currentUrl = await driver.getCurrentUrl();
-
-    if (currentUrl.endsWith("#unlock")) {
+    let e = await auto.waitForElement(
+      By.xpath('(//*[@id="onboarding__terms-checkbox"] | //button[text()="Unlock"])[1]')
+    );
+    if ((await e.getText()) === "Unlock") {
       await auto.clickElement(By.xpath('//div[@class="unlock-page__links"]//a'));
       await fillImportSrpRecoveryWords(driver, seedphrase);
       await auto.enterText(By.xpath('//*[@id="password"]'), "Rtn@2024");

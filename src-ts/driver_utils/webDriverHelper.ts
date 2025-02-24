@@ -46,7 +46,7 @@ export default class WebDriverHelper {
       .perform();
   }
 
-  async safeClick(selector: By, timeout: number | undefined = undefined): Promise<boolean> {
+  async safeClick(selector: By, timeout: number | undefined = 5000): Promise<boolean> {
     timeout = timeout || this.defaultTimeout.timeouts.element || 60000;
     try {
       const element = await this.driver.wait(until.elementLocated(selector), timeout);
@@ -96,11 +96,11 @@ export default class WebDriverHelper {
     }
   }
 
-  async waitForElementToBeInvisible(selector: By, timeout : number | undefined = undefined): Promise<boolean> {
+  async waitForElementToBeInvisible(selector: By, timeout: number | undefined = undefined): Promise<boolean> {
     timeout = timeout || this.defaultTimeout.timeouts.element || 60000;
     try {
       await this.driver.wait(until.elementLocated(selector), timeout);
-      return !!await this.driver.wait(until.elementIsNotVisible(this.driver.findElement(selector)), timeout);
+      return !!(await this.driver.wait(until.elementIsNotVisible(this.driver.findElement(selector)), timeout));
     } catch (error: any) {
       throw new Error(`Element did not become invisible: ${selector} - ${error.message}`);
     }
@@ -181,7 +181,7 @@ export default class WebDriverHelper {
     await element.sendKeys(text);
   }
 
-  async waitForUrlToContain(substring: string, timeout : number | undefined = undefined): Promise<void> {
+  async waitForUrlToContain(substring: string, timeout: number | undefined = undefined): Promise<void> {
     timeout = timeout || this.defaultTimeout.timeouts.element || 60000;
     try {
       await this.driver.wait(until.urlContains(substring), timeout);
@@ -196,7 +196,7 @@ export default class WebDriverHelper {
     return await element.getAttribute(attribute);
   }
 
-  async switchToIframe(selector: By, timeout : number | undefined = undefined): Promise<void> {
+  async switchToIframe(selector: By, timeout: number | undefined = undefined): Promise<void> {
     try {
       const iframe = await this.waitForElement(selector, timeout);
       await this.driver.switchTo().frame(iframe);

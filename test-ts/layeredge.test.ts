@@ -3,9 +3,7 @@ import { INSTALLED_EXTENSION } from "../src-ts/resources.js";
 import BrowserManager from "../src-ts/browser/browserManager.js";
 
 (async () => {
-  const options = configureChromeOptions();
-  options.addExtensions();
-  const driver = (await new BrowserManager().startProfile({ extensions: [INSTALLED_EXTENSION.metamask.path] })) 
+  const driver = await new BrowserManager().startProfile({ extensions: [INSTALLED_EXTENSION.metamask.path] });
   const service = new Service({
     serviceName: "layeredge",
     driver,
@@ -20,7 +18,7 @@ import BrowserManager from "../src-ts/browser/browserManager.js";
   await service.auto.tabReset();
 
   try {
-    await service.login();
+    await service.load();
   } catch (error) {
     console.error("Test encountered an error:", error);
     await driver.sleep(99999999);

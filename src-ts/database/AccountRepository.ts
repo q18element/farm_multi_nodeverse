@@ -5,7 +5,7 @@ export interface Account {
   username: string;
   password: string;
   seedphrase: string;
-  services: string[];
+  services: string;
   profile_volume: number;
 }
 
@@ -39,32 +39,23 @@ export default class AccountRepository {
 
   async importAccounts(accounts: Account[]): Promise<void> {
     for (const account of accounts) {
-      await new Promise<void>((resolve, reject) => {
-        this.db.run(
-          `INSERT INTO accounts ( username, password, seedphrase, services, profile_volume)
-           VALUES ( ?, ?, ?, ?, ?)
-           ON CONFLICT(username) DO UPDATE SET 
-             password = excluded.password,
-             seedphrase = excluded.seedphrase,
-             services = excluded.services,
-             profile_volume = excluded.profile_volume`,
-          [
-            account.id,
-            account.username,
-            account.password,
-            account.seedphrase || "",
-            JSON.stringify(account.services || []),
-            account.profile_volume,
-          ],
-          (err: any) => {
-            if (err) {
-              reject(err);
-            } else {
-              resolve();
-            }
-          }
-        );
-      });
+      this.db.run(
+        `INSERT INTO accounts (username, password, seedphrase, services, profile_volume)
+         VALUES (?, ?, ?, ?, ?)
+         ON CONFLICT(username) DO UPDATE SET 
+           password = excluded.password,
+           seedphrase = excluded.seedphrase,
+           services = excluded.services,
+           profile_volume = excluded.profile_volume`,
+        [
+          // account.id,
+          account.username,
+          account.password,
+          account.seedphrase || "",
+          account.services || "",
+          account.profile_volume,
+        ]
+      );
     }
   }
 }

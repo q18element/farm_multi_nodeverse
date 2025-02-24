@@ -1,12 +1,12 @@
 import { By } from "selenium-webdriver";
 import MetamaskService from "./metamask.js";
-import BaseService, { ServiceOptions } from "./baseService.js";
+import BaseService, { BaseServiceOptions } from "./baseService.js";
 import { Account } from "../database/AccountRepository.js";
 
 export default class LayerEdgeService extends BaseService {
-  metamaskService: any;
+  metamaskService: MetamaskService;
 
-  constructor(opts: ServiceOptions) {
+  constructor(opts: BaseServiceOptions) {
     super(opts);
     this.metamaskService = this.childService(MetamaskService);
   }
@@ -22,14 +22,14 @@ export default class LayerEdgeService extends BaseService {
   async check() {
     const auto = this.auto;
 
-    await this.login();
+    await this.load();
     return await auto.driver.executeScript(() => {
       // @ts-ignore
       return document.querySelector('strong[class*="earning_total__"]')?.innerText || "unknown";
     });
   }
 
-  async login() {
+  async load() {
     const { seedphrase }: Account = this.account;
     const auto = this.auto;
     const driver = auto.driver;
