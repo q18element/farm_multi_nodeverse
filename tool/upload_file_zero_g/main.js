@@ -3,14 +3,22 @@ import fs from "fs";
 import PromptSync from "prompt-sync";
 import { checkProxyWorks, convertNameToDirName } from "../../dist/src-ts/utils/index.js";
 import ZeroGFaucetService from "../../dist/src-ts/services/zeroGFaucet.js";
-import CaptchaSolverService from "../../dist/src-ts/services/captchaSolverService.js";
+import log4js from "log4js";
 
+log4js.configure({
+  appenders: {
+    console: { type: "console" },
+  },
+  categories: {
+    default: { appenders: ["console"], level: "info" },
+  },
+});
 fs.mkdirSync("./temp", { recursive: true });
 const prompt = PromptSync();
 
 const seedphrases = txtToLinesArray("seedphrases.txt").filter((s) => _checkDate(s));
 const bm = new BrowserManager();
-const thread = parseInt(prompt("Số lượng luồng faucet muốn chạy: ")) || 1;
+const thread = parseInt(prompt("Số lượng luồng profile muốn chạy: ")) || 1;
 
 const groupedByGroupLength = seedphrases.reduce((acc, item, index) => {
   const groupIndex = Math.floor(index / thread);
@@ -41,6 +49,7 @@ const groupedByGroupLength = seedphrases.reduce((acc, item, index) => {
 async function process(seedphrase, proxy) {
   const driver = await bm.startProfile({
     proxy,
+    extensions: ["../../crx/MetaMask.crx"],
   });
   const service = new ZeroGFaucetService({
     driver,
@@ -73,7 +82,7 @@ function _checkDate(px) {
 
 function saveTime(name) {
   try {
-    fs.writeFileSync(`./temp/${convertNameToDirName(name)}`, Date.now());
+    fs.writeFileSync(`./temp/${convertNameToDirName(name)}`, Date.now().toString());
   } catch (e) {
     console.error("failed save time " + name + " " + e);
   }
