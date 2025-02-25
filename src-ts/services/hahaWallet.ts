@@ -166,11 +166,12 @@ export default class HahaWallet extends BaseService {
     const { username } = this.account;
     let domain = username.split("@").pop(),
       otp = null;
+
     var filter = {
       senderEmail: "accounts@haha.me",
       subject: "Your HaHa verification code",
       unread: false,
-      fromTime: 0,
+      fromTime: fromTime - (fromTime % 1000) * 60 * 60 * 24,
     };
     const startAt = Date.now();
     while (Date.now() - startAt < this.waitMailDelay) {
@@ -243,7 +244,7 @@ export default class HahaWallet extends BaseService {
     const processVerify = async () => {
       await driver.sleep(5000);
       // let code = await self.getVerifyCode( username, password, fromTime);
-      let code = await self.getVerifyCode(0);
+      let code = await self.getVerifyCode(fromTime);
 
       for (let i = 0; i < 6; i++) {
         let inp = await auto.waitForElement(By.css("#otp-input-" + i));

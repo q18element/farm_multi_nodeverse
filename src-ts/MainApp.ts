@@ -84,7 +84,7 @@ export default class MainApp {
     const accounts = await this.getAccounts();
     this.logger.debug(accounts);
 
-    const executions = groupArray(await this.getProcessExecutions(accounts), this.thread);
+    const executions = groupArray(await this.getProfileExecutions(accounts), this.thread);
     for (const execution of executions) {
       await Promise.all(
         execution.map(async (exe) => {
@@ -101,7 +101,7 @@ export default class MainApp {
 
     this.dailyInterval();
   }
-  async getProcessExecutions(accounts: Account[]): Promise<ProfileExecution[]> {
+  async getProfileExecutions(accounts: Account[]): Promise<ProfileExecution[]> {
     const executions: ProfileExecution[] = [];
     for (const account of accounts) {
       this._serviceCache[account.username] = this._serviceCache[account.username] || [];
