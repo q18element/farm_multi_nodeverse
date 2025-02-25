@@ -133,7 +133,7 @@ export default class MetamaskService extends BaseService {
   }
 
   async setupNewWallet() {
-    const auto = this.auto;
+    const auto = this.browser;
     const driver = auto.driver;
     const { loginUrl, selectors } = config.services.mtm;
     await driver.get(loginUrl);
@@ -178,7 +178,7 @@ export default class MetamaskService extends BaseService {
   }
 
   async lockMetamask() {
-    const auto = this.auto;
+    const auto = this.browser;
     try {
       await auto.driver.sleep(1000);
       await auto.clickElement(By.css('span[style*="./images/icons/more-vertical.svg"]'));
@@ -187,7 +187,7 @@ export default class MetamaskService extends BaseService {
   }
 
   async confirmAny() {
-    const auto = this.auto;
+    const auto = this.browser;
     const driver = auto.driver;
     let currentWindow = await driver.getWindowHandle();
     const timeout = 10; // timeout in seconds
@@ -227,7 +227,7 @@ export default class MetamaskService extends BaseService {
     await driver.switchTo().window(currentWindow);
   }
   async setupOldWallet(seedphrase: string) {
-    const auto = this.auto;
+    const auto = this.browser;
     const driver = auto.driver;
     const prevTab = await driver.getWindowHandle();
     await driver.switchTo().newWindow("tab");
@@ -299,7 +299,7 @@ export default class MetamaskService extends BaseService {
   }
 
   async resetMetamaskTab() {
-    const driver = this.auto.driver;
+    const driver = this.browser.driver;
     for (const tab of await driver.getAllWindowHandles()) {
       try {
         await driver.switchTo().window(tab);

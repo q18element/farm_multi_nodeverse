@@ -15,7 +15,7 @@ import BrowserManager from "../src-ts/browser/browserManager.js";
 
   await driver.sleep(5000);
 
-  await service.auto.tabReset();
+  await service.browser.tabReset();
 
   try {
     await service.load();

@@ -161,7 +161,7 @@ export default class MainApp {
                   break;
                 } catch (e) {
                   this.logger.error(`Error on load Profile ${account.username} index: ${i} err ${e} retry i: ${l + 1}`);
-                  await service.auto.resetTabs();
+                  await service.browser.resetTabs();
                 }
               }
             }

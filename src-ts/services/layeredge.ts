@@ -13,7 +13,7 @@ export default class LayerEdgeService extends BaseService {
   async configDriver() {}
 
   async _isLoggedIn() {
-    const auto = this.auto;
+    const auto = this.browser;
 
     return !(
       await (
@@ -25,7 +25,7 @@ export default class LayerEdgeService extends BaseService {
   }
 
   async check() {
-    const auto = this.auto;
+    const auto = this.browser;
 
     await this.load();
     return await auto.driver.executeScript(() => {
@@ -38,7 +38,7 @@ export default class LayerEdgeService extends BaseService {
   }
   async load() {
     const { seedphrase }: Account = this.account;
-    const auto = this.auto;
+    const auto = this.browser;
     const driver = auto.driver;
     const metamaskService = this.metamaskService;
     const get = await auto.assignTabGet("layeredge");

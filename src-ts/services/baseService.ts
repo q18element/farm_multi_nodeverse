@@ -8,23 +8,23 @@ interface BaseServiceOptions {
   config?: Record<string, any>;
   driver: WebDriver;
   account: Account;
-  auto?: WebDriverHelper;
+  browser?: WebDriverHelper;
 }
 
 export default abstract class BaseService {
   serviceName?: string;
   config?: Record<string, any>;
-  auto: WebDriverHelper;
+  browser: WebDriverHelper;
   protected pinTab?: string;
   driver: WebDriver;
   account: Account;
   logger: log4js.Logger;
 
-  constructor({ serviceName, config, driver, auto, account }: BaseServiceOptions) {
+  constructor({ serviceName, config, driver, browser, account }: BaseServiceOptions) {
     this.serviceName = serviceName;
     this.config = config;
     this.driver = driver;
-    this.auto = auto || new WebDriverHelper(driver);
+    this.browser = browser || new WebDriverHelper(driver);
     this.account = account;
     this.logger = log4js.getLogger(new.target.name);
   }
@@ -33,7 +33,7 @@ export default abstract class BaseService {
       serviceName: this.serviceName,
       config: this.config,
       driver: this.driver,
-      auto: this.auto,
+      browser: this.browser,
       account: this.account,
     });
   }

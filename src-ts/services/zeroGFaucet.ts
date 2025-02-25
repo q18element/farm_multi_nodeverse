@@ -21,7 +21,7 @@ export default class ZeroGFaucetService extends BaseService {
   }
 
   async faucet(address: string) {
-    const { auto } = this;
+    const { browser: auto } = this;
     const addressInput = By.xpath('//input[@id="address"]');
     const faucetBtn = By.xpath('//button[@type="submit" and not(disabled) and contains(text(), "Request AOGI Token")]');
     await auto.get("https://faucet.0g.ai/");
@@ -36,7 +36,7 @@ export default class ZeroGFaucetService extends BaseService {
 
   async uploadFile() {
     const { seedphrase } = this.account;
-    const auto = this.auto;
+    const auto = this.browser;
     const driver = auto.driver;
     await this.metamaskServcie.setupOldWallet(seedphrase);
     await auto.get("https://chainlist.org/chain/16600");
