@@ -1,15 +1,26 @@
 import path from "path";
 import csv from "csvtojson";
 import log4js from "log4js";
+import { Mutex, Semaphore, withTimeout } from "async-mutex";
+
 import DatabaseManager from "./database/database.js";
 import { Account } from "./database/AccountRepository.js";
 import BrowserManager from "./browser/browserManager.js";
-import { nameToServiceConfig } from "./services/servicesMapping.js";
-import { checkProxyWorks, convertNameToDirName } from "./utils/index.js";
+import { nameToServiceConfig, ServiceConfig } from "./services/servicesMapping.js";
+import { checkProxyWorks, convertNameToDirName, groupArray } from "./utils/index.js";
 import BaseService from "./services/baseService.js";
 
 interface MainAppOptions {
   wd: string; // working directory
+}
+
+interface ProfileExecution {
+  account: Account;
+  index: number;
+  load: () => Promise<void>;
+  daily: () => Promise<void>;
+  check: () => Promise<any>;
+  quit: () => Promise<void>;
 }
 
 export default class MainApp {
@@ -22,6 +33,11 @@ export default class MainApp {
 
   browserManager: BrowserManager;
   logger: log4js.Logger;
+  mutex: Mutex;
+  thread: number;
+  loadRetry: number;
+  loadedExecutions: ProfileExecution[];
+  chromeSize: { width: number; height: number; scale: number };
 
   constructor({ wd }: MainAppOptions) {
     wd = wd || "./";
@@ -34,6 +50,11 @@ export default class MainApp {
     });
     this._proxies = [];
     this._serviceCache = {};
+    this.mutex = new Mutex();
+    this.thread = 5;
+    this.loadRetry = 3;
+    this.loadedExecutions = [];
+    this.chromeSize = { width: 1920, height: 1080, scale: 0.5 };
     this.processArgs();
     this.logger = log4js.getLogger(new.target.name);
   }
@@ -62,12 +83,114 @@ export default class MainApp {
 
     const accounts = await this.getAccounts();
     this.logger.debug(accounts);
-    for (const account of accounts) {
-      this.logger.debug(`Processing account: ${account.username}`);
-      await this.processAccountServices(account);
-    }
-  }
 
+    const executions = groupArray(await this.getProcessExecutions(accounts), this.thread);
+    for (const execution of executions) {
+      await Promise.all(
+        execution.map(async (exe) => {
+          this.logger.info(`Processing Profile: ${exe.account.username} index: ${exe.index}`);
+          try {
+            await exe.load();
+            this.loadedExecutions.push(exe);
+          } catch (e) {
+            this.logger.error(`Error on load Profile ${exe.account.username} index: ${exe.index} err ${e}`);
+          }
+        })
+      );
+    }
+
+    this.dailyInterval();
+  }
+  async getProcessExecutions(accounts: Account[]): Promise<ProfileExecution[]> {
+    const executions: ProfileExecution[] = [];
+    for (const account of accounts) {
+      this._serviceCache[account.username] = this._serviceCache[account.username] || [];
+
+      // start export required extension and service from account.services
+      const acc_services = account.services.split(" ");
+      const serviceStack: ServiceConfig[] = [];
+      const requiredExtension: string[] = [];
+      for (const service of acc_services) {
+        let __s = nameToServiceConfig(service);
+        if (__s) {
+          serviceStack.push(__s);
+          requiredExtension.push(...__s.extensions.map((e) => e.path));
+        }
+      }
+
+      if (serviceStack.length <= 0) {
+        this.logger.error(`No valid service found for ${account.username}`);
+        console.log(`No valid service found for ${account.username}`);
+        continue;
+      }
+
+      for (let i = 0; i < account.profile_volume; i++) {
+        executions.push({
+          load: async () => {
+            let _proxy = this._proxies.pop(); // get a proxy
+            let _driver = await this.browserManager.startProfile({
+              profileDirName: `profile-${convertNameToDirName(account.username)}-${i}`,
+              extensions: requiredExtension,
+              proxy: _proxy,
+              chromeSize: this.chromeSize,
+            });
+
+            const mainService = new serviceStack[0].service({
+              driver: _driver,
+              account,
+            });
+            let _services = [mainService];
+
+            for (let j = 1; j < serviceStack.length; j++) {
+              // @ts-ignore
+              if (typeof serviceStack[j].maxVolume === "number" && serviceStack[j].maxVolume < i + 1) {
+                this.logger.debug(
+                  "Skip service " + serviceStack[j].service.name + " because max volume reached " + (i + 1)
+                );
+                continue;
+              }
+              _services.push(mainService.childService(serviceStack[j].service));
+            }
+
+            this._serviceCache[account.username][i] = _services;
+            for (const service of _services) {
+              for (let l = 0; l < this.loadRetry; i++) {
+                try {
+                  await service.load();
+                  break;
+                } catch (e) {
+                  this.logger.error(`Error on load Profile ${account.username} index: ${i} err ${e} retry i: ${l + 1}`);
+                  await service.auto.resetTabs();
+                }
+              }
+            }
+          },
+          daily: async () => {
+            for (const service of this._serviceCache[account.username][i]) {
+              await service.daily();
+            }
+          },
+          check: async () => {
+            for (const service of this._serviceCache[account.username][i]) {
+              await service.check();
+            }
+          },
+          quit: async () => {
+            for (const service of this._serviceCache[account.username][i]) {
+              await service.driver.quit();
+              this._serviceCache[account.username][i] = [];
+              return;
+            }
+          },
+          account,
+          index: i,
+        });
+      }
+    }
+    this.logger.debug(executions);
+
+    return executions;
+  }
   async processAccountServices(account: Account) {
     this._serviceCache[account.username] = this._serviceCache[account.username] || []; // cache account services
 
@@ -113,4 +236,25 @@ export default class MainApp {
       }
     }
   }
+  async dailyExecution() {
+    const realease = await this.mutex.acquire();
+    try {
+      for (const accountUsername in this._serviceCache) {
+        for (const profileIndex in this._serviceCache[accountUsername]) {
+          for (const service of this._serviceCache[accountUsername][profileIndex]) {
+            try {
+              await service.daily();
+            } catch {
+              this.logger.error(
+                `Daily execution failed for ${accountUsername} profile ${profileIndex} service ${service.serviceName}`
+              );
+            }
+          }
+        }
+      }
+    } finally {
+      realease();
+    }
+  }
+  async dailyInterval() {}
 }

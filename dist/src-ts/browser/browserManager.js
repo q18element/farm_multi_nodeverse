@@ -6,15 +6,19 @@ import path from "path";
 import { parseHttpProxyAuth, processProxy } from "../utils/index.js";
 export default class BrowserManager {
     profileDir;
+    lastPos;
+    screen;
     constructor(opts) {
         this.profileDir = opts?.profileDir;
+        this.lastPos = { x: 0, y: 0 };
+        this.screen = { width: 1920, height: 1080 };
     }
     /**
      * Starts a new Chrome browser profile with the given options.
      * @param  opts - Options for starting the profile
      * @returns Selenium WebDriver
      */
-    async startProfile({ profileDirName, proxy, args, driverPath, extensions }) {
+    async startProfile({ profileDirName, proxy, args, driverPath, extensions, chromeSize = { width: 800, height: 600, scale: 0.7 }, }) {
         const options = new chrome.Options();
         const _args = [
             "--allow-pre-commit-input",
@@ -38,6 +42,21 @@ export default class BrowserManager {
                 _args.push(`--proxy-auth=${prox?.auth}`);
             }
         }
+        if (chromeSize) {
+            _args.push(`--window-size=${chromeSize.width},${chromeSize.height}`);
+            _args.push(`--force-device-scale-factor=${chromeSize.scale}`);
+            _args.push(`--window-position=${this.lastPos.x},${this.lastPos.y}`);
+            let x = this.lastPos.x + chromeSize.width * chromeSize.scale;
+            let y = this.lastPos.y;
+            if (x > this.screen.width) {
+                x = 0;
+                y += chromeSize.height * chromeSize.scale;
+            }
+            if (y > this.screen.height) {
+                y = 0;
+            }
+            this.lastPos = { x: Math.floor(x), y: Math.floor(y) };
+        }
         if (extensions) {
             if (Array.isArray(extensions)) {
                 options.addExtensions(...extensions);
@@ -57,6 +76,17 @@ export default class BrowserManager {
             wdBuilder.setChromeService(new chrome.ServiceBuilder(driverPath));
         }
         const driver = await wdBuilder.build();
+        driver.sleep(1000);
+        // fix metamask offscreen
+        await driver.switchTo().newWindow("tab");
+        const cur = await driver.getWindowHandle();
+        for (const tab of await driver.getAllWindowHandles()) {
+            if (tab !== cur) {
+                await driver.switchTo().window(tab);
+                await driver.close();
+            }
+        }
+        await driver.switchTo().window(cur);
         return driver;
     }
 }

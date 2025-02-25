@@ -4,4 +4,8 @@ const INSTALLED_EXTENSION = {
         name: "Metamask",
         path: "./crx/MetaMask.crx",
     },
+    hahawallet: {
+        name: "HahaWallet",
+        path: "./crx/HahaWallet.crx",
+    },
 };

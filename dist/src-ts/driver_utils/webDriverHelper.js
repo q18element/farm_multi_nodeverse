@@ -16,7 +16,11 @@ export default class WebDriverHelper {
         this.assignedTab = {};
         this._assignedTab = [];
     }
-    async assignTab(tabName) {
+    async getOnAsigned(url, tabName) {
+        await this.__assignTab_(tabName);
+        return await this.driver.get(url);
+    }
+    async __assignTab_(tabName) {
         if (this.assignedTab[tabName]) {
             await this.driver.switchTo().window(this.assignedTab[tabName]);
             return;
@@ -35,8 +39,25 @@ export default class WebDriverHelper {
         // Switch to the assigned tab
         await this.driver.switchTo().window(this.assignedTab[tabName]);
     }
+    async assignTabGet(tabName) {
+        return async (url) => {
+            await this.getOnAsigned(url, tabName);
+        };
+    }
+    /** reset all tab if not assigned */
+    async resetTabs() {
+        for (const tab of this._assignedTab) {
+            if (!this._assignedTab.includes(tab) && (await this.driver.getAllWindowHandles()).length > 1) {
+                await this.driver.switchTo().window(tab);
+                await this.driver.close();
+            }
+        }
+    }
     async get(url) {
         const driver = this.driver;
+        if (this._assignedTab.includes(await this.driver.getWindowHandle())) {
+            await driver.switchTo().newWindow("tab");
+        }
         await driver.get(url);
         await driver.wait(async () => {
             return await driver.executeScript("return document.readyState").then((state) => {

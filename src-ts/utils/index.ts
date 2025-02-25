@@ -1,4 +1,4 @@
-export { sleep, parseHttpProxyAuth, convertNameToDirName, checkProxyWorks, processProxy };
+export { sleep, parseHttpProxyAuth, convertNameToDirName, checkProxyWorks, processProxy, groupArray };
 import { HttpsProxyAgent } from "https-proxy-agent";
 import fetch from "node-fetch";
 import proxychain from "proxy-chain";
@@ -91,4 +91,13 @@ async function processProxy(proxyUrl: string, maxRetries = 3) {
       await sleep(2000);
     }
   }
+}
+function groupArray<T>(arr: T[], num: number): Array<T[]> {
+  const grouped = [];
+
+  for (let i = 0; i < arr.length; i += num) {
+    grouped.push(arr.slice(i, i + num));
+  }
+
+  return grouped;
 }

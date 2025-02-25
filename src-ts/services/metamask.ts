@@ -243,6 +243,7 @@ export default class MetamaskService extends BaseService {
       );
       if ((await e.getText()) === "Unlock") {
         await auto.clickElement(By.xpath('//div[@class="unlock-page__links"]//a'));
+        await driver.sleep(2000);
         await fillImportSrpRecoveryWords(driver, seedphrase);
         await auto.enterText(By.xpath('//*[@id="password"]'), "Rtn@2024");
         await auto.enterText(By.xpath('//*[@id="confirm-password"]'), "Rtn@2024");

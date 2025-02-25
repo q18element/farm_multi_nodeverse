@@ -4,15 +4,13 @@ import BaseService, { BaseServiceOptions } from "./baseService.js";
 import { Account } from "../database/AccountRepository.js";
 
 export default class LayerEdgeService extends BaseService {
-  daily(): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
   metamaskService: MetamaskService;
 
   constructor(opts: BaseServiceOptions) {
     super(opts);
     this.metamaskService = this.childService(MetamaskService);
   }
+  async configDriver() {}
 
   async _isLoggedIn() {
     const auto = this.auto;
@@ -27,8 +25,6 @@ export default class LayerEdgeService extends BaseService {
   }
 
   async check() {
-    this.auto.assignTab("layeredge");
-
     const auto = this.auto;
 
     await this.load();
@@ -37,26 +33,28 @@ export default class LayerEdgeService extends BaseService {
       return document.querySelector('strong[class*="earning_total__"]')?.innerText || "unknown";
     });
   }
-
+  async daily(): Promise<void> {
+    await this.load();
+  }
   async load() {
-    this.auto.assignTab("layeredge");
     const { seedphrase }: Account = this.account;
     const auto = this.auto;
     const driver = auto.driver;
     const metamaskService = this.metamaskService;
+    const get = await auto.assignTabGet("layeredge");
+
     await metamaskService.setupOldWallet(seedphrase);
 
-    await auto.get("https://dashboard.layeredge.io/");
+    await get("https://dashboard.layeredge.io/");
     await driver.sleep(2500);
     if (!(await this._isLoggedIn())) {
       this.logger.info("login");
       await auto.clickElement(By.css('button[class*="inviteModal_submitButton__"]:not(:disabled)'));
-      await driver.sleep(500);
+      await auto.sleep(500);
       await auto.clickElement(By.xpath('//div[text()="MetaMask" ]'));
-      await driver.sleep(3000);
+      await auto.sleep(3000);
       await metamaskService.confirmAny();
-      await driver.sleep(3000);
-      /** @type {WebElement} */
+      await auto.sleep(3000);
     }
     let element = await auto.waitForElement(
       By.xpath(
@@ -67,7 +65,7 @@ export default class LayerEdgeService extends BaseService {
       await auto.enterText(By.xpath('//input[@placeholder="Enter your invite code"]'), "aSwVnVxy");
       await auto.clickElement(By.xpath('//button[contains(text(),"Continue")]'));
     }
-    await driver.sleep(3000);
+    await auto.sleep(3000);
     if (await auto.checkElementExists(By.xpath('//button[contains(text(),"Start Node")]'))) {
       this.logger.info("start node  ");
 
@@ -78,7 +76,7 @@ export default class LayerEdgeService extends BaseService {
           element.click();
         }
       });
-      await driver.sleep(1000);
+      await auto.sleep(1000);
 
       await driver.executeScript(() => {
         let element = document.querySelector('div[class*="earning_earning__"] button');
@@ -113,11 +111,25 @@ export default class LayerEdgeService extends BaseService {
         await driver.sleep(2000);
 
         // await auto.waitForElement(By.xpath(`(//button[contains(@class, 'button_btn__') and span="Claimed"])[2]`));
+      } catch (e) {
+        this.logger.info("claim reward error", e);
+      } finally {
         await driver.executeScript(() => {
           window.location.reload();
         });
-      } catch (e) {
-        this.logger.info("claim reward error", e);
+      }
+    }
+    let i = 0;
+    while (i <= 3) {
+      i++;
+
+      if (await auto.safeClick(By.xpath('//button[contains(text(),"Start Node")]'))) {
+        this.logger.info("start node  ");
+        try {
+          await this.metamaskService.confirmAny();
+        } catch (e) {
+          continue;
+        }
       }
     }
   }
