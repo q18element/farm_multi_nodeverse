@@ -57,52 +57,49 @@ export default class MainApp {
         await this.__beforeRun();
         const accounts = await this.getAccounts();
         this.logger.debug(accounts);
-        const executions = groupArray(await this.getProcessExecutions(accounts), this.thread);
+        const executions = groupArray(await this.getProfileExecutions(accounts), this.thread);
         for (const execution of executions) {
             await Promise.all(execution.map(async (exe) => {
                 this.logger.info(`Processing Profile: ${exe.account.username} index: ${exe.index}`);
-                for (let i = 0; i < this.loadRetry; i++) {
-                    try {
-                        await exe.load();
-                        this.loadedExecutions.push(exe);
-                        return;
-                    }
-                    catch (e) {
-                        await exe.quit();
-                        this.logger.error(`Error on load Profile ${exe.account.username} index: ${exe.index} err ${e} retry i: ${i + 1}`);
-                    }
+                try {
+                    await exe.load();
+                    this.loadedExecutions.push(exe);
+                }
+                catch (e) {
+                    this.logger.error(`Error on load Profile ${exe.account.username} index: ${exe.index} err ${e}`);
                 }
             }));
         }
         this.dailyInterval();
     }
-    async getProcessExecutions(accounts) {
+    async getProfileExecutions(accounts) {
         const executions = [];
         for (const account of accounts) {
             this._serviceCache[account.username] = this._serviceCache[account.username] || [];
             // start export required extension and service from account.services
             const acc_services = account.services.split(" ");
-            const serviceStack = [];
-            const requiredExtension = [];
+            const _serviceStack = new Set();
+            const requiredExtension = new Set();
             for (const service of acc_services) {
                 let __s = nameToServiceConfig(service);
                 if (__s) {
-                    serviceStack.push(__s);
-                    requiredExtension.push(...__s.extensions.map((e) => e.path));
+                    _serviceStack.add(__s);
+                    __s.extensions.map((e) => requiredExtension.add(e.path));
                 }
             }
-            if (serviceStack.length <= 0) {
+            if (_serviceStack.size <= 0) {
                 this.logger.error(`No valid service found for ${account.username}`);
                 console.log(`No valid service found for ${account.username}`);
                 continue;
             }
+            const serviceStack = Array.from(_serviceStack);
             for (let i = 0; i < account.profile_volume; i++) {
                 executions.push({
                     load: async () => {
                         let _proxy = this._proxies.pop(); // get a proxy
                         let _driver = await this.browserManager.startProfile({
                             profileDirName: `profile-${convertNameToDirName(account.username)}-${i}`,
-                            extensions: requiredExtension,
+                            extensions: Array.from(requiredExtension),
                             proxy: _proxy,
                             chromeSize: this.chromeSize,
                         });
@@ -121,7 +118,16 @@ export default class MainApp {
                         }
                         this._serviceCache[account.username][i] = _services;
                         for (const service of _services) {
-                            await service.load();
+                            for (let l = 0; l < this.loadRetry; l++) {
+                                try {
+                                    await service.load();
+                                    break;
+                                }
+                                catch (e) {
+                                    this.logger.error(`Error on load Profile ${account.username} index: ${i} err ${e} retry i: ${l + 1}`);
+                                    await service.auto.resetTabs();
+                                }
+                            }
                         }
                     },
                     daily: async () => {

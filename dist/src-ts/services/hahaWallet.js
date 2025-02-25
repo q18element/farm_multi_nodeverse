@@ -28,7 +28,7 @@ export default class HahaWallet extends BaseService {
             firstMail: By.xpath('//*[@id="threads_list"]/div[1]/div[3]/div[1]'),
             refreshButton: By.xpath('//*[@id="refresh-threads-btn"]'),
         };
-        this.waitMailDelay = 3 * 60 * 1000;
+        this.waitMailDelay = 15 * 60 * 1000;
     }
     /** @paramDridriver  */
     async getOtpBiz(filter) {
@@ -39,7 +39,7 @@ export default class HahaWallet extends BaseService {
         await driver.switchTo().newWindow("tab");
         await driver.get("https://id.bizflycloud.vn/login?service=https%3A%2F%2Fmail.bizflycloud.vn%2F&_t=webmail");
         try {
-            console.log(await driver.getCurrentUrl());
+            this.logger.info(await driver.getCurrentUrl());
             const isLogin = await auto.checkElementExists(this.bizSelectors.inboxElement, 5000);
             if (!isLogin) {
                 await auto.enterText(this.bizSelectors.emailInput, username);
@@ -95,7 +95,7 @@ export default class HahaWallet extends BaseService {
         await driver.switchTo().newWindow("tab");
         await driver.get("https://mail.veer.vn");
         try {
-            console.log(await driver.getCurrentUrl());
+            this.logger.info(await driver.getCurrentUrl());
             const isLogin = await auto.checkElementExists(this.veerSelectors.inboxElement, 5000);
             if (!isLogin) {
                 // Wait for and enter the email
@@ -133,7 +133,7 @@ export default class HahaWallet extends BaseService {
             await driver.sleep(3000);
         }
         catch (error) {
-            console.error("Error extracting OTP:", error);
+            throw new Error("Error extracting OTP: " + error);
         }
         finally {
             await driver.close();
@@ -147,7 +147,7 @@ export default class HahaWallet extends BaseService {
             senderEmail: "accounts@haha.me",
             subject: "Your HaHa verification code",
             unread: false,
-            fromTime: 0,
+            fromTime: fromTime - (fromTime % 1000) * 60 * 60 * 24,
         };
         const startAt = Date.now();
         while (Date.now() - startAt < this.waitMailDelay) {
@@ -161,7 +161,7 @@ export default class HahaWallet extends BaseService {
                 throw new Error("Unsupported email domain");
             }
             if (otp) {
-                console.log("OTP: " + otp);
+                this.logger.info("OTP: " + otp);
                 return otp;
             }
             await this.driver.sleep(5000);
@@ -212,7 +212,7 @@ export default class HahaWallet extends BaseService {
         const processVerify = async () => {
             await driver.sleep(5000);
             // let code = await self.getVerifyCode( username, password, fromTime);
-            let code = await self.getVerifyCode(0);
+            let code = await self.getVerifyCode(fromTime);
             for (let i = 0; i < 6; i++) {
                 let inp = await auto.waitForElement(By.css("#otp-input-" + i));
                 inp.sendKeys(code[i]);
