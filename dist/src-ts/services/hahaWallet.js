@@ -33,27 +33,27 @@ export default class HahaWallet extends BaseService {
     /** @paramDridriver  */
     async getOtpBiz(filter) {
         const { username, password } = this.account;
-        const auto = this.auto;
-        const driver = auto.driver;
+        const browser = this.browser;
+        const driver = browser.driver;
         const baseWindow = await driver.getWindowHandle();
         await driver.switchTo().newWindow("tab");
         await driver.get("https://id.bizflycloud.vn/login?service=https%3A%2F%2Fmail.bizflycloud.vn%2F&_t=webmail");
         try {
             this.logger.info(await driver.getCurrentUrl());
-            const isLogin = await auto.checkElementExists(this.bizSelectors.inboxElement, 5000);
+            const isLogin = await browser.checkElementExists(this.bizSelectors.inboxElement, 5000);
             if (!isLogin) {
-                await auto.enterText(this.bizSelectors.emailInput, username);
+                await browser.enterText(this.bizSelectors.emailInput, username);
                 await driver.sleep(500);
-                await auto.clickElement(this.bizSelectors.nextButton);
+                await browser.clickElement(this.bizSelectors.nextButton);
                 await driver.sleep(5000);
-                await auto.enterText(this.bizSelectors.passwordInput, password);
+                await browser.enterText(this.bizSelectors.passwordInput, password);
                 await driver.sleep(500);
-                await auto.clickElement(this.bizSelectors.loginButton);
-                await auto.waitForElement(this.bizSelectors.inboxElement, 45000);
+                await browser.clickElement(this.bizSelectors.loginButton);
+                await browser.waitForElement(this.bizSelectors.inboxElement, 45000);
             }
             // logged in
             await driver.sleep(1000);
-            await auto.clickElement(this.bizSelectors.refreshButton);
+            await browser.clickElement(this.bizSelectors.refreshButton);
             await driver.sleep(3000);
             const emails = await driver.executeAsyncScript(() => {
                 fetch("https://mail.bizflycloud.vn/api/threads?in=INBOX&limit=50&offset=0", {
@@ -89,7 +89,7 @@ export default class HahaWallet extends BaseService {
     }
     async getOtpVeer(filter) {
         const { username, password } = this.account;
-        const auto = this.auto;
+        const auto = this.browser;
         const driver = auto.driver;
         const baseWindow = await driver.getWindowHandle();
         await driver.switchTo().newWindow("tab");
@@ -181,32 +181,32 @@ export default class HahaWallet extends BaseService {
     }
     async load() {
         await this.fullTask();
-        await this.auto.resetTabs();
+        await this.browser.resetTabs();
     }
     async fullTask() {
         const { username, password, seedphrase } = this.account;
-        const auto = this.auto;
-        const driver = auto.driver;
+        const browser = this.browser;
+        const driver = browser.driver;
         let refcode = "ANONYMOUS-ROU5K5";
         let pincode = "12345678";
         const self = this;
         const passPincode = async () => {
-            await auto.enterText(By.css('input[placeholder="Your Pin Code"]'), pincode);
-            await auto.enterText(By.css('input[placeholder="Confirm Pin Code"]'), pincode);
-            await auto.clickElement(By.xpath('//button[text()="Continue" and not(@disabled)]'));
+            await browser.enterText(By.css('input[placeholder="Your Pin Code"]'), pincode);
+            await browser.enterText(By.css('input[placeholder="Confirm Pin Code"]'), pincode);
+            await browser.clickElement(By.xpath('//button[text()="Continue" and not(@disabled)]'));
         };
         let fromTime = Date.now();
         const enterAccount = async () => {
-            await auto.enterText(By.css('input[type="email"]'), username);
-            await auto.enterText(By.css('input[type="password"]'), password);
-            let fromTime = Date.now();
+            await browser.enterText(By.css('input[type="email"]'), username);
+            await browser.enterText(By.css('input[type="password"]'), password);
+            fromTime = Date.now();
         };
         const isLoggedIn = async () => {
-            const e = await auto.waitForElement(By.xpath('(//p[text()="Legacy Wallet"] | //button[text()="GET STARTED"] | //button[text()="Unlock"])[1]'));
+            const e = await browser.waitForElement(By.xpath('(//p[text()="Legacy Wallet"] | //button[text()="GET STARTED"] | //button[text()="Unlock"])[1]'));
             return (await e.getText()) !== "GET STARTED";
         };
         const isUnlockPage = async () => {
-            const e = await auto.waitForElement(By.xpath('(//p[text()="Legacy Wallet"] | //button[text()="GET STARTED"] | //button[text()="Unlock"])[1]'));
+            const e = await browser.waitForElement(By.xpath('(//p[text()="Legacy Wallet"] | //button[text()="GET STARTED"] | //button[text()="Unlock"])[1]'));
             return (await e.getText()) === "Unlock";
         };
         const processVerify = async () => {
@@ -214,15 +214,15 @@ export default class HahaWallet extends BaseService {
             // let code = await self.getVerifyCode( username, password, fromTime);
             let code = await self.getVerifyCode(fromTime);
             for (let i = 0; i < 6; i++) {
-                let inp = await auto.waitForElement(By.css("#otp-input-" + i));
+                let inp = await browser.waitForElement(By.css("#otp-input-" + i));
                 inp.sendKeys(code[i]);
             }
-            await auto.clickElement(By.xpath('//button[text()="VERIFY"]'));
+            await browser.clickElement(By.xpath('//button[text()="VERIFY"]'));
         };
-        await auto.get("chrome-extension://andhndehpcjpmneneealacgnmealilal/home.html");
+        await browser.get("chrome-extension://andhndehpcjpmneneealacgnmealilal/home.html");
         await driver.sleep(2000);
         if (!(await isLoggedIn())) {
-            await auto.clickElement(By.xpath('//button[text()="GET STARTED"]'));
+            await browser.clickElement(By.xpath('//button[text()="GET STARTED"]'));
             await enterAccount();
             await driver.executeScript(() => {
                 document.querySelector('input[placeholder="Referral Code"]')
@@ -232,55 +232,55 @@ export default class HahaWallet extends BaseService {
                         .click();
             });
             await driver.sleep(500);
-            await auto.enterText(By.css('input[placeholder="Referral Code"]'), refcode);
-            await auto.clickElement(By.xpath('//button[text()="CONTINUE" and not(@disabled)]'));
-            let e = await auto.waitForElement(By.xpath('(//div[text()="User already exists"] | //*[@id="otp-input-0"])[1]'));
+            await browser.enterText(By.css('input[placeholder="Referral Code"]'), refcode);
+            await browser.clickElement(By.xpath('//button[text()="CONTINUE" and not(@disabled)]'));
+            let e = await browser.waitForElement(By.xpath('(//div[text()="User already exists"] | //*[@id="otp-input-0"])[1]'));
             if ((await e.getText()).includes("User already exists")) {
-                await auto.clickElement(By.xpath('//button[span="Login"]'));
+                await browser.clickElement(By.xpath('//button[span="Login"]'));
                 await enterAccount();
-                await auto.clickElement(By.xpath('//button[text()="CONTINUE" and not(@disabled)]'));
+                await browser.clickElement(By.xpath('//button[text()="CONTINUE" and not(@disabled)]'));
             }
             else {
                 await processVerify();
                 try {
-                    await auto.clickElement(By.xpath('//button[text()="Skip"]'));
+                    await browser.clickElement(By.xpath('//button[text()="Skip"]'));
                 }
                 catch (e) { }
             }
-            let verfifychecke = await (await auto.waitForElement(By.xpath('(//button[text()="VERIFY"] | //input[@placeholder="Your Pin Code"] | //button[text()="Skip" and not(@disabled)] )[1]'))).getText();
+            let verfifychecke = await (await browser.waitForElement(By.xpath('(//button[text()="VERIFY"] | //input[@placeholder="Your Pin Code"] | //button[text()="Skip" and not(@disabled)] )[1]'))).getText();
             if (verfifychecke.includes("VERIFY")) {
                 await processVerify();
-                await auto.clickElement(By.xpath('//button[text()="Skip"]'), 5000);
+                await browser.clickElement(By.xpath('//button[text()="Skip"]'), 5000);
             }
             else if (verfifychecke.includes("Skip")) {
-                await auto.actionsClickElement(By.xpath('//button[text()="Skip"]'), 5000);
+                await browser.actionsClickElement(By.xpath('//button[text()="Skip"]'), 5000);
             }
             await passPincode();
-            await auto.clickElement(By.xpath('//label[contains(text(),"I agree to HaHa")]//input'));
+            await browser.clickElement(By.xpath('//label[contains(text(),"I agree to HaHa")]//input'));
             // await
             // auto.clickElement( By.xpath('//button[text()="Create a New Wallet" and not(@disabled)]'));
-            await auto.clickElement(By.xpath('//button[text()="Import Existing Wallet" and not(@disabled)]'));
+            await browser.clickElement(By.xpath('//button[text()="Import Existing Wallet" and not(@disabled)]'));
             let inputs = await driver.findElements(By.xpath('//input[@class="w-full bg-transparent border-none outline-none"]'));
             let sps = seedphrase.trim().split(" ");
             for (let i = 0; i < 12; i++) {
-                await auto.enterText(By.xpath(`(//input[@class="w-full bg-transparent border-none outline-none"])[${i + 1}]`), sps[i]);
+                await browser.enterText(By.xpath(`(//input[@class="w-full bg-transparent border-none outline-none"])[${i + 1}]`), sps[i]);
             }
-            await auto.clickElement(By.xpath('//button[text()="Continue" and not(@disabled)]'));
-            await auto.clickElement(By.xpath('//button[text()="Start Using Wallet" and not(@disabled)]'));
+            await browser.clickElement(By.xpath('//button[text()="Continue" and not(@disabled)]'));
+            await browser.clickElement(By.xpath('//button[text()="Start Using Wallet" and not(@disabled)]'));
             await driver.sleep(2000);
-            await auto.safeClick(By.xpath('//button[text()="Skip for now" and not(@disabled)]'));
+            await browser.safeClick(By.xpath('//button[text()="Skip for now" and not(@disabled)]'));
         }
         else {
             if (await isUnlockPage()) {
-                await auto.enterText(By.css('input[type="password"]'), pincode);
-                await auto.clickElement(By.xpath('//button[text()="Unlock" and not(@disabled)]'));
+                await browser.enterText(By.css('input[type="password"]'), pincode);
+                await browser.clickElement(By.xpath('//button[text()="Unlock" and not(@disabled)]'));
             }
         }
-        await auto.waitForElement(By.xpath('//p[text()="Legacy Wallet"]'));
+        await browser.waitForElement(By.xpath('//p[text()="Legacy Wallet"]'));
         // on wallet logged in
-        if (await auto.checkElementExists(By.xpath('//div[contains(text(),"Click here to claim your daily karma!")]'))) {
-            await auto.clickElement(By.xpath('//div[contains(text(),"Click here to claim your daily karma!")]'));
-            await auto.safeClick(By.xpath('//button[text()="Claim"]'), 5000);
+        if (await browser.checkElementExists(By.xpath('//div[contains(text(),"Click here to claim your daily karma!")]'))) {
+            await browser.clickElement(By.xpath('//div[contains(text(),"Click here to claim your daily karma!")]'));
+            await browser.safeClick(By.xpath('//button[text()="Claim"]'), 5000);
         }
     }
 }

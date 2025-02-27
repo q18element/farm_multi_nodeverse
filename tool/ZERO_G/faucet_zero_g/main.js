@@ -1,9 +1,9 @@
-import BrowserManager from "../../dist/src-ts/browser/browserManager.js";
+import BrowserManager from "../../../dist/src-ts/browser/browserManager.js";
 import fs from "fs";
 import PromptSync from "prompt-sync";
-import { checkProxyWorks, convertNameToDirName } from "../../dist/src-ts/utils/index.js";
-import ZeroGFaucetService from "../../dist/src-ts/services/zeroGFaucet.js";
-import CaptchaSolverService from "../../dist/src-ts/services/captchaSolverService.js";
+import { checkProxyWorks, convertNameToDirName } from "../../../dist/src-ts/utils/index.js";
+import ZeroGFaucetService from "../../../dist/src-ts/services/zeroGFaucet.js";
+import CaptchaSolverService from "../../../dist/src-ts/services/captchaSolverService.js";
 
 fs.mkdirSync("./temp", { recursive: true });
 const prompt = PromptSync();
@@ -40,7 +40,7 @@ const groupedByGroupLength = addresses.reduce((acc, item, index) => {
 async function process(address, proxy) {
   const driver = await bm.startProfile({
     proxy,
-    extensions: ["../../crx/CAPTCHASolver.crx"],
+    extensions: ["../../../crx/CAPTCHASolver.crx"],
   });
   console.log("Faucet address", address, "with proxy", proxy);
   const service = new ZeroGFaucetService({ driver });

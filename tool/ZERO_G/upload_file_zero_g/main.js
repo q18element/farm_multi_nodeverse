@@ -1,8 +1,8 @@
-import BrowserManager from "../../dist/src-ts/browser/browserManager.js";
+import BrowserManager from "../../../dist/src-ts/browser/browserManager.js";
 import fs from "fs";
 import PromptSync from "prompt-sync";
-import { checkProxyWorks, convertNameToDirName } from "../../dist/src-ts/utils/index.js";
-import ZeroGFaucetService from "../../dist/src-ts/services/zeroGFaucet.js";
+import { checkProxyWorks, convertNameToDirName } from "../../../dist/src-ts/utils/index.js";
+import ZeroGFaucetService from "../../../dist/src-ts/services/zeroGFaucet.js";
 import log4js from "log4js";
 
 log4js.configure({
@@ -49,7 +49,7 @@ const groupedByGroupLength = seedphrases.reduce((acc, item, index) => {
 async function process(seedphrase, proxy) {
   const driver = await bm.startProfile({
     proxy,
-    extensions: ["../../crx/MetaMask.crx"],
+    extensions: ["../../../crx/MetaMask.crx"],
   });
   const service = new ZeroGFaucetService({
     driver,

@@ -9,11 +9,11 @@ export default class LayerEdgeService extends BaseService {
     }
     async configDriver() { }
     async _isLoggedIn() {
-        const auto = this.auto;
+        const auto = this.browser;
         return !(await (await auto.waitForElement(By.xpath('(//button[text()="Connect Wallet"] | //*[contains(text(),"Lightnode")])[1]'))).getText()).includes("Connect Wallet");
     }
     async check() {
-        const auto = this.auto;
+        const auto = this.browser;
         await this.load();
         return await auto.driver.executeScript(() => {
             // @ts-ignore
@@ -25,7 +25,7 @@ export default class LayerEdgeService extends BaseService {
     }
     async load() {
         const { seedphrase } = this.account;
-        const auto = this.auto;
+        const auto = this.browser;
         const driver = auto.driver;
         const metamaskService = this.metamaskService;
         const get = await auto.assignTabGet("layeredge");

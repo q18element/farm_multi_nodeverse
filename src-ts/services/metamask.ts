@@ -239,8 +239,13 @@ export default class MetamaskService extends BaseService {
       driver.sleep(2000);
       await driver.switchTo().window(current);
       let e = await auto.waitForElement(
-        By.xpath('(//*[@id="onboarding__terms-checkbox"] | //button[text()="Unlock"])[1]')
+        By.xpath('(//*[@id="onboarding__terms-checkbox"] | //button[text()="Unlock"] | //button[text()="Tokens"])[1]')
       );
+      if ((await e.getText()) === "Tokens") {
+        // if already unlocked, skip, may it is retry
+        this.logger.info("Metamask is already unlocked");
+        return;
+      }
       if ((await e.getText()) === "Unlock") {
         await auto.clickElement(By.xpath('//div[@class="unlock-page__links"]//a'));
         await driver.sleep(2000);

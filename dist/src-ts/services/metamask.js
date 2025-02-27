@@ -120,7 +120,7 @@ export default class MetamaskService extends BaseService {
         this.extensionId = "nkbihfbeogaeaoehlefnkodbefgpgknn";
     }
     async setupNewWallet() {
-        const auto = this.auto;
+        const auto = this.browser;
         const driver = auto.driver;
         const { loginUrl, selectors } = config.services.mtm;
         await driver.get(loginUrl);
@@ -157,7 +157,7 @@ export default class MetamaskService extends BaseService {
         this.logger.info(`Mtm setup success on proxy `);
     }
     async lockMetamask() {
-        const auto = this.auto;
+        const auto = this.browser;
         try {
             await auto.driver.sleep(1000);
             await auto.clickElement(By.css('span[style*="./images/icons/more-vertical.svg"]'));
@@ -166,7 +166,7 @@ export default class MetamaskService extends BaseService {
         catch (e) { }
     }
     async confirmAny() {
-        const auto = this.auto;
+        const auto = this.browser;
         const driver = auto.driver;
         let currentWindow = await driver.getWindowHandle();
         const timeout = 10; // timeout in seconds
@@ -199,7 +199,7 @@ export default class MetamaskService extends BaseService {
         await driver.switchTo().window(currentWindow);
     }
     async setupOldWallet(seedphrase) {
-        const auto = this.auto;
+        const auto = this.browser;
         const driver = auto.driver;
         const prevTab = await driver.getWindowHandle();
         await driver.switchTo().newWindow("tab");
@@ -210,7 +210,12 @@ export default class MetamaskService extends BaseService {
             await auto.get(loginUrl);
             driver.sleep(2000);
             await driver.switchTo().window(current);
-            let e = await auto.waitForElement(By.xpath('(//*[@id="onboarding__terms-checkbox"] | //button[text()="Unlock"])[1]'));
+            let e = await auto.waitForElement(By.xpath('(//*[@id="onboarding__terms-checkbox"] | //button[text()="Unlock"] | //button[text()="Tokens"])[1]'));
+            if ((await e.getText()) === "Tokens") {
+                // if already unlocked, skip, may it is retry
+                this.logger.info("Metamask is already unlocked");
+                return;
+            }
             if ((await e.getText()) === "Unlock") {
                 await auto.clickElement(By.xpath('//div[@class="unlock-page__links"]//a'));
                 await driver.sleep(2000);
@@ -265,7 +270,7 @@ export default class MetamaskService extends BaseService {
         }
     }
     async resetMetamaskTab() {
-        const driver = this.auto.driver;
+        const driver = this.browser.driver;
         for (const tab of await driver.getAllWindowHandles()) {
             try {
                 await driver.switchTo().window(tab);

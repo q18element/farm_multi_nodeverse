@@ -18,6 +18,7 @@ output
 config/phantomKeys.txt
 # src
 # app_test.js
+*temp*
 
 
 

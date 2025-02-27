@@ -77,13 +77,13 @@ export default class BrowserManager {
       _args.push(`--force-device-scale-factor=${chromeSize.scale}`);
       _args.push(`--window-position=${this.lastPos.x},${this.lastPos.y}`);
 
-      let x = this.lastPos.x + chromeSize.width * chromeSize.scale;
+      let x = this.lastPos.x + chromeSize.width;
       let y = this.lastPos.y;
-      if (x > this.screen.width) {
+      if (x > this.screen.width/chromeSize.scale) {
         x = 0;
-        y += chromeSize.height * chromeSize.scale;
+        y += chromeSize.height;
       }
-      if (y > this.screen.height) {
+      if (y > this.screen.height/chromeSize.scale) {
         y = 0;
       }
       this.lastPos = { x: Math.floor(x), y: Math.floor(y) };

@@ -1,5 +1,5 @@
 import BaseService from "./baseService.js";
-export default class ChaptchaSolverService extends BaseService {
+export default class CaptchaSolverService extends BaseService {
     load() {
         throw new Error("Method not implemented.");
     }
@@ -10,7 +10,7 @@ export default class ChaptchaSolverService extends BaseService {
         throw new Error("Method not implemented.");
     }
     async activePopup() {
-        const { auto } = this;
+        const { browser: auto } = this;
         const { driver } = auto;
         const current = await driver.getWindowHandle();
         await driver.switchTo().newWindow("tab");

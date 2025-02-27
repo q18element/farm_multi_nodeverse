@@ -1,7 +1,8 @@
 import path from "path";
 import csv from "csvtojson";
 import log4js from "log4js";
-import { Mutex, Semaphore, withTimeout } from "async-mutex";
+import { Mutex } from "async-mutex";
+import Yargs from "yargs/browser.js";
 
 import DatabaseManager from "./database/database.js";
 import { Account } from "./database/AccountRepository.js";
@@ -52,10 +53,10 @@ export default class MainApp {
     this._proxies = [];
     this._serviceCache = {};
     this.mutex = new Mutex();
-    this.thread = 5;
+    this.thread = 2;
     this.loadRetry = 3;
     this._loadedExecutions = [];
-    this.chromeSize = { width: 1920, height: 1080, scale: 0.5 };
+    this.chromeSize = { width: 1920, height: 1080, scale: 0.4 };
     this.processArgs();
     this.logger = log4js.getLogger(new.target.name);
   }
